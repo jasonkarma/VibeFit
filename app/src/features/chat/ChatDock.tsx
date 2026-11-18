@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUp, Sparkles, X } from 'lucide-react';
+import { ArrowUp, Loader2, Sparkles, Wifi, WifiOff, X } from 'lucide-react';
+import type { AiStatus } from '@/services/aiStylist';
 import type { ChatTurn, UserPreferences } from '@/types/domain';
 import { useMotion } from '@/lib/motion';
 import { cn } from '@/lib/cn';
@@ -11,6 +12,20 @@ interface ChatDockProps {
     onApplyPatch: (patch: Partial<UserPreferences>) => void;
     chatLog: ChatTurn[];
     onPushTurn: (turn: ChatTurn) => void;
+    /**
+     * Live model parser. Returns null when the model is unavailable or its output
+     * failed validation, which is the signal to use the local parser instead.
+     */
+    onParseWithAi: (
+        message: string,
+        current: UserPreferences,
+    ) => Promise<{
+        patch: Partial<UserPreferences>;
+        reply: string;
+        appliedFields: string[];
+        understood: boolean;
+    } | null>;
+    aiStatus: AiStatus;
 }
 
 const SUGGESTIONS = [
@@ -23,23 +38,28 @@ const SUGGESTIONS = [
 /**
  * Command-palette style styling assistant.
  *
- * Fixed glass dock at the bottom with a gradient glow that activates only on
- * focus, so it reads as a tool you summon rather than persistent chrome. Three
- * suggestion chips (plus a fourth) let a sceptical reviewer try it in one click.
+ * Dual-path by design. The live model is tried first when configured; if it is
+ * unconfigured, offline, rate-limited, slow, or returns something that fails
+ * validation, the deterministic local parser answers instead. The user sees one
+ * continuous assistant either way — the badge is the only tell, and it reports
+ * which engine actually replied rather than which one was configured.
  *
- * Interaction contract: every message produces a transcript line stating exactly
- * which preference fields changed. Auto-updating four saved fields with no
- * visible receipt would be indistinguishable from doing nothing.
+ * That distinction matters: a badge claiming "Live" while the local parser did
+ * the work would be a lie in the one place the user is being asked to trust the
+ * system.
  */
 export function ChatDock({
     preferences,
     onApplyPatch,
     chatLog,
     onPushTurn,
+    onParseWithAi,
+    aiStatus,
 }: ChatDockProps) {
     const { reduced, patch } = useMotion();
     const [value, setValue] = useState('');
     const [focused, setFocused] = useState(false);
+    const [pending, setPending] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -60,9 +80,9 @@ export function ChatDock({
         return () => window.removeEventListener('keydown', onKeyDown);
     }, []);
 
-    function submit(message: string) {
+    async function submit(message: string) {
         const text = message.trim();
-        if (!text) return;
+        if (!text || pending) return;
 
         onPushTurn({
             id: `u-${Date.now()}`,
@@ -71,17 +91,47 @@ export function ChatDock({
             timestamp: Date.now(),
         });
 
-        const intent = parseChatMessage(text, preferences);
+        setPending(true);
 
-        if (Object.keys(intent.patch).length > 0) {
-            onApplyPatch(intent.patch);
+        let reply: string;
+        let appliedFields: string[] = [];
+
+        try {
+            const aiResult = await onParseWithAi(text, preferences);
+
+            if (aiResult) {
+                // Live path succeeded and already passed validation.
+                if (Object.keys(aiResult.patch).length > 0) {
+                    onApplyPatch(aiResult.patch);
+                }
+                reply = aiResult.reply;
+                appliedFields = aiResult.appliedFields;
+            } else {
+                // Local path. Same behaviour as Sprint 1, unchanged.
+                const intent = parseChatMessage(text, preferences);
+                if (Object.keys(intent.patch).length > 0) {
+                    onApplyPatch(intent.patch);
+                }
+                reply = intent.reply;
+                appliedFields = intent.appliedFields;
+            }
+        } catch {
+            // A thrown error must never leave the user without an answer.
+            const intent = parseChatMessage(text, preferences);
+            if (Object.keys(intent.patch).length > 0) {
+                onApplyPatch(intent.patch);
+            }
+            reply = intent.reply;
+            appliedFields = intent.appliedFields;
+        } finally {
+            setPending(false);
         }
 
         onPushTurn({
             id: `a-${Date.now()}`,
             role: 'assistant',
-            text: intent.reply,
-            appliedFields: intent.appliedFields,
+            text: reply,
+            appliedFields,
             timestamp: Date.now(),
         });
 
@@ -89,6 +139,7 @@ export function ChatDock({
     }
 
     const recent = chatLog.slice(-3);
+    const isLive = aiStatus === 'live';
 
     return (
         <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex justify-center px-4 pb-5">
@@ -111,9 +162,7 @@ export function ChatDock({
                                         : 'border-champagne/25 bg-champagne/[0.06]',
                                 )}
                             >
-                                <p className="text-[0.8125rem] leading-relaxed text-obsidian-50">
-                                    {turn.text}
-                                </p>
+                                <p className="text-[0.8125rem] leading-relaxed text-obsidian-50">{turn.text}</p>
                                 {turn.appliedFields && turn.appliedFields.length > 0 && (
                                     <div className="mt-1.5 flex flex-wrap gap-1">
                                         {turn.appliedFields.map((field, index) => (
@@ -142,8 +191,9 @@ export function ChatDock({
                         <button
                             key={suggestion}
                             type="button"
-                            onClick={() => submit(suggestion)}
-                            className="rounded-pill border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.6875rem] text-obsidian-400 backdrop-blur-xl transition-colors hover:border-champagne/40 hover:text-white"
+                            disabled={pending}
+                            onClick={() => void submit(suggestion)}
+                            className="rounded-pill border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.6875rem] text-obsidian-400 backdrop-blur-xl transition-colors hover:border-champagne/40 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {suggestion}
                         </button>
@@ -154,11 +204,10 @@ export function ChatDock({
                 <form
                     onSubmit={(event) => {
                         event.preventDefault();
-                        submit(value);
+                        void submit(value);
                     }}
                     className="relative"
                 >
-                    {/* Animated gradient border, focus only. */}
                     <div
                         className={cn(
                             'absolute -inset-px rounded-surface opacity-0 transition-opacity duration-300',
@@ -190,7 +239,7 @@ export function ChatDock({
                             className="w-full bg-transparent text-sm text-white outline-none placeholder:text-obsidian-500"
                         />
 
-                        {value && (
+                        {value && !pending && (
                             <button
                                 type="button"
                                 onClick={() => setValue('')}
@@ -203,19 +252,61 @@ export function ChatDock({
 
                         <button
                             type="submit"
-                            disabled={!value.trim()}
+                            disabled={!value.trim() || pending}
                             aria-label="Send message"
                             className="shrink-0 rounded-full bg-champagne p-1.5 text-obsidian transition-colors hover:bg-champagne-200 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-obsidian-500"
                         >
-                            <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
+                            {pending ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                            ) : (
+                                <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
+                            )}
                         </button>
                     </div>
                 </form>
 
-                <p className="mt-1.5 text-center text-[0.625rem] text-obsidian-500">
-                    On-device parser — no message leaves your browser.
-                </p>
+                <div className="mt-1.5 flex items-center justify-center gap-2">
+                    <EngineBadge status={aiStatus} />
+                    <span className="text-[0.625rem] text-obsidian-500">
+                        {isLive
+                            ? 'Responses from the live model, validated against the catalog before applying.'
+                            : 'Runs on-device — no message leaves your browser.'}
+                    </span>
+                </div>
             </div>
         </div>
+    );
+}
+
+/**
+ * Engine status badge.
+ *
+ * Deliberately quiet: a small dot, a label, and a tooltip. It answers "did the
+ * model actually answer me?" for a reviewer, without becoming a feature the user
+ * has to think about. `role="status"` means a screen reader announces a change
+ * from Live to Local if the network fails mid-session.
+ */
+export function EngineBadge({ status }: { status: AiStatus }) {
+    const isLive = status === 'live';
+    const Icon = isLive ? Wifi : WifiOff;
+
+    return (
+        <span
+            role="status"
+            title={
+                isLive
+                    ? 'Replies come from the live LumiaRouter model. Every preference is validated before it is applied.'
+                    : 'Using the deterministic on-device engine. No network calls, no API key required.'
+            }
+            className={cn(
+                'inline-flex items-center gap-1.5 rounded-pill border px-2 py-0.5 font-data text-[0.5625rem] uppercase tracking-[0.1em]',
+                isLive
+                    ? 'border-violet/40 bg-violet/10 text-violet'
+                    : 'border-white/10 bg-white/[0.03] text-obsidian-500',
+            )}
+        >
+            <Icon className="h-2.5 w-2.5" aria-hidden="true" />
+            {isLive ? 'Opus 5.5 Live' : 'Local Engine'}
+        </span>
     );
 }

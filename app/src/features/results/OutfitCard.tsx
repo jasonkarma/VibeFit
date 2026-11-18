@@ -12,6 +12,11 @@ interface OutfitCardProps {
     onOpen: (entry: RankedOutfit) => void;
     /** Where this card sits in the stagger, for reveal delay. */
     index: number;
+    /**
+     * Personalized narrative from the live model, already validated to reference
+     * only real prices. Absent when running on the local engine.
+     */
+    aiReason?: string;
 }
 
 /**
@@ -27,7 +32,7 @@ interface OutfitCardProps {
  * outfits, not between every garment. The garment list belongs to the detail
  * view that Sprint 2 adds.
  */
-export function OutfitCard({ entry, budget, onOpen, index }: OutfitCardProps) {
+export function OutfitCard({ entry, budget, onOpen, index, aiReason }: OutfitCardProps) {
     const { reduced, card } = useMotion();
     const { outfit, items, knownTotal, priceComplete, matchScore, reasons, arReady } = entry;
 
@@ -104,6 +109,18 @@ export function OutfitCard({ entry, budget, onOpen, index }: OutfitCardProps) {
                     <p className="mt-1 text-[0.8125rem] leading-relaxed text-obsidian-400">
                         {outfit.tagline}
                     </p>
+
+                    {/*
+                      When the model supplied a reason, it leads — it is personalized and
+                      reads better than the mechanical chips. The engine's own reasons stay
+                      underneath as the factual substrate, so the card remains trustworthy
+                      even if the narrative is disabled or unavailable.
+                    */}
+                    {aiReason && (
+                        <p className="mt-2.5 border-l border-violet/40 pl-2.5 text-[0.8125rem] leading-relaxed text-obsidian-50">
+                            {aiReason}
+                        </p>
+                    )}
 
                     {/* Reason chips: presentational, so spans rather than list items. */}
                     <div className="mt-3 flex flex-wrap gap-1">

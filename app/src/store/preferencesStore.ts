@@ -15,6 +15,7 @@ import { catalog } from '@/data/catalog';
 import { recommendOutfits } from '@/engine/recommend';
 import { computeRelaxOptions } from '@/engine/relax';
 import { validateBudget, validatePreferences, hasErrors } from '@/features/preferences/validation';
+import { rankOutfitsWithAi, type AiStatus, getAiStatus } from '@/services/aiStylist';
 
 /**
  * Single source of truth for the whole Sprint 1 flow.
@@ -44,6 +45,17 @@ export interface PreferenceState {
     lastGeneratedAt: number | null;
     chatLog: ChatTurn[];
 
+    /**
+     * Per-outfit narrative reasons from the live model, keyed by outfit id.
+     * Empty when the local engine is in use, in which case cards fall back to the
+     * engine's own deterministic reason chips.
+     */
+    aiReasons: Record<string, string>;
+    /** Whether the last ranking call reached the live model. Drives the badge. */
+    aiStatus: AiStatus;
+    /** Outfits the model chose to surface first, in its order. */
+    aiOrder: string[];
+
     // --- field patches ---
     setOccasion: (occasion: Occasion) => void;
     setDressCode: (dressCode: DressCode) => void;
@@ -63,6 +75,8 @@ export interface PreferenceState {
     generate: () => void;
     /** Regenerate in place after a preference change, if results already exist. */
     refreshIfGenerated: () => void;
+    /** Ask the live model to rank/reason over the current results. Local-safe. */
+    enrichWithAi: () => Promise<void>;
     reset: () => void;
 
     // --- chat ---
@@ -81,6 +95,9 @@ export const usePreferencesStore = create<PreferenceState>()(
             resultDiagnostics: null,
             lastGeneratedAt: null,
             chatLog: [],
+            aiReasons: {},
+            aiStatus: getAiStatus(),
+            aiOrder: [],
 
             setOccasion: (occasion) =>
                 set((state) => ({
@@ -163,8 +180,14 @@ export const usePreferencesStore = create<PreferenceState>()(
 
                     // Guard the invariant at the store boundary, not just in the UI, so
                     // the chat parser cannot violate it either.
-                    if (patch.colors && patch.colors.length > 1 && patch.colors.includes(NO_COLOR_PREFERENCE)) {
-                        next.colors = patch.colors.filter((c) => c !== NO_COLOR_PREFERENCE);
+                    //
+                    // Resolution rule: "No Color Preference" is an explicit opt-out and
+                    // wins over concrete colors. If it is present at all, the patch means
+                    // "I don't care about color", so the concrete entries are dropped
+                    // rather than the opt-out — silently keeping colors while claiming no
+                    // preference would misrepresent what the user asked for.
+                    if (patch.colors && patch.colors.includes(NO_COLOR_PREFERENCE)) {
+                        next.colors = [NO_COLOR_PREFERENCE];
                     }
 
                     if (patch.budget !== undefined && patch.budgetInput === undefined) {
@@ -198,6 +221,12 @@ export const usePreferencesStore = create<PreferenceState>()(
                     resultDiagnostics: result.diagnostics,
                     lastGeneratedAt: Date.now(),
                     hasSubmitted: true,
+                    // Reasons are derived from a specific result set. Keeping them
+                    // after a regeneration would attach last generation's narrative
+                    // to this generation's outfits — the worst kind of stale data,
+                    // because it reads as though it were correct.
+                    aiReasons: {},
+                    aiOrder: [],
                 });
             },
 
@@ -211,6 +240,41 @@ export const usePreferencesStore = create<PreferenceState>()(
                     results: result.outfits,
                     resultDiagnostics: result.diagnostics,
                     lastGeneratedAt: Date.now(),
+                    aiReasons: {},
+                    aiOrder: [],
+                });
+            },
+
+            enrichWithAi: async () => {
+                const { results, preferences } = get();
+                if (results.length === 0) return;
+
+                // Returns null when unconfigured, in tests, offline, or when the
+                // response fails validation. Each of those is a normal outcome and
+                // simply leaves the engine's own deterministic reasons in place.
+                const ranked = await rankOutfitsWithAi(preferences, results);
+
+                if (ranked === null || ranked.size === 0) {
+                    set({ aiStatus: 'local', aiReasons: {}, aiOrder: [] });
+                    return;
+                }
+
+                const aiReasons: Record<string, string> = {};
+                const aiOrder: string[] = [];
+                for (const entry of results) {
+                    const reason = ranked.get(entry.outfit.id);
+                    if (reason) {
+                        aiReasons[entry.outfit.id] = reason;
+                        aiOrder.push(entry.outfit.id);
+                    }
+                }
+
+                set({
+                    aiReasons,
+                    aiOrder,
+                    // Only claim "Live" when at least one reason survived
+                    // validation — the badge must never overstate what happened.
+                    aiStatus: aiOrder.length > 0 ? 'live' : 'local',
                 });
             },
 
@@ -223,6 +287,9 @@ export const usePreferencesStore = create<PreferenceState>()(
                     resultDiagnostics: null,
                     lastGeneratedAt: null,
                     chatLog: [],
+                    aiReasons: {},
+                    aiOrder: [],
+                    aiStatus: getAiStatus(),
                 }),
 
             pushChatTurn: (turn) =>

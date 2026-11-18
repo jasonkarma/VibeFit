@@ -14,10 +14,12 @@ coverage/
 .vitest/
 *.lcov
 
-# Environment
+# Environment — never commit real credentials.
+# .env.example is intentionally NOT ignored: it is the template, with no secrets.
 .env
 .env.local
 .env.*.local
+!.env.example
 
 # Editor / OS
 .DS_Store

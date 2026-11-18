@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { usePreferencesStore } from '@/store/preferencesStore';
+import { parsePreferencesWithAi } from '@/services/aiStylist';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { StepIndicator } from '@/components/ui/StepIndicator';
 import { SectionHeading } from '@/components/ui/SectionHeading';
@@ -35,6 +36,7 @@ export function PreferencesPage() {
     const generate = usePreferencesStore((state) => state.generate);
     const chatLog = usePreferencesStore((state) => state.chatLog);
     const pushChatTurn = usePreferencesStore((state) => state.pushChatTurn);
+    const aiStatus = usePreferencesStore((state) => state.aiStatus);
 
     function handleGenerate() {
         const isValid = validateAll();
@@ -146,6 +148,8 @@ export function PreferencesPage() {
                 onApplyPatch={applyPatch}
                 chatLog={chatLog}
                 onPushTurn={pushChatTurn}
+                onParseWithAi={parsePreferencesWithAi}
+                aiStatus={aiStatus}
             />
         </PageTransition>
     );

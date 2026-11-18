@@ -6,6 +6,7 @@ import type { RankedOutfit } from '@/types/domain';
 import { catalog } from '@/data/catalog';
 import { usePreferencesStore } from '@/store/preferencesStore';
 import { computeRelaxOptions } from '@/engine/relax';
+import { parsePreferencesWithAi } from '@/services/aiStylist';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { StepIndicator } from '@/components/ui/StepIndicator';
 import { ChatDock } from '@/features/chat/ChatDock';
@@ -34,6 +35,10 @@ export function ResultsPage() {
     const generate = usePreferencesStore((state) => state.generate);
     const chatLog = usePreferencesStore((state) => state.chatLog);
     const pushChatTurn = usePreferencesStore((state) => state.pushChatTurn);
+    const aiStatus = usePreferencesStore((state) => state.aiStatus);
+    const aiReasons = usePreferencesStore((state) => state.aiReasons);
+    const aiOrder = usePreferencesStore((state) => state.aiOrder);
+    const enrichWithAi = usePreferencesStore((state) => state.enrichWithAi);
 
     const hasRequiredInputs = Boolean(
         preferences.occasion && preferences.dressCode && preferences.budget,
@@ -65,9 +70,42 @@ export function ResultsPage() {
         preferences.colors.join('|'),
     ]);
 
+    /**
+     * Ask the live model to rank and explain this result set.
+     *
+     * Keyed on `lastGeneratedAt`, not on results length: that value changes once
+     * per generation, so this fires exactly once each time the engine produces a
+     * new set. Keying on the results array would re-fire on every re-render and
+     * bill the user for repeated identical calls.
+     *
+     * When unconfigured, offline, or in tests, `enrichWithAi` resolves without
+     * changing anything and the badge stays "Local Engine".
+     */
+    useEffect(() => {
+        if (lastGeneratedAt === null) return;
+        if (results.length === 0) return;
+        void enrichWithAi();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [lastGeneratedAt]);
+
     if (!hasRequiredInputs) return null;
 
     const budget = preferences.budget ?? 0;
+
+    /**
+     * Display order: the model's ranking first, then anything it did not mention.
+     * `aiOrder` only ever contains IDs from this result set (enforced in
+     * `interpretRankResponse`), so this cannot drop or invent cards.
+     */
+    const orderedResults = useMemo(() => {
+        if (aiOrder.length === 0) return results;
+        const byId = new Map(results.map((entry) => [entry.outfit.id, entry]));
+        const ordered = aiOrder
+            .map((id) => byId.get(id))
+            .filter((entry): entry is RankedOutfit => Boolean(entry));
+        const remaining = results.filter((entry) => !aiOrder.includes(entry.outfit.id));
+        return [...ordered, ...remaining];
+    }, [results, aiOrder]);
 
     function handleApplyRelax(patch: Partial<typeof preferences>) {
         applyPatch(patch);
@@ -131,9 +169,15 @@ export function ResultsPage() {
                         className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
                         aria-label="Recommended outfits"
                     >
-                        {results.map((entry, index) => (
+                        {orderedResults.map((entry, index) => (
                             <li key={entry.outfit.id}>
-                                <OutfitCard entry={entry} budget={budget} onOpen={handleOpenOutfit} index={index} />
+                                <OutfitCard
+                                    entry={entry}
+                                    budget={budget}
+                                    onOpen={handleOpenOutfit}
+                                    index={index}
+                                    aiReason={aiReasons[entry.outfit.id]}
+                                />
                             </li>
                         ))}
                     </motion.ul>
@@ -150,6 +194,8 @@ export function ResultsPage() {
                 onApplyPatch={applyPatch}
                 chatLog={chatLog}
                 onPushTurn={pushChatTurn}
+                onParseWithAi={parsePreferencesWithAi}
+                aiStatus={aiStatus}
             />
         </PageTransition>
     );

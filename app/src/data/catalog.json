@@ -1,0 +1,1097 @@
+{
+    "version": "1.0.0-sprint1",
+    "priceRetrievedAt": "2026-11-18",
+    "products": [
+        {
+            "id": "p-tee-cotton",
+            "name": "Essential Cotton Tee",
+            "retailer": "Uniqlo",
+            "slot": "top",
+            "price": 19.9,
+            "productUrl": "https://www.uniqlo.com/us/en/products/E422992-000/00",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "White",
+                "Black"
+            ],
+            "styles": [
+                "Minimalist",
+                "Classic"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null,
+            "notes": "Baseline everyday tee. Anchors the under-$120 casual outfits."
+        },
+        {
+            "id": "p-breton",
+            "name": "Breton Stripe Long-Sleeve",
+            "retailer": "Uniqlo",
+            "slot": "top",
+            "price": 24.9,
+            "productUrl": "https://www.uniqlo.com/us/en/products/E460522-000/00",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "White",
+                "Navy"
+            ],
+            "styles": [
+                "Classic",
+                "Trendy"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-poplin",
+            "name": "Oversized Poplin Shirt",
+            "retailer": "ARKET",
+            "slot": "top",
+            "price": 59,
+            "productUrl": "https://www.arket.com/en_us/womens/shirts/product.oversized-poplin-shirt.white.1132458001.html",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "White",
+                "Navy"
+            ],
+            "styles": [
+                "Minimalist",
+                "Classic"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-rib-crew",
+            "name": "Ribbed Long-Sleeve Crew",
+            "retailer": "COS",
+            "slot": "top",
+            "price": 49,
+            "productUrl": "https://www.cos.com/en_usd/women/womenswear/tops/product.ribbed-long-sleeve-top.beige.1176482001.html",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Beige",
+                "White"
+            ],
+            "styles": [
+                "Minimalist",
+                "Classic"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-silk-cami",
+            "name": "Silk-Blend Camisole",
+            "retailer": "Reformation",
+            "slot": "top",
+            "price": 88,
+            "productUrl": "https://www.thereformation.com/products/ines-silk-camisole/1312345.html",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Black",
+                "Earth Tones"
+            ],
+            "styles": [
+                "Bohemian",
+                "Trendy"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-draped-top",
+            "name": "Draped Jersey Top",
+            "retailer": "Mango",
+            "slot": "top",
+            "price": 42,
+            "productUrl": "https://shop.mango.com/us/en/p/women/t-shirts-and-tops/draped-jersey-top_17010523",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Black"
+            ],
+            "styles": [
+                "Trendy",
+                "Bohemian"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-rib-tank",
+            "name": "Cropped Rib Tank",
+            "retailer": "Weekday",
+            "slot": "top",
+            "price": 22,
+            "productUrl": "https://www.weekday.com/en_usd/women/tops/product.cropped-rib-tank.white.1163254001.html",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "White",
+                "Black"
+            ],
+            "styles": [
+                "Trendy",
+                "Streetwear"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-cashmere",
+            "name": "Cashmere Crewneck Sweater",
+            "retailer": "Everlane",
+            "slot": "top",
+            "price": 98,
+            "productUrl": "https://www.everlane.com/products/womens-cashmere-crew-sweater-navy",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Navy",
+                "Beige"
+            ],
+            "styles": [
+                "Classic",
+                "Minimalist"
+            ],
+            "image": null,
+            "arSupported": true,
+            "overlayAsset": "/ar/cashmere-crewneck.png",
+            "notes": "AR garment 1 of 5. Transparent PNG overlay lands in Sprint 2."
+        },
+        {
+            "id": "p-satin-cami",
+            "name": "Satin Camisole",
+            "retailer": "& Other Stories",
+            "slot": "top",
+            "price": 89,
+            "productUrl": "https://www.stories.com/en_usd/clothing/tops/product.satin-camisole.black.1158288001.html",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Black"
+            ],
+            "styles": [
+                "Classic",
+                "Minimalist"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-wool-blazer",
+            "name": "Wool-Blend Single-Breasted Blazer",
+            "retailer": "Massimo Dutti",
+            "slot": "layer",
+            "price": 139,
+            "productUrl": "https://www.massimodutti.com/us/wool-blend-blazer-l00432085",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Navy",
+                "Black"
+            ],
+            "styles": [
+                "Classic",
+                "Minimalist"
+            ],
+            "image": null,
+            "arSupported": true,
+            "overlayAsset": "/ar/wool-blazer.png",
+            "notes": "AR garment 2 of 5."
+        },
+        {
+            "id": "p-tux-blazer",
+            "name": "Structured Tuxedo Blazer",
+            "retailer": "Theory",
+            "slot": "layer",
+            "price": 249,
+            "productUrl": "https://www.theory.com/womens-blazers/structured-tuxedo-blazer.html",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Black"
+            ],
+            "styles": [
+                "Classic",
+                "Minimalist"
+            ],
+            "image": null,
+            "arSupported": true,
+            "overlayAsset": "/ar/tuxedo-blazer.png",
+            "notes": "AR garment 3 of 5. Carries the black-tie outfit closest to the $500 ceiling."
+        },
+        {
+            "id": "p-moto",
+            "name": "Leather Moto Jacket",
+            "retailer": "Zara",
+            "slot": "layer",
+            "price": 129,
+            "productUrl": "https://www.zara.com/us/en/leather-moto-jacket-p05634024.html",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Black"
+            ],
+            "styles": [
+                "Trendy",
+                "Streetwear"
+            ],
+            "image": null,
+            "arSupported": true,
+            "overlayAsset": "/ar/leather-moto.png",
+            "notes": "AR garment 4 of 5."
+        },
+        {
+            "id": "p-denim-jacket",
+            "name": "Oversized Denim Jacket",
+            "retailer": "Levi's",
+            "slot": "layer",
+            "price": 98,
+            "productUrl": "https://www.levi.com/US/en_US/clothing/women/outerwear/oversized-trucker-jacket/p/299450008",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Navy"
+            ],
+            "styles": [
+                "Streetwear",
+                "Bohemian"
+            ],
+            "image": null,
+            "arSupported": true,
+            "overlayAsset": "/ar/denim-jacket.png",
+            "notes": "AR garment 5 of 5."
+        },
+        {
+            "id": "p-straight-trouser",
+            "name": "Straight-Leg Trousers",
+            "retailer": "COS",
+            "slot": "bottom",
+            "price": 89,
+            "productUrl": "https://www.cos.com/en_usd/women/womenswear/trousers/product.straight-leg-trousers.beige.1190452001.html",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Beige",
+                "Navy",
+                "Black"
+            ],
+            "styles": [
+                "Minimalist",
+                "Classic"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-chino",
+            "name": "Slim Cropped Chino",
+            "retailer": "Uniqlo",
+            "slot": "bottom",
+            "price": 34.9,
+            "productUrl": "https://www.uniqlo.com/us/en/products/E455402-000/00",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Beige",
+                "Navy"
+            ],
+            "styles": [
+                "Minimalist",
+                "Classic"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-midi-skirt",
+            "name": "Pleated Midi Skirt",
+            "retailer": "ARKET",
+            "slot": "bottom",
+            "price": 79,
+            "productUrl": "https://www.arket.com/en_us/women/skirts/product.pleated-midi-skirt.black.1120458001.html",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Navy",
+                "Black"
+            ],
+            "styles": [
+                "Classic",
+                "Trendy"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-crepe-trouser",
+            "name": "Black Crepe Trousers",
+            "retailer": "Banana Republic",
+            "slot": "bottom",
+            "price": 75,
+            "productUrl": "https://bananarepublic.gap.com/browse/product.do?pid=506738002",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Black"
+            ],
+            "styles": [
+                "Classic"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-cargo",
+            "name": "Relaxed Cargo Pants",
+            "retailer": "Dickies",
+            "slot": "bottom",
+            "price": 65,
+            "productUrl": "https://www.dickies.com/pants/relaxed-fit-cargo-pants/FP01.html",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Earth Tones"
+            ],
+            "styles": [
+                "Streetwear"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-linen-trouser",
+            "name": "Wide-Leg Linen Trousers",
+            "retailer": "Everlane",
+            "slot": "bottom",
+            "price": null,
+            "productUrl": "https://www.everlane.com/products/womens-linen-wide-leg-pant-beige",
+            "priceRetrievedAt": null,
+            "colors": [
+                "Beige",
+                "Earth Tones"
+            ],
+            "styles": [
+                "Bohemian",
+                "Minimalist"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null,
+            "notes": "EDGE CASE — price is genuinely unknown. Must render 'Price Unavailable' and must be excluded from budget totals, never estimated."
+        },
+        {
+            "id": "p-silk-skirt",
+            "name": "Silk Column Skirt",
+            "retailer": "Reformation",
+            "slot": "bottom",
+            "price": 159,
+            "productUrl": "https://www.thereformation.com/products/luna-silk-skirt/1312101.html",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Black"
+            ],
+            "styles": [
+                "Classic",
+                "Minimalist"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-loafers",
+            "name": "Leather Penny Loafers",
+            "retailer": "G.H. Bass",
+            "slot": "shoes",
+            "price": 110,
+            "productUrl": "https://www.ghbass.com/products/womens-weejuns-larson-black",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Black",
+                "Earth Tones"
+            ],
+            "styles": [
+                "Classic"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-sneakers",
+            "name": "Canvas Low-Top Sneaker",
+            "retailer": "Vans",
+            "slot": "shoes",
+            "price": 55,
+            "productUrl": "https://www.vans.com/en-us/shoes-c00081/authentic-shoe-pvn000ee3baq",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "White",
+                "Black"
+            ],
+            "styles": [
+                "Streetwear",
+                "Minimalist"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-slip-on",
+            "name": "Canvas Slip-On",
+            "retailer": "Old Navy",
+            "slot": "shoes",
+            "price": 29,
+            "productUrl": "https://oldnavy.gap.com/browse/product.do?pid=510055002",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "White"
+            ],
+            "styles": [
+                "Minimalist",
+                "Trendy"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null,
+            "notes": "Lowest-cost footwear, which keeps two casual outfits under the $90 scenario ceiling."
+        },
+        {
+            "id": "p-sandals",
+            "name": "Strappy Heeled Sandal",
+            "retailer": "Mango",
+            "slot": "shoes",
+            "price": 79,
+            "productUrl": "https://shop.mango.com/us/en/p/women/shoes/heels/strappy-heeled-sandal_17057708",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Black"
+            ],
+            "styles": [
+                "Trendy",
+                "Classic"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-pumps",
+            "name": "Pointed Leather Pumps",
+            "retailer": "Sam Edelman",
+            "slot": "shoes",
+            "price": 85,
+            "productUrl": "https://www.samedelman.com/product/womens-hazel-pump-30195/black-leather-ec0109960",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Black"
+            ],
+            "styles": [
+                "Classic"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-scarf",
+            "name": "Printed Silk Scarf",
+            "retailer": "& Other Stories",
+            "slot": "accessory",
+            "price": 59,
+            "productUrl": "https://www.stories.com/en_usd/accessories/scarves/product.printed-silk-scarf.multi.1142644001.html",
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Colorful",
+                "Earth Tones"
+            ],
+            "styles": [
+                "Bohemian"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null
+        },
+        {
+            "id": "p-hoops",
+            "name": "Gold Vermeil Hoops",
+            "retailer": "Mejuri",
+            "slot": "accessory",
+            "price": 68,
+            "productUrl": null,
+            "priceRetrievedAt": "2026-11-18",
+            "colors": [
+                "Colorful"
+            ],
+            "styles": [
+                "Trendy",
+                "Classic"
+            ],
+            "image": null,
+            "arSupported": false,
+            "overlayAsset": null,
+            "notes": "EDGE CASE — no valid product page. The shop link must be hidden, never rendered disabled-but-clickable or pointed at a placeholder."
+        }
+    ],
+    "outfits": [
+        {
+            "id": "o-01",
+            "name": "Everyday Ease",
+            "tagline": "The outfit you reach for without thinking.",
+            "occasions": [
+                "Casual Outing"
+            ],
+            "dressCodes": [
+                "Casual",
+                "Smart Casual"
+            ],
+            "styles": [
+                "Minimalist",
+                "Classic"
+            ],
+            "colors": [
+                "White",
+                "Beige",
+                "Black"
+            ],
+            "itemIds": [
+                "p-tee-cotton",
+                "p-chino",
+                "p-sneakers"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-02",
+            "name": "Weekend Soft",
+            "tagline": "Stripes, sand-toned chinos, nothing loud.",
+            "occasions": [
+                "Casual Outing"
+            ],
+            "dressCodes": [
+                "Casual",
+                "Smart Casual"
+            ],
+            "styles": [
+                "Minimalist",
+                "Classic",
+                "Trendy"
+            ],
+            "colors": [
+                "White",
+                "Beige",
+                "Navy"
+            ],
+            "itemIds": [
+                "p-breton",
+                "p-chino",
+                "p-slip-on"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-03",
+            "name": "Studio Slip",
+            "tagline": "Cropped rib, clean line, white on white.",
+            "occasions": [
+                "Casual Outing"
+            ],
+            "dressCodes": [
+                "Casual"
+            ],
+            "styles": [
+                "Trendy",
+                "Minimalist"
+            ],
+            "colors": [
+                "White",
+                "Beige",
+                "Black"
+            ],
+            "itemIds": [
+                "p-rib-tank",
+                "p-chino",
+                "p-slip-on"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-04",
+            "name": "Downtown Utility",
+            "tagline": "Cargo volume grounded by a plain sneaker.",
+            "occasions": [
+                "Casual Outing"
+            ],
+            "dressCodes": [
+                "Casual",
+                "Smart Casual"
+            ],
+            "styles": [
+                "Streetwear"
+            ],
+            "colors": [
+                "Earth Tones",
+                "White",
+                "Black"
+            ],
+            "itemIds": [
+                "p-rib-tank",
+                "p-cargo",
+                "p-sneakers"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-05",
+            "name": "Skate Deck",
+            "tagline": "Breton stripes over workwear cargo.",
+            "occasions": [
+                "Casual Outing"
+            ],
+            "dressCodes": [
+                "Casual",
+                "Smart Casual"
+            ],
+            "styles": [
+                "Streetwear",
+                "Minimalist"
+            ],
+            "colors": [
+                "White",
+                "Earth Tones",
+                "Navy"
+            ],
+            "itemIds": [
+                "p-breton",
+                "p-cargo",
+                "p-sneakers"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-06",
+            "name": "Golden Hour",
+            "tagline": "Silk camisole, utilitarian bottom, bare ankle.",
+            "occasions": [
+                "Party"
+            ],
+            "dressCodes": [
+                "Casual",
+                "Smart Casual"
+            ],
+            "styles": [
+                "Bohemian",
+                "Trendy"
+            ],
+            "colors": [
+                "Earth Tones",
+                "Black",
+                "White"
+            ],
+            "itemIds": [
+                "p-silk-cami",
+                "p-cargo",
+                "p-slip-on"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-07",
+            "name": "Clay & Chiffon",
+            "tagline": "Draped jersey with linen that moves.",
+            "occasions": [
+                "Party"
+            ],
+            "dressCodes": [
+                "Casual"
+            ],
+            "styles": [
+                "Bohemian",
+                "Trendy"
+            ],
+            "colors": [
+                "Earth Tones",
+                "Black",
+                "Beige"
+            ],
+            "itemIds": [
+                "p-draped-top",
+                "p-linen-trouser",
+                "p-sandals"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-08",
+            "name": "Boardroom Standard",
+            "tagline": "Poplin shirt, soft-shouldered blazer, loafers.",
+            "occasions": [
+                "Work"
+            ],
+            "dressCodes": [
+                "Business Formal",
+                "Smart Casual"
+            ],
+            "styles": [
+                "Classic",
+                "Minimalist"
+            ],
+            "colors": [
+                "Navy",
+                "Beige",
+                "Black"
+            ],
+            "itemIds": [
+                "p-poplin",
+                "p-wool-blazer",
+                "p-straight-trouser",
+                "p-loafers"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-09",
+            "name": "Navy Suit Edit",
+            "tagline": "Cashmere over pressed trousers.",
+            "occasions": [
+                "Work"
+            ],
+            "dressCodes": [
+                "Business Formal",
+                "Smart Casual"
+            ],
+            "styles": [
+                "Classic",
+                "Minimalist"
+            ],
+            "colors": [
+                "Navy",
+                "Beige",
+                "Black"
+            ],
+            "itemIds": [
+                "p-cashmere",
+                "p-straight-trouser",
+                "p-loafers"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-10",
+            "name": "Quiet Luxury Office",
+            "tagline": "Ribbed knit, straight leg, polished loafer.",
+            "occasions": [
+                "Work"
+            ],
+            "dressCodes": [
+                "Smart Casual"
+            ],
+            "styles": [
+                "Minimalist",
+                "Classic"
+            ],
+            "colors": [
+                "Beige",
+                "Black",
+                "Earth Tones"
+            ],
+            "itemIds": [
+                "p-rib-crew",
+                "p-straight-trouser",
+                "p-loafers"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-11",
+            "name": "Soft Tailoring",
+            "tagline": "The softest way to look hired.",
+            "occasions": [
+                "Work"
+            ],
+            "dressCodes": [
+                "Smart Casual",
+                "Casual"
+            ],
+            "styles": [
+                "Minimalist",
+                "Classic"
+            ],
+            "colors": [
+                "Beige",
+                "Navy",
+                "Black"
+            ],
+            "itemIds": [
+                "p-rib-crew",
+                "p-chino",
+                "p-loafers"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-12",
+            "name": "Neutral Layers",
+            "tagline": "Cashmere, linen, and a low slip-on.",
+            "occasions": [
+                "Work"
+            ],
+            "dressCodes": [
+                "Smart Casual"
+            ],
+            "styles": [
+                "Minimalist",
+                "Bohemian"
+            ],
+            "colors": [
+                "Beige",
+                "Navy"
+            ],
+            "itemIds": [
+                "p-cashmere",
+                "p-linen-trouser",
+                "p-loafers"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-13",
+            "name": "After Dark",
+            "tagline": "Silk camisole, pleated skirt, thin strap.",
+            "occasions": [
+                "Party"
+            ],
+            "dressCodes": [
+                "Cocktail",
+                "Smart Casual"
+            ],
+            "styles": [
+                "Trendy",
+                "Classic",
+                "Bohemian"
+            ],
+            "colors": [
+                "Black",
+                "Navy"
+            ],
+            "itemIds": [
+                "p-silk-cami",
+                "p-midi-skirt",
+                "p-sandals"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-14",
+            "name": "Velvet Hour",
+            "tagline": "Leather moto over a draped black top.",
+            "occasions": [
+                "Party"
+            ],
+            "dressCodes": [
+                "Smart Casual"
+            ],
+            "styles": [
+                "Trendy",
+                "Streetwear"
+            ],
+            "colors": [
+                "Black"
+            ],
+            "itemIds": [
+                "p-draped-top",
+                "p-moto",
+                "p-crepe-trouser",
+                "p-pumps"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-19",
+            "name": "Midnight Mode",
+            "tagline": "Black on black, kept short and sharp.",
+            "occasions": [
+                "Party"
+            ],
+            "dressCodes": [
+                "Cocktail",
+                "Smart Casual"
+            ],
+            "styles": [
+                "Trendy",
+                "Minimalist"
+            ],
+            "colors": [
+                "Black"
+            ],
+            "itemIds": [
+                "p-rib-tank",
+                "p-midi-skirt",
+                "p-pumps"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-15",
+            "name": "Midnight Silk",
+            "tagline": "Satin and column silk with a pointed pump.",
+            "occasions": [
+                "Wedding"
+            ],
+            "dressCodes": [
+                "Black Tie",
+                "Cocktail"
+            ],
+            "styles": [
+                "Classic",
+                "Minimalist"
+            ],
+            "colors": [
+                "Black"
+            ],
+            "itemIds": [
+                "p-satin-cami",
+                "p-silk-skirt",
+                "p-pumps"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-16",
+            "name": "Tuxedo Ease",
+            "tagline": "Black tie, worn like you own the room.",
+            "occasions": [
+                "Wedding"
+            ],
+            "dressCodes": [
+                "Black Tie"
+            ],
+            "styles": [
+                "Classic",
+                "Minimalist"
+            ],
+            "colors": [
+                "Black"
+            ],
+            "itemIds": [
+                "p-satin-cami",
+                "p-tux-blazer",
+                "p-crepe-trouser",
+                "p-pumps"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-17",
+            "name": "Garden Formal",
+            "tagline": "Draped jersey and pleats for an outdoor ceremony.",
+            "occasions": [
+                "Wedding"
+            ],
+            "dressCodes": [
+                "Cocktail",
+                "Smart Casual"
+            ],
+            "styles": [
+                "Bohemian",
+                "Trendy"
+            ],
+            "colors": [
+                "Black",
+                "Navy"
+            ],
+            "itemIds": [
+                "p-draped-top",
+                "p-midi-skirt",
+                "p-sandals"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-18",
+            "name": "Love & Linen",
+            "tagline": "Silk camisole, linen trouser, a scarf for the wind.",
+            "occasions": [
+                "Wedding"
+            ],
+            "dressCodes": [
+                "Cocktail",
+                "Smart Casual"
+            ],
+            "styles": [
+                "Bohemian"
+            ],
+            "colors": [
+                "Earth Tones",
+                "Black",
+                "Colorful",
+                "Beige"
+            ],
+            "itemIds": [
+                "p-silk-cami",
+                "p-linen-trouser",
+                "p-sandals",
+                "p-scarf"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-20",
+            "name": "Denim Layer",
+            "tagline": "Washed denim over a stripe, grounded in canvas.",
+            "occasions": [
+                "Casual Outing"
+            ],
+            "dressCodes": [
+                "Casual",
+                "Smart Casual"
+            ],
+            "styles": [
+                "Streetwear",
+                "Bohemian"
+            ],
+            "colors": [
+                "Navy",
+                "White",
+                "Earth Tones"
+            ],
+            "itemIds": [
+                "p-breton",
+                "p-denim-jacket",
+                "p-chino",
+                "p-sneakers"
+            ],
+            "heroImage": null
+        },
+        {
+            "id": "o-21",
+            "name": "Poplin Standard",
+            "tagline": "Crisp cotton, cropped chino, worn-in loafers.",
+            "occasions": [
+                "Work"
+            ],
+            "dressCodes": [
+                "Smart Casual",
+                "Business Formal"
+            ],
+            "styles": [
+                "Minimalist",
+                "Classic"
+            ],
+            "colors": [
+                "Beige",
+                "Navy",
+                "White"
+            ],
+            "itemIds": [
+                "p-poplin",
+                "p-chino",
+                "p-loafers"
+            ],
+            "heroImage": null
+        }
+    ]
+}

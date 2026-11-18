@@ -69,9 +69,23 @@ export function validateBudget(raw: string): BudgetValidation {
     return { ok: true, value: Math.round(value * 100) / 100 };
 }
 
-/** Keeps the field usable: digits, one decimal point, optional $ and separators. */
+/**
+ * Budget field sanitising.
+ *
+ * Deliberately permissive: characters are *not* stripped as the user types.
+ *
+ * Filtering the input down to digits looks tidy but quietly breaks acceptance
+ * criterion 14.2 — a user pasting "250 dollars" would watch the letters vanish
+ * with no explanation, and the "reject non-numeric input with a helpful message"
+ * case could never actually occur. Leaving the characters in place lets
+ * validation explain what is wrong, which is both honest and demonstrable.
+ *
+ * Nothing is lost by this: `parseBudgetInput` already tolerates "$", thousands
+ * separators, and surrounding whitespace, so the lenient path still accepts
+ * "$1,250.50" typed or pasted verbatim.
+ */
 export function sanitizeBudgetTyping(raw: string): string {
-    return raw.replace(/[^\d.,$-]/g, '');
+    return raw;
 }
 
 export function validatePreferences(prefs: UserPreferences): PreferenceErrors {

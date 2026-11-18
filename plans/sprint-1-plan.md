@@ -3,7 +3,9 @@
 **Sprint:** VIBE Sprint 1 · 10 Nov – 17 Nov 2026
 **Charter milestone:** 11/17/2026 — *Sprint 1: conversational styling assistant and initial outfit recommendations*
 **Build target:** MSIS-609 working prototype, final demo 12/08/2026
-**Plan status:** proposed — pending two scope confirmations (see [Open Decisions](#open-decisions))
+**Plan status:** approved 11/18/2026 — stack, app path, chat bar, and story ownership all confirmed
+**Stack:** Vite + React + TypeScript + Tailwind · React Router · Zustand · Framer Motion · Lucide React
+**Visual direction:** Editorial Obsidian & Champagne (see [Design System](#10-design-system--editorial-obsidian--champagne))
 
 ---
 
@@ -64,7 +66,8 @@ Every line below must be demonstrable and covered by an automated test or a writ
 
 **In Sprint 1**
 
-- Project scaffold, routing, design primitives, error boundary
+- Project scaffold, routing, design-system tokens, typography, motion primitives, error boundary
+- Full "Editorial Obsidian & Champagne" visual layer: glassmorphic surfaces, ambient mesh glows, serif/Sans/Mono type scale, Framer Motion page transitions and staggered reveals
 - Domain types + Zod schemas + full seed catalog (data only; no price/link UI)
 - Persisted preference store (survives navigation and refresh)
 - The four preference inputs with validation
@@ -87,14 +90,14 @@ Every line below must be demonstrable and covered by an automated test or a writ
 
 ## 4. Open decisions
 
-| # | Decision | Recommendation | Why |
+| # | Decision | Resolution | Consequence for this sprint |
 |---|---|---|---|
-| D1 | Vite + React Router vs Next.js App Router | **Vite + React Router** | SPA needs no SSR; `getUserMedia` and localStorage persistence are simpler; one static build target for the Sprint 2 AR work. Next is an easy swap if the team already has a Next repo. |
-| D2 | App location | **`app/` subfolder** at repo root | Keeps [`VibeFit_10_User_Stories_Jira_Backlog.xlsx`](VibeFit_10_User_Stories_Jira_Backlog.xlsx), the charter PDF, and [`plans/`](plans/) separate from build output. |
-| D3 | Chat bar in Sprint 1? | **Yes — deterministic parser only** | Charter line 87 names the conversational assistant as the Sprint 1 deliverable. No API key, no cost, never breaks the demo. An LLM adapter can drop behind the same interface in Sprint 2. |
-| D4 | Ownership of the three "In Progress" items | Needs confirmation | VIBE-11/13/15 are assigned to TC and NN but this workspace is empty. If teammates have code elsewhere we must reconcile to one repo before building, or we will produce duplicate implementations. |
-| D5 | Where prices come from | Curated `catalog.json` with `priceRetrievedAt` | Charter risk register requires "display when information was retrieved". Fits the $40 extraction budget line. |
-| D6 | Recommendation "AI" | Deterministic hybrid: filter + weighted score + reason strings | Meets "explainable and testable" for the 8/10 scenarios criterion. Optional LLM re-ranking later. |
+| D1 | Vite + React Router vs Next.js App Router | **Vite + React Router** — resolved | SPA only; `getUserMedia` and localStorage persistence stay simple; single static build target for Sprint 2 AR |
+| D2 | App location | **`app/` subfolder** — resolved | Docs and link audits live in `docs/`; backlog XLSX, charter PDF, and `plans/` stay outside the build root |
+| D3 | Chat bar in Sprint 1? | **Yes — deterministic parser only** — resolved | Satisfies the charter's 11/17 conversational-assistant milestone with no API key, no cost, no demo failure mode |
+| D4 | Ownership of VIBE-11 / VIBE-13 / VIBE-15 | **Implement fully in this repo** — resolved | Teammates review their story's section against the acceptance matrix rather than merging separate code. One repo, one implementation. |
+| D5 | Where prices come from | Curated `catalog.json` with `priceRetrievedAt` | Charter risk register requires "display when information was retrieved"; fits the $40 extraction budget line |
+| D6 | Recommendation "AI" | Deterministic hybrid: filter + weighted score + reason strings | Satisfies the testable 8/10 scenario criterion; optional LLM re-ranking later behind the same interface |
 
 ---
 
@@ -114,6 +117,22 @@ flowchart LR
     L --> P[Edit Preferences Round Trip]
     P --> S
     L --> T[Sprint 2 Outfit Detail and AR]
+```
+
+**Render layer.** Every screen is wrapped by a `PageTransition` Framer Motion boundary. Preference inputs, result cards, and chat replies all compose from one shared motion vocabulary defined once in [`src/lib/motion.ts`](src/lib/motion.ts), so the animation feel is consistent and the durations are adjustable from a single file (which is what makes the reduced-motion and test overrides a one-line change).
+
+```mermaid
+flowchart LR
+    S[preferencesStore] --> PG[Preferences Screen]
+    S --> RS[Results Screen]
+    S --> CB[Chat Dock]
+    M[motion.ts presets] --> PG
+    M --> RS
+    M --> CB
+    T[tokens.ts palette and type] --> PG
+    T --> RS
+    T --> CB
+    R[prefers-reduced-motion or Vitest] --> M
 ```
 
 **Engine pipeline**
@@ -249,34 +268,130 @@ The bar renders above the preference sections so a single sentence can populate 
 
 ---
 
-## 10. Repository layout
+## 10. Design System — Editorial Obsidian & Champagne
+
+Target feel: SSENSE / Farfetch editorial restraint crossed with the command-surface precision of Linear and Raycast. Dark-first, low-noise, high-contrast type, motion used for confirmation rather than decoration.
+
+### 10.1 Dependencies added at scaffold time
+
+`framer-motion`, `lucide-react`, `clsx`, `tailwind-merge` (plus the existing Zustand, React Router, Zod, Vitest stack). `clsx` + `tailwind-merge` power a single [`cn()`](app/src/lib/cn.ts) helper so conditional variant classes never collide.
+
+### 10.2 Tokens — single source of truth in [`src/styles/tokens.ts`](app/src/styles/tokens.ts)
+
+| Token group | Values |
+|---|---|
+| Canvas | `--obsidian: #09090B` base background; page never uses pure black |
+| Ambient glow | `rgba(212, 175, 55, 0.08)` champagne mesh · `rgba(139, 92, 246, 0.07)` violet mesh, as two large blurred radial gradients fixed behind content |
+| Surfaces | `bg-white/[0.03]` + `backdrop-blur-xl` + `border border-white/10`; elevated variant `bg-white/[0.05]` |
+| Champagne gold | `#E5C158` — primary actions, selected states, active borders, match-ring stroke |
+| Electric violet | `#A855F7` — AI assistant badge, sparkle glyphs, chat dock focus glow |
+| Semantic | Emerald `#34D399` budget comfortable · Amber `#FBBF24` budget tight · Rose `#FB7185` over/mismatch |
+| Text | `#FAFAFA` primary · `#A1A1AA` secondary · `#71717A` tertiary |
+| Radii | surfaces `1rem`, tiles `0.875rem`, pills `999px` |
+| Elevation | glass ring + `shadow-[0_1px_0_rgba(255,255,255,0.06)_inset]`; no heavy drop shadows |
+
+Contrast note: gold `#E5C158` on obsidian exceeds 7:1 for text but is reserved for fills and borders with `#09090B` text on gold — never gold text on glass below 16px, where `#FAFAFA` is used instead.
+
+### 10.3 Typography — loaded in [`app/index.html`](app/index.html)
+
+| Role | Family | Usage |
+|---|---|---|
+| Editorial display | **Instrument Serif** with **Cormorant Garamond** fallback | Page titles, outfit names, section headers, the wordmark |
+| UI sans | **Plus Jakarta Sans** | Labels, buttons, chips, body copy, validation messages |
+| Data mono | **JetBrains Mono** | USD amounts, budget meter values, match percentages, scenario IDs |
+
+Loaded via `preconnect` + a single `display=swap` stylesheet request. `font-display: swap` matters here: the demo must render readable text on first paint of a cold network.
+
+Type scale: `display 56/48/40`, `heading 28/24`, `label 13 uppercase tracking-[0.08em]`, `body 15`, `mono 13`. Italic Instrument Serif is used deliberately for the empty-state message to make it feel authored rather than like an error.
+
+### 10.4 Component inventory (built in Sprint 1, extended in Sprint 2)
+
+| Component | Spec |
+|---|---|
+[`Surface.tsx`](app/src/components/ui/Surface.tsx) | Glass panel primitive — the base for every card, dock, and modal |
+[`Pill.tsx`](app/src/components/ui/Pill.tsx) | Magnetic-feel selectable tag; Framer `layoutId` shared border + checkmark |
+[`BentoTile.tsx`](app/src/components/ui/BentoTile.tsx) | Editorial card wrapper with optional `layoutId` selection ring |
+[`MatchRing.tsx`](app/src/components/ui/MatchRing.tsx) | SVG ring, score as mono percentage, animated stroke on mount only |
+[`BudgetMeter.tsx`](app/src/components/ui/BudgetMeter.tsx) | `$Total / $Budget` bar with semantic color and mono labels |
+[`ChatDock.tsx`](app/src/features/chat/ChatDock.tsx) | Floating glassmorphic command bar |
+[`FieldError.tsx`](app/src/components/ui/FieldError.tsx) | `role="alert"` message with rose accent and shake trigger |
+[`PageTransition.tsx`](app/src/components/ui/PageTransition.tsx) | Route-level fade/slide wrapper |
+
+### 10.5 Per-story visual treatment
+
+**VIBE-11 Occasion (tiles).** Four large bento cards in a 2×2 grid, each with a Lucide glyph, the occasion name in Instrument Serif, and a one-line editorial descriptor. Selection animates a champagne ring in via `layoutId="occasion-ring"` so the ring physically travels between cards instead of blinking.
+
+**VIBE-13 Dress Code (ladder).** Present the five options on an explicit formality ladder from Casual to Black Tie, with a thin gold progress rail behind the row. This is a design improvement over radio buttons *and* it makes AC 13.3 obvious: changing dress code visibly slides a single indicator along the rail.
+
+**VIBE-14 Budget (input + tier bar + shake).** The strict numeric input from §8 is primary and fully accessible. Beside it sits a live non-authoritative tier meter — Under $100 / $100–200 / $200–350 / $350+ — rendered in JetBrains Mono with a gold fill. The slider is an *optional accelerator* that only writes the same sanitized value into the same store field, so it can never bypass AC 14.2. Invalid submissions trigger a 3-frame horizontal shake on the field wrapper plus the `role="alert"` text; the shake is decorative and carries no information not already in the text.
+
+**VIBE-15 Style & Color (pills + swatches).** Styles are magnetic pills. Colors are real swatches with a small champagne checkmark, and `No Color Preference` is a visually distinct full-width pill with a Lucide `CircleSlash` glyph. Because AC 15.2 requires mutual exclusivity, selecting a concrete color deselects `No Color Preference` in the same patch, and the store enforces it independently of the UI.
+
+**Chat Dock.** Fixed glass dock with an animated conic-gradient border that activates only on `:focus-within`. Above it, three suggestion chips ("Summer wedding under $250", "Make it cheaper", "Business formal for work"). After parsing, a row of small pill-patches animates in showing exactly the fields that changed (`Occasion → Wedding`, `Budget → $250`) with champagne dots — this socialises the parser's behaviour, which is the difference between a demo that looks clever and one that looks trustworthy.
+
+**Results (bento grid).** Staggered fade-up at `staggerChildren: 0.08`, `y: 12 → 0`. Each card: hero garment image with slow hover zoom, outfit name in Instrument Serif, `MatchRing` in the corner, `BudgetMeter` across the bottom, reason strings as subtle mono chips, and a glowing `AR Ready` badge (violet, `Sparkles` icon) when the outfit contains one of the five AR-supported tops/jackets. The AR badge is data-driven off `arSupported`, and in Sprint 1 it advertises Sprint 2 capability — so it must be worded as readiness ("AR Ready"), never as an available feature, to avoid overstating prototype scope in the sponsor demo.
+
+**Empty state.** Italic serif headline, a calm one-sentence explanation, then the three relax buttons rendered as bento tiles each showing its resulting count. No red, no alarm icon — a constraint conflict is a styling problem, not an error.
+
+### 10.6 Motion vocabulary in [`src/lib/motion.ts`](app/src/lib/motion.ts)
+
+| Preset | Value |
+|---|---|
+| `pageTransition` | opacity 0→1, y 8→0, 240ms, ease `[0.22, 1, 0.36, 1]` |
+| `staggerContainer` | `staggerChildren: 0.08`, `delayChildren: 0.04` |
+| `cardReveal` | opacity 0→1, y 12→0, 320ms |
+| `dockFocusGlow` | conic gradient rotation, 6s linear infinite, focus only |
+| `shake` | x `[0, -6, 6, -3, 0]`, 220ms |
+| `patchPop` | scale 0.9→1, opacity 0→1, 180ms |
+
+### 10.7 Accessibility and testability guardrail (hard requirement)
+
+Framer Motion is a presentational layer only — it must never own behaviour.
+
+1. **Semantic elements only.** Motion variants wrap `motion.button`, `motion.div`, `motion.li`. Real `<button>`, `<input>`, `<label>`, `<fieldset>`, and `role="alert"` are preserved. Selection state is expressed through `aria-pressed` / `aria-checked` / `aria-invalid` first, with `layoutId` purely decorative.
+2. **Reduced motion.** A single `useReducedMotion()`-backed `motionSafe` object collapses all presets to `{ duration: 0 }` when `prefers-reduced-motion: reduce` is set. Zero information is conveyed by animation alone.
+3. **Test environment override.** [`src/lib/motion.ts`](app/src/lib/motion.ts) exports `MOTION_DISABLED` triggered by `import.meta.env.MODE === 'test'` or `import.meta.env.VITEST`, so every animation resolves instantly in Vitest. No `await sleep()` or `waitFor` on animation frames anywhere in the suite; tests assert DOM state, not animation state.
+4. **No layout-dependent assertions.** Staggered reveals must not gate mount. Cards exist in the DOM on first render; only their opacity/transform animate. This keeps `getByRole` queries reliable and keeps the "distinct outfits" assertions from depending on timing.
+5. **Contrast and focus.** Champagne focus ring `ring-2 ring-[#E5C158]/60 ring-offset-2 ring-offset-[#09090B]` on every interactive element; keyboard order follows visual order; the chat dock is reachable by `Tab` and dismissible by `Escape`.
+6. **Performance.** Ambient glows are static CSS gradients, not animated canvases. Only `transform` and `opacity` animate. Hover zoom uses `scale` on the image inside an `overflow-hidden` frame.
+
+---
+
+## 11. Repository layout
 
 ```
 VibeFit/
 ├── app/
 │   ├── index.html
-│   ├── package.json · vite.config.ts · tsconfig.json · tailwind.config.ts
+│   ├── package.json · vite.config.ts · vitest.config.ts · tailwind.config.ts
 │   └── src/
 │       ├── main.tsx · App.tsx · routes.tsx · index.css
+│       ├── styles/tokens.ts · theme.css
+│       ├── lib/cn.ts · motion.ts · format.ts
 │       ├── types/domain.ts
 │       ├── data/catalog.json · catalog.schema.ts · testScenarios.ts
 │       ├── store/preferencesStore.ts
 │       ├── engine/recommend.ts · score.ts · relax.ts · __tests__/
 │       ├── features/
 │       │   ├── preferences/  PreferencesPage.tsx · OccasionSelector.tsx · DressCodeSelector.tsx
-│       │   │                 BudgetInput.tsx · StyleColorSelector.tsx · validation.ts
-│       │   ├── chat/         ChatBar.tsx · parseIntent.ts · __tests__/
-│       │   └── results/      ResultsPage.tsx · OutfitCard.tsx · EmptyState.tsx
-│       └── components/  Button · Card · Badge · Alert · StepIndicator · ErrorBoundary
-├── docs/sprint-1-acceptance-matrix.md · demo-script.md · product-link-audit.md
+│       │   │                 BudgetInput.tsx · BudgetTierBar.tsx · StyleColorSelector.tsx · validation.ts
+│       │   ├── chat/         ChatDock.tsx · parseIntent.ts · SuggestionChips.tsx · PatchFeedback.tsx
+│       │   └── results/      ResultsPage.tsx · OutfitCard.tsx · EmptyState.tsx · RelaxTile.tsx
+│       └── components/
+│           ├── ui/       Surface · Pill · BentoTile · MatchRing · BudgetMeter · FieldError
+│           │             PageTransition · StepIndicator · ErrorBoundary
+│           └── layout/   AppShell.tsx · AmbientBackground.tsx · Header.tsx
+├── docs/sprint-1-acceptance-matrix.md · demo-script.md · product-link-audit.md · design-tokens.md
 └── plans/sprint-1-plan.md
 ```
+
+Tailwind theme extends `colors.editorial` (obsidian, champagne, violet, semantic), `fontFamily.display/sans/mono`, and `backgroundImage.meshChampagne` / `meshViolet` from the same token source, so a palette change is a one-file edit rather than a grep across components.
 
 Routes: `/preferences` (default) → `/results`, with a guard that redirects to `/preferences` when required inputs are missing, so a hard refresh never lands on a broken results page.
 
 ---
 
-## 11. Test plan
+## 12. Test plan
 
 Vitest + Testing Library + jsdom. Scripts: `npm test`, `npm run test:coverage`, `npm run typecheck`, `npm run build`.
 
@@ -299,9 +414,16 @@ Each assertion checks: unique ids, complete item sets, total ≤ budget, non-emp
 
 **Additional suites:** budget validation table (~12 cases), style/color mutual exclusivity, persistence across simulated refresh, Edit Preferences round trip preserving untouched fields, chat parser (~15 utterances incl. "Show me a cheaper option"), and a guard test that no product with `price: null` is counted into a budget total.
 
+**Design-layer suites** (kept deliberately small so the visual layer cannot become a testing tax):
+
+1. `motion.test.ts` — asserts `MOTION_DISABLED` is true under Vitest and that each preset collapses to zero duration, so no future refactor silently reintroduces animation-dependent flakiness.
+2. `a11y.test.tsx` — every selectable control exposes `aria-pressed` or `aria-checked`; every invalid field exposes `aria-invalid` and an `aria-describedby` pointing at an existing `role="alert"` node; the chat dock is keyboard reachable and `Escape`-dismissible.
+3. `tokens.test.ts` — contrast guard for the semantic combinations actually used (gold fill on obsidian, rose on glass, white on glass) so no one ships an unreadable badge.
+4. Snapshot-free assertion style throughout: no snapshot tests on animated components.
+
 ---
 
-## 12. Risks for this sprint
+## 13. Risks for this sprint
 
 | Risk | Impact | Mitigation |
 |---|---|---|
@@ -311,10 +433,15 @@ Each assertion checks: unique ids, complete item sets, total ≤ budget, non-emp
 | Catalog link validity at 90% | Charter success criterion | Audit links during catalog creation, record in [`docs/product-link-audit.md`](docs/product-link-audit.md) |
 | Price drift in sample data | Demo credibility | Store `priceRetrievedAt`; Sprint 2 surfaces the "Sample Price" badge |
 | Empty-state reachable too easily in demo | Looks broken to sponsor | Scenario 5 is the only intentional empty case; relax buttons always produce a path forward |
+| Motion layer drifts into owning behaviour | Flaky tests, broken ACs | Semantic elements plus `aria-*` state asserted by `a11y.test.tsx`; all animation gated behind `motionSafe` |
+| Web fonts fail or load slowly on demo network | Jarring first paint | `display=swap` with a serif fallback stack; layout stable because sizes come from scale tokens, not glyph metrics |
+| Contrast fails on glass at small sizes | Accessibility and rubric risk | `tokens.test.ts` guards shipped combinations; gold is fill-only, never small gold body text |
+| Glass and blur overuse janks the demo device | Stutter during card stagger | Ambient glows are static CSS; only `transform`/`opacity` animate; blur limited to a few large surfaces |
+| Design polish consumes sprint capacity | Committed stories miss 11/19 | Visual work is scheduled inside each story's own step, not as a separate phase; the chat dock and result cards degrade to plain glass panels if time runs out |
 
 ---
 
-## 13. Definition of Done for Sprint 1
+## 14. Definition of Done for Sprint 1
 
 1. All 20 Sprint 1 acceptance criteria have a passing test or a documented manual verification step in the acceptance matrix.
 2. `npm run typecheck && npm test && npm run build` pass clean.
@@ -323,4 +450,6 @@ Each assertion checks: unique ids, complete item sets, total ≤ budget, non-emp
 5. Empty state and its relax buttons are reachable and demonstrate a recovery path.
 6. Chat bar updates all four preference states from one sentence and confirms what it changed.
 7. 5-minute demo script runs end-to-end with no console errors.
-8. Jira: VIBE-11, VIBE-13, VIBE-14, VIBE-15, VIBE-8 transitioned to Done with a link to the acceptance matrix.
+8. Design system is in place and consistent: palette, type roles, glass surfaces, and motion presets all resolve from [`tokens.ts`](app/src/styles/tokens.ts) and [`motion.ts`](app/src/lib/motion.ts), with no hardcoded hex values in feature components.
+9. `motion.test.ts` and `a11y.test.tsx` pass, and reduced-motion mode is manually verified, proving animation never owns behaviour.
+10. Jira: VIBE-11, VIBE-13, VIBE-14, VIBE-15, VIBE-8 transitioned to Done with a link to the acceptance matrix, plus the Sprint 1 date re-baseline note attached.

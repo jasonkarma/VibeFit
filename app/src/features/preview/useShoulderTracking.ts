@@ -1,155 +1,95 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-    AUTO_FOLLOW_CONFIDENCE,
-    estimateShouldersFromFrame,
-    transformFromShoulders,
-    projectShouldersToStage,
-    type ShoulderEstimate,
-} from './shoulderTracking';
+import { useEffect, useRef, useState } from 'react';
+import { AUTO_FOLLOW_CONFIDENCE, transformFromShoulders, type ShoulderEstimate } from './shoulderTracking';
 import type { OverlayTransform } from './overlayTransform';
+import type { createPoseTracker } from './poseLandmarker';
 
-/**
- * Drive automatic shoulder tracking while the camera is live (Sprint 3).
- *
- * Three behaviours matter more than the detection itself:
- *
- *  1. **Tracking is opt-out, not opt-in, once the camera is on** — but it never
- *     overrides the user. Any manual slider movement suspends auto-follow, so the
- *     sliders keep working exactly as they did in Sprint 2. Without this the two
- *     would fight and the overlay would feel possessed.
- *  2. **Smoothing.** Raw per-frame estimates jitter by a few percent, which reads
- *     as a shaking garment. An exponential moving average keeps the overlay calm
- *     while still following real movement.
- *  3. **It must cost nothing when it is not running.** In Vitest, in silhouette
- *     mode, or with the toggle off, the animation loop is never started — so no
- *     `requestAnimationFrame` runs and no canvas is created.
- */
+type TrackingStatus = 'off' | 'loading' | 'searching' | 'tracking' | 'unavailable';
+type PoseTracker = Awaited<ReturnType<typeof createPoseTracker>>;
+type TrackedTransform = Pick<OverlayTransform, 'scale' | 'offsetX' | 'offsetY'> & { rotation: number };
+const FRAME_INTERVAL_MS = 65;
 
-export type TrackingStatus = 'off' | 'searching' | 'tracking';
-
-export interface UseShoulderTrackingOptions {
-    /** The live video element, or null when no stream is attached. */
+interface UseShoulderTrackingOptions {
     videoRef: React.RefObject<HTMLVideoElement | null>;
-    /** Only track when the camera is genuinely live. */
     active: boolean;
-    /** User-facing toggle. */
     enabled: boolean;
-    /** Called with smoothed slider values when a confident estimate lands. */
-    onTransform: (transform: Pick<OverlayTransform, 'scale' | 'offsetX' | 'offsetY'>) => void;
+    onTransform: (transform: TrackedTransform) => void;
 }
 
-export interface UseShoulderTrackingResult {
-    status: TrackingStatus;
-    /** Most recent estimate, or null. Useful for the on-screen confidence hint. */
-    estimate: ShoulderEstimate | null;
-    /** True while auto-follow is moving the garment. */
-    autoFollowing: boolean;
-
-}
-
-/** How often to run detection. 12fps is ample and keeps the main thread free. */
-const DETECT_INTERVAL_MS = 80;
-/** EMA weight for new samples; lower = smoother but laggier. */
-const SMOOTHING = 0.22;
-/** Frames of consecutive confident detections required before taking over. */
-const CONFIRM_FRAMES = 3;
-
-export function useShoulderTracking({
-    videoRef,
-    active,
-    enabled,
-    onTransform,
-}: UseShoulderTrackingOptions): UseShoulderTrackingResult {
+export function useShoulderTracking({ videoRef, active, enabled, onTransform }: UseShoulderTrackingOptions) {
     const [status, setStatus] = useState<TrackingStatus>('off');
     const [estimate, setEstimate] = useState<ShoulderEstimate | null>(null);
-    const [autoFollowing, setAutoFollowing] = useState(false);
-
-    /*
-     * The callback is stored in a ref so the effect does not need it in its
-     * dependency list. If it were a dependency, an inline arrow in the parent would
-     * tear down and restart the animation loop on every render — which is both
-     * wasteful and a source of dropped frames.
-     */
     const onTransformRef = useRef(onTransform);
-    useEffect(() => {
-        onTransformRef.current = onTransform;
-    }, [onTransform]);
+    useEffect(() => { onTransformRef.current = onTransform; }, [onTransform]);
 
     useEffect(() => {
-        // Every early return here is a "do not start a loop" guarantee.
-        if (!enabled || !active) {
+        if (!active || !enabled) {
             setStatus('off');
             setEstimate(null);
-            setAutoFollowing(false);
             return;
         }
 
-        if (typeof window === 'undefined' || typeof window.requestAnimationFrame !== 'function') {
-            return;
-        }
-
-        setStatus('searching');
-        let frame = 0;
+        let tracker: PoseTracker | undefined;
         let cancelled = false;
+        let frame = 0;
         let lastRun = 0;
+        let lastVideoTime = -1;
         let hits = 0;
-        let canvas: HTMLCanvasElement | undefined;
-        let smoothed: ReturnType<typeof transformFromShoulders> | undefined;
+        let previous: TrackedTransform | undefined;
+        setStatus('loading');
 
-        const tick = (now: number) => {
-            if (cancelled) return;
-
-            if (now - lastRun >= DETECT_INTERVAL_MS) {
+        function tick(now: number) {
+            if (cancelled || !tracker) return;
+            const video = videoRef.current;
+            if (video && video.readyState >= 2 && video.currentTime !== lastVideoTime && now - lastRun >= FRAME_INTERVAL_MS) {
                 lastRun = now;
-                const video = videoRef.current;
-
-                if (video && video.readyState >= 2) {
-                    // One canvas reused across frames; allocating per frame would
-                    // churn the GC during a live demo.
-                    canvas ??= document.createElement('canvas');
-                    const next = estimateShouldersFromFrame(video, canvas);
+                lastVideoTime = video.currentTime;
+                try {
+                    const next = tracker.detect(video, now);
                     setEstimate(next);
-
                     if (!next || next.confidence < AUTO_FOLLOW_CONFIDENCE) {
                         hits = 0;
-                        setAutoFollowing(false);
+                        previous = undefined;
                         setStatus('searching');
-                    } else {
-                        hits += 1;
-                        if (hits >= CONFIRM_FRAMES) {
-                            // Match the centered object-cover crop before applying
-                            // the horizontal mirror in transformFromShoulders.
-                            const raw = transformFromShoulders(
-                                projectShouldersToStage(next, video),
-                            );
-                            const previous = smoothed ?? raw;
-                            smoothed = {
-                                scale: previous.scale + (raw.scale - previous.scale) * SMOOTHING,
-                                offsetX: previous.offsetX + (raw.offsetX - previous.offsetX) * SMOOTHING,
-                                offsetY: previous.offsetY + (raw.offsetY - previous.offsetY) * SMOOTHING,
-                            };
-                            onTransformRef.current({
-                                scale: Math.round(smoothed.scale),
-                                offsetX: Math.round(smoothed.offsetX),
-                                offsetY: Math.round(smoothed.offsetY),
-                            });
-                            setAutoFollowing(true);
-                            setStatus('tracking');
-                        }
+                    } else if (++hits >= 3) {
+                        const raw = { ...transformFromShoulders(next), rotation: next.rotation ?? 0 };
+                        const smooth = (key: keyof TrackedTransform) =>
+                            previous ? previous[key] + (raw[key] - previous[key]) * 0.38 : raw[key];
+                        previous = { scale: smooth('scale'), offsetX: smooth('offsetX'), offsetY: smooth('offsetY'), rotation: smooth('rotation') };
+                        onTransformRef.current(previous);
+                        setStatus('tracking');
                     }
+                } catch {
+                    setEstimate(null);
+                    setStatus('unavailable');
+                    tracker.close();
+                    tracker = undefined;
+                    return;
                 }
             }
-
             frame = window.requestAnimationFrame(tick);
-        };
+        }
 
-        frame = window.requestAnimationFrame(tick);
+        void import('./poseLandmarker').then(({ createPoseTracker }) => {
+            if (!cancelled) return createPoseTracker();
+        }).then((created) => {
+            if (!created) return;
+            if (cancelled) {
+                created.close();
+                return;
+            }
+            tracker = created;
+            setStatus('searching');
+            frame = window.requestAnimationFrame(tick);
+        }).catch(() => {
+            if (!cancelled) setStatus('unavailable');
+        });
 
         return () => {
             cancelled = true;
             window.cancelAnimationFrame(frame);
+            tracker?.close();
         };
-    }, [enabled, active, videoRef]);
+    }, [active, enabled, videoRef]);
 
-    return { status, estimate, autoFollowing };
+    return { status, estimate, autoFollowing: status === 'tracking' };
 }

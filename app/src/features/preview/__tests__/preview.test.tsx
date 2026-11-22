@@ -171,7 +171,6 @@ describe('Story 10 AC2 — combined look', () => {
         // o-08 has five pieces after the Sprint 2 catalog addition.
         expect(within(pieceList).getAllByRole('listitem')).toHaveLength(5);
 
-        expect(screen.getAllByText(/prototype visual/i).length).toBeGreaterThan(0);
         expect(screen.getByRole('img', { name: 'Whitney Weejuns Penny Loafer · Black' })).toBeVisible();
         expect(screen.getByText('Product photos where available')).toBeVisible();
     });
@@ -283,11 +282,11 @@ describe('Story 10 AC3 — AR garments and switching', () => {
 
         // o-08 holds the wool blazer, so that starts selected.
         const blazer = within(switcher)
-            .getByText('Wool-Blend Single-Breasted Blazer')
+            .getByText('Tailored Drape Blazer · Navy')
             .closest('button')!;
         expect(blazer).toHaveAttribute('aria-pressed', 'true');
 
-        const moto = within(switcher).getByText('Leather Moto Jacket').closest('button')!;
+        const moto = within(switcher).getByText('Ponte Aviator Jacket · Black').closest('button')!;
         await user.click(moto);
 
         expect(moto).toHaveAttribute('aria-pressed', 'true');

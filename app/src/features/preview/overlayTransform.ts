@@ -11,6 +11,8 @@
  */
 
 export interface OverlayTransform {
+    /** In-plane turn of the garment from the tracked shoulder line. */
+    rotation?: number;
     /** Percent scale, 40–160. 100 = the asset's natural size. */
     scale: number;
     /** Horizontal offset in percent of frame width, -50 to 50. */
@@ -52,7 +54,7 @@ export function overlayStyle(transform: OverlayTransform): {
 } {
     const { scale, offsetX, offsetY, opacity } = clampTransform(transform);
     return {
-        transform: `translate(${offsetX}%, ${offsetY}%) scale(${scale / 100})`,
+        transform: `translate(${offsetX}%, ${offsetY}%) scale(${scale / 100})${transform.rotation ? ` rotate(${transform.rotation}deg)` : ''}`,
         opacity: opacity / 100,
         transformOrigin: '50% 40%',
     };

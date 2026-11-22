@@ -259,7 +259,7 @@ describe('full flow — generate, retain, refine', () => {
         // The impossible charter combination.
         await user.click(screen.getByRole('button', { name: /^Work/i }));
         await user.click(screen.getByRole('button', { name: /^Business Formal — /i }));
-        await user.type(screen.getByLabelText(/total clothing budget/i), '80');
+        await user.type(screen.getByLabelText(/total clothing budget/i), '400');
         await user.click(screen.getByRole('button', { name: /^Streetwear/i }));
         await user.click(screen.getByRole('button', { name: /^Colorful$/i }));
         await user.click(screen.getByRole('button', { name: /generate outfits/i }));

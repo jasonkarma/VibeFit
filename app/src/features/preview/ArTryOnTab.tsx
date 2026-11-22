@@ -60,18 +60,14 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
 
     const videoRef = useRef<HTMLVideoElement | null>(null);
 
-    // Contrast tracking is opt-in because the camera can mistake a head or
-    // the background for shoulders.
-    const [autoTrackEnabled, setAutoTrackEnabled] = useState(false);
+    const [autoTrackEnabled, setAutoTrackEnabled] = useState(true);
     const [hasManualOverride, setHasManualOverride] = useState(false);
 
     const handleTrackedTransform = useCallback(
-        (next: Pick<OverlayTransform, 'scale' | 'offsetX' | 'offsetY'>) => {
+        (next: Pick<OverlayTransform, 'scale' | 'offsetX' | 'offsetY' | 'rotation'>) => {
             setTransform((current) => ({
                 ...current,
                 ...next,
-                scale: Math.min(next.scale, 110),
-                offsetY: Math.max(next.offsetY, 12),
             }));
         },
         [],
@@ -85,11 +81,13 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
         enabled: autoTrackEnabled && !hasManualOverride,
         onTransform: handleTrackedTransform,
     });
+    const waitingForPose = showCamera && autoTrackEnabled && !hasManualOverride &&
+        (tracking.status === 'loading' || tracking.status === 'searching');
 
     /** Any slider movement returns control to the user. */
     function handleManualTransform(next: OverlayTransform) {
         setHasManualOverride(true);
-        setTransform(next);
+        setTransform({ ...next, rotation: 0 });
     }
 
     function handleResumeTracking() {
@@ -231,7 +229,9 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                                     <ScanFace className="h-2.5 w-2.5" aria-hidden="true" />
                                     {tracking.autoFollowing
                                         ? 'Shoulder estimate'
-                                        : tracking.status === 'searching'
+                                        : tracking.status === 'loading'
+                                            ? 'Loading body tracking'
+                                            : tracking.status === 'searching'
                                             ? 'Finding shoulders'
                                             : 'Manual alignment'}
                                 </span>
@@ -243,9 +243,10 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                                     src={overlay}
                                     alt={`${selected.name} overlay`}
                                     data-testid="ar-overlay"
-                                    className="pointer-events-none absolute inset-0 h-full w-full object-contain"
+                                    className="pointer-events-none absolute inset-0 h-full w-full object-contain transition-opacity duration-150 motion-reduce:transition-none"
                                     style={{
                                         ...overlayStyle(transform),
+                                        ...(waitingForPose && { opacity: 0 }),
                                         ...(outline && {
                                             objectPosition: 'center bottom',
                                             transformOrigin: '50% 28%',
@@ -353,9 +354,13 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                                                 ? `Following your shoulders. Confidence ${Math.round(
                                                     (tracking.estimate?.confidence ?? 0) * 100,
                                                 )}%.`
-                                                : autoTrackEnabled
-                                                    ? 'Looking for your shoulders. Stand centred and face the camera.'
-                                                    : 'Use the alignment controls to position the collar below your chin. Automatic tracking is experimental.'}
+                                                : tracking.status === 'unavailable'
+                                                    ? 'Body tracking could not start. Use the alignment controls below.'
+                                                    : tracking.status === 'loading'
+                                                        ? 'Loading the on-device body tracker.'
+                                                        : autoTrackEnabled
+                                                            ? 'Face the camera with both shoulders visible.'
+                                                            : 'Use the alignment controls to position the collar below your chin.'}
                                     </p>
                                 </div>
 

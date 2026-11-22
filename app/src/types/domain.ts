@@ -48,6 +48,7 @@ export const COLOR_OPTIONS = [
     'Navy',
     'Beige',
     'Earth Tones',
+    'Gray',
     'Colorful',
 ] as const;
 export type ColorOption = (typeof COLOR_OPTIONS)[number];
@@ -60,6 +61,7 @@ export const COLOR_SWATCHES: Record<ColorOption, string> = {
     Navy: '#1E2A44',
     Beige: '#D6C7B0',
     'Earth Tones': '#8B6F47',
+    Gray: '#9ca3af',
     Colorful: 'linear-gradient(135deg,#E5C158,#A855F7 55%,#34D399)',
 };
 
@@ -110,7 +112,11 @@ export const RETAILERS = [
     'Old Navy',
     'Reformation',
     'Sam Edelman',
+    'SuitShop',
+    'Suitsupply',
     'Theory',
+    'Thursday Boot Company',
+    'Timex',
     'Uniqlo',
     'Vans',
     'Weekday',

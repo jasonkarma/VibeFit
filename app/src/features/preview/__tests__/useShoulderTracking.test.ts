@@ -1,13 +1,17 @@
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import * as tracking from '../shoulderTracking';
+import { createPoseTracker } from '../poseLandmarker';
+
+vi.mock('../poseLandmarker', () => ({ createPoseTracker: vi.fn() }));
 import { useShoulderTracking } from '../useShoulderTracking';
 
 afterEach(() => vi.restoreAllMocks());
 
-it('requires consecutive confident frames after a miss or manual pause', () => {
+it('requires consecutive confident frames after a miss or manual pause', async () => {
     const estimate = { centerX: 0.5, centerY: 0.28, width: 0.42, confidence: 1 };
-    const detect = vi.spyOn(tracking, 'estimateShouldersFromFrame').mockReturnValue(estimate);
+    const detect = vi.fn().mockReturnValue(estimate);
+    const close = vi.fn();
+    vi.mocked(createPoseTracker).mockResolvedValue({ detect, close });
     let frame: FrameRequestCallback;
     let time = 0;
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
@@ -25,9 +29,10 @@ it('requires consecutive confident frames after a miss or manual pause', () => {
     );
 
     function tick() {
-        act(() => frame(time += 100));
+        act(() => { video.currentTime += 0.1; frame(time += 100); });
     }
 
+    await waitFor(() => expect(result.current.status).toBe('searching'));
     tick();
     tick();
     detect.mockReturnValueOnce({ ...estimate, confidence: 0 });
@@ -48,6 +53,7 @@ it('requires consecutive confident frames after a miss or manual pause', () => {
     expect(cancel).toHaveBeenCalled();
     expect(result.current).toMatchObject({ status: 'off', estimate: null });
     rerender({ active: true, enabled: true });
+    await waitFor(() => expect(result.current.status).toBe('searching'));
     tick();
     tick();
     expect(onTransform).toHaveBeenCalledTimes(1);

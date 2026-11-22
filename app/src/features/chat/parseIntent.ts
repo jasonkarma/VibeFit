@@ -76,6 +76,7 @@ const STYLE_SYNONYMS: Array<[RegExp, StylePreference]> = [
 const COLOR_SYNONYMS: Array<[RegExp, ColorPreference]> = [
     [/\bno colou?r preference\b|\bany colou?r\b|\bwhatever colou?r\b/i, NO_COLOR_PREFERENCE],
     [/\bearth tones?\b|\bneutral\b|\bwarm tones?\b|\btan\b/i, 'Earth Tones'],
+    [/\bgr[ae]y\b/i, 'Gray'],
     [/\bcolou?rful\b|\bbright\b|\bstatement colou?r\b/i, 'Colorful'],
     [/\bnavy\b|\bblue\b/i, 'Navy'],
     [/\bwhite\b|\bcream\b|\bivory\b/i, 'White'],

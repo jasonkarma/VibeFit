@@ -1,37 +1,36 @@
 {
-    "version": "1.4.0-sprint3",
+    "version": "1.5.0-sprint3",
     "priceRetrievedAt": "2026-11-18",
     "products": [
         {
             "id": "p-tee-cotton",
-            "name": "Essential Cotton Tee",
+            "name": "Crew Neck T-Shirt · White",
             "retailer": "Uniqlo",
             "slot": "top",
             "price": 19.9,
-            "productUrl": "https://www.uniqlo.com/us/en/products/E422992-000/00",
+            "productUrl": "https://www.uniqlo.com/us/en/products/E422992-000/00?colorDisplayCode=00",
             "priceRetrievedAt": "2026-11-18",
             "colors": [
-                "White",
-                "Black"
+                "White"
             ],
             "styles": [
                 "Minimalist",
                 "Classic"
             ],
-            "image": null,
+            "image": "/catalog/p-tee-cotton-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "notes": "Baseline everyday tee. Anchors the under-$120 casual outfits.",
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-breton",
-            "name": "Breton Stripe Long-Sleeve",
-            "retailer": "Uniqlo",
+            "name": "Tissue Long-Sleeve Crew · Bone / Navy",
+            "retailer": "Everlane",
             "slot": "top",
-            "price": 24.9,
-            "productUrl": null,
-            "priceRetrievedAt": "2026-11-18",
+            "price": 44.0,
+            "productUrl": "https://www.everlane.com/products/womens-tissue-long-sleeve-crew-bone-true-navy",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
                 "White",
                 "Navy"
@@ -40,116 +39,116 @@
                 "Classic",
                 "Trendy"
             ],
-            "image": null,
+            "image": "/catalog/p-breton-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
             "department": "Womenswear",
-            "notes": "Historical audit landed on HEATTECH tights."
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-poplin",
-            "name": "Oversized Poplin Shirt",
-            "retailer": "ARKET",
+            "name": "Must-Have Oxford Shirt · White",
+            "retailer": "Everlane",
             "slot": "top",
-            "price": 59,
-            "productUrl": "https://www.arket.com/en_us/womens/shirts/product.oversized-poplin-shirt.white.1132458001.html",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 49.0,
+            "productUrl": "https://www.everlane.com/products/womens-relaxed-oxford-shirt-white",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "White",
-                "Navy"
-            ],
-            "styles": [
-                "Minimalist",
-                "Classic"
-            ],
-            "image": null,
-            "arSupported": false,
-            "overlayAsset": null,
-            "department": "Womenswear"
-        },
-        {
-            "id": "p-rib-crew",
-            "name": "Ribbed Long-Sleeve Crew",
-            "retailer": "COS",
-            "slot": "top",
-            "price": 49,
-            "productUrl": "https://www.cos.com/en_usd/women/womenswear/tops/product.ribbed-long-sleeve-top.beige.1176482001.html",
-            "priceRetrievedAt": "2026-11-18",
-            "colors": [
-                "Beige",
                 "White"
             ],
             "styles": [
                 "Minimalist",
                 "Classic"
             ],
-            "image": null,
+            "image": "/catalog/p-poplin-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
+        },
+        {
+            "id": "p-rib-crew",
+            "name": "Luxe Rib Long-Sleeve Crew · Washed Heathered Grey",
+            "retailer": "Everlane",
+            "slot": "top",
+            "price": 12.0,
+            "productUrl": "https://www.everlane.com/products/womens-supima-rib-long-sleeve-crew-heathered-grey",
+            "priceRetrievedAt": "2026-11-22",
+            "colors": [
+                "Gray"
+            ],
+            "styles": [
+                "Minimalist",
+                "Classic"
+            ],
+            "image": "/catalog/p-rib-crew-retailer.jpg",
+            "arSupported": false,
+            "overlayAsset": null,
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-silk-cami",
-            "name": "Silk-Blend Camisole",
-            "retailer": "Reformation",
+            "name": "Thin Strap Cami in Silk Charmeuse · Black",
+            "retailer": "Everlane",
             "slot": "top",
-            "price": 88,
-            "productUrl": null,
-            "priceRetrievedAt": "2026-11-18",
+            "price": 41.0,
+            "productUrl": "https://www.everlane.com/products/womens-thin-strap-cami-in-silk-charmeuse-black",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Black",
-                "Earth Tones"
+                "Black"
             ],
             "styles": [
                 "Bohemian",
                 "Trendy"
             ],
-            "image": null,
+            "image": "/catalog/p-silk-cami-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
             "department": "Womenswear",
-            "notes": "Historical audit landed on a vintage dress."
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-draped-top",
-            "name": "Draped Jersey Top",
-            "retailer": "Mango",
+            "name": "Drapey Jersey Slouchy Top · Graphite",
+            "retailer": "Everlane",
             "slot": "top",
-            "price": 42,
-            "productUrl": "https://shop.mango.com/us/en/p/women/t-shirts-and-tops/draped-jersey-top_17010523",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 41.0,
+            "productUrl": "https://www.everlane.com/products/womens-drapey-jersey-slouchy-top-graphite",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Black"
+                "Gray"
             ],
             "styles": [
                 "Trendy",
                 "Bohemian"
             ],
-            "image": null,
+            "image": "/catalog/p-draped-top-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-rib-tank",
-            "name": "Cropped Rib Tank",
-            "retailer": "Weekday",
+            "name": "Luxe Rib Racerback Tank · White",
+            "retailer": "Everlane",
             "slot": "top",
-            "price": 22,
-            "productUrl": "https://www.weekday.com/en_usd/women/tops/product.cropped-rib-tank.white.1163254001.html",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 26.0,
+            "productUrl": "https://www.everlane.com/products/womens-luxe-rib-racerback-tank-white",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "White",
-                "Black"
+                "White"
             ],
             "styles": [
                 "Trendy",
                 "Streetwear"
             ],
-            "image": null,
+            "image": "/catalog/p-rib-tank-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-cashmere",
@@ -189,54 +188,54 @@
         },
         {
             "id": "p-satin-cami",
-            "name": "Satin Camisole",
-            "retailer": "& Other Stories",
+            "name": "Thin Strap Cami in Silk Charmeuse · Navy",
+            "retailer": "Everlane",
             "slot": "top",
-            "price": 89,
-            "productUrl": "https://www.stories.com/en_usd/clothing/tops/product.satin-camisole.black.1158288001.html",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 48.0,
+            "productUrl": "https://www.everlane.com/products/womens-thin-strap-cami-in-silk-charmeuse-navy",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Black"
+                "Navy"
             ],
             "styles": [
                 "Classic",
                 "Minimalist"
             ],
-            "image": null,
+            "image": "/catalog/p-satin-cami-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-wool-blazer",
-            "name": "Wool-Blend Single-Breasted Blazer",
-            "retailer": "Massimo Dutti",
+            "name": "Tailored Drape Blazer · Navy",
+            "retailer": "Everlane",
             "slot": "layer",
-            "price": 139,
-            "productUrl": null,
-            "priceRetrievedAt": "2026-11-18",
+            "price": 119.0,
+            "productUrl": "https://www.everlane.com/products/womens-tailored-drape-blazer-navy",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Navy",
-                "Black"
+                "Navy"
             ],
             "styles": [
                 "Classic",
                 "Minimalist"
             ],
-            "image": null,
+            "image": "/catalog/p-wool-blazer-retailer.jpg",
             "arSupported": true,
             "overlayAsset": "/ar/wool-blazer.svg",
-            "notes": "AR garment 2 of 5.",
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-tux-blazer",
-            "name": "Structured Tuxedo Blazer",
-            "retailer": "Theory",
+            "name": "Dream Blazer · Black",
+            "retailer": "Everlane",
             "slot": "layer",
-            "price": 249,
-            "productUrl": null,
-            "priceRetrievedAt": "2026-11-18",
+            "price": 50.0,
+            "productUrl": "https://www.everlane.com/products/womens-dream-blazer-black",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
                 "Black"
             ],
@@ -244,20 +243,20 @@
                 "Classic",
                 "Minimalist"
             ],
-            "image": null,
+            "image": "/catalog/p-tux-blazer-retailer.jpg",
             "arSupported": true,
             "overlayAsset": "/ar/tuxedo-blazer.svg",
-            "notes": "AR garment 3 of 5. Carries the black-tie outfit closest to the $500 ceiling.",
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-moto",
-            "name": "Leather Moto Jacket",
-            "retailer": "Zara",
+            "name": "Ponte Aviator Jacket · Black",
+            "retailer": "Everlane",
             "slot": "layer",
-            "price": 129,
-            "productUrl": null,
-            "priceRetrievedAt": "2026-11-18",
+            "price": 71.0,
+            "productUrl": "https://www.everlane.com/products/womens-ponte-aviator-jacket-black",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
                 "Black"
             ],
@@ -265,20 +264,20 @@
                 "Trendy",
                 "Streetwear"
             ],
-            "image": null,
+            "image": "/catalog/p-moto-retailer.jpg",
             "arSupported": true,
             "overlayAsset": "/ar/leather-moto.svg",
             "department": "Womenswear",
-            "notes": "AR garment 4 of 5. Historical audit landed on the Zara search page."
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-denim-jacket",
-            "name": "Oversized Denim Jacket",
-            "retailer": "Levi's",
+            "name": "Denim Chore Jacket · Mid Indigo",
+            "retailer": "Everlane",
             "slot": "layer",
-            "price": 98,
-            "productUrl": "https://www.levi.com/US/en_US/clothing/women/outerwear/oversized-trucker-jacket/p/299450008",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 89.0,
+            "productUrl": "https://www.everlane.com/products/womens-denim-chore-jacket-2-mid-indigo",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
                 "Navy"
             ],
@@ -286,138 +285,135 @@
                 "Streetwear",
                 "Bohemian"
             ],
-            "image": null,
+            "image": "/catalog/p-denim-jacket-retailer.jpg",
             "arSupported": true,
             "overlayAsset": "/ar/denim-jacket.svg",
-            "notes": "AR garment 5 of 5.",
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-straight-trouser",
-            "name": "Straight-Leg Trousers",
-            "retailer": "COS",
+            "name": "Straight-Leg Trouser in Tailor Twill · Light Taupe",
+            "retailer": "Everlane",
             "slot": "bottom",
-            "price": 89,
-            "productUrl": "https://www.cos.com/en_usd/women/womenswear/trousers/product.straight-leg-trousers.beige.1190452001.html",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 53.0,
+            "productUrl": "https://www.everlane.com/products/womens-straight-leg-trouser-tailor-twill-light-taupe",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Beige",
-                "Navy",
-                "Black"
+                "Beige"
             ],
             "styles": [
                 "Minimalist",
                 "Classic"
             ],
-            "image": null,
+            "image": "/catalog/p-straight-trouser-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-chino",
-            "name": "Slim Cropped Chino",
+            "name": "Chino Pants · Beige",
             "retailer": "Uniqlo",
             "slot": "bottom",
             "price": 34.9,
-            "productUrl": "https://www.uniqlo.com/us/en/products/E461663-000/00",
+            "productUrl": "https://www.uniqlo.com/us/en/products/E461663-000/00?colorDisplayCode=32",
             "priceRetrievedAt": "2026-11-18",
             "colors": [
-                "Beige",
-                "Navy"
+                "Beige"
             ],
             "styles": [
                 "Minimalist",
                 "Classic"
             ],
-            "image": null,
+            "image": "/catalog/p-chino-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-midi-skirt",
-            "name": "Pleated Midi Skirt",
-            "retailer": "ARKET",
+            "name": "Pleated Crepe Midi Skirt · Black",
+            "retailer": "Everlane",
             "slot": "bottom",
-            "price": 79,
-            "productUrl": "https://www.arket.com/en_us/women/skirts/product.pleated-midi-skirt.black.1120458001.html",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 50.0,
+            "productUrl": "https://www.everlane.com/products/womens-pleated-crepe-midi-skirt-black",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Navy",
                 "Black"
             ],
             "styles": [
                 "Classic",
                 "Trendy"
             ],
-            "image": null,
+            "image": "/catalog/p-midi-skirt-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-crepe-trouser",
-            "name": "Black Crepe Trousers",
-            "retailer": "Banana Republic",
+            "name": "Straight-Leg Trouser in Tailor Twill · Black",
+            "retailer": "Everlane",
             "slot": "bottom",
-            "price": 75,
-            "productUrl": "https://bananarepublic.gap.com/browse/product.do?pid=506738002",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 53.0,
+            "productUrl": "https://www.everlane.com/products/womens-straight-leg-trouser-tailor-twill-black",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
                 "Black"
             ],
             "styles": [
                 "Classic"
             ],
-            "image": null,
+            "image": "/catalog/p-crepe-trouser-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-cargo",
-            "name": "Relaxed Cargo Pants",
-            "retailer": "Zara",
+            "name": "Utility Straight-Leg Cargo Pant · Olive",
+            "retailer": "Everlane",
             "slot": "bottom",
-            "price": 65,
-            "productUrl": null,
-            "priceRetrievedAt": "2026-11-18",
+            "price": 47.0,
+            "productUrl": "https://www.everlane.com/products/womens-utility-straight-leg-cargo-pant-olive",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
                 "Earth Tones"
             ],
             "styles": [
                 "Streetwear"
             ],
-            "image": null,
+            "image": "/catalog/p-cargo-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
             "department": "Womenswear",
-            "notes": "Reassigned from Dickies in Sprint 3: the Dickies product page 404s and no replacement product page verifies. Zara menswear trousers is reachable.",
-            "notes": "Reassigned from Dickies after a product-page 404. The Zara replacement led to a menswear pants category."
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-linen-trouser",
-            "name": "Wide-Leg Linen Trousers",
+            "name": "Wide-Leg Drawstring Pant in Linen · White",
             "retailer": "Everlane",
             "slot": "bottom",
             "price": null,
-            "productUrl": null,
-            "retailerUrl": "https://www.everlane.com/collections/womens-pants",
+            "productUrl": "https://www.everlane.com/products/womens-wide-leg-drawstring-pant-in-linen-white",
             "priceRetrievedAt": null,
             "colors": [
-                "Beige",
-                "Earth Tones"
+                "White"
             ],
             "styles": [
                 "Bohemian",
                 "Minimalist"
             ],
-            "image": null,
+            "image": "/catalog/p-linen-trouser-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "notes": "Sprint 3: product URL 404s; re-pointed to the verified Everlane womenswear trousers collection. Price remains null (edge case) and is unaffected by the link change.",
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-linen-khaki",
@@ -444,12 +440,12 @@
         },
         {
             "id": "p-silk-skirt",
-            "name": "Silk Column Skirt",
-            "retailer": "Reformation",
+            "name": "Slip Skirt in Silk Charmeuse · Black",
+            "retailer": "Everlane",
             "slot": "bottom",
-            "price": 159,
-            "productUrl": null,
-            "priceRetrievedAt": "2026-11-18",
+            "price": 101.0,
+            "productUrl": "https://www.everlane.com/products/womens-slip-skirt-in-silk-charmeuse-black",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
                 "Black"
             ],
@@ -457,11 +453,11 @@
                 "Classic",
                 "Minimalist"
             ],
-            "image": null,
+            "image": "/catalog/p-silk-skirt-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
             "department": "Womenswear",
-            "notes": "Historical audit landed on a top."
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-loafers",
@@ -486,35 +482,33 @@
         },
         {
             "id": "p-sneakers",
-            "name": "Canvas Low-Top Sneaker",
-            "retailer": "Zara",
+            "name": "Authentic Shoe · True White",
+            "retailer": "Vans",
             "slot": "shoes",
-            "price": 55,
-            "productUrl": null,
-            "retailerUrl": "https://www.zara.com/us/en/woman-shoes-l1251.html",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 60,
+            "productUrl": "https://www.vans.com/en-us/p/shoes/icons/authentic-5310/authentic-shoe-VN000Z4PW00",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "White",
-                "Black"
+                "White"
             ],
             "styles": [
                 "Streetwear",
                 "Minimalist"
             ],
-            "image": null,
+            "image": "/catalog/p-sneakers-retailer.png",
             "arSupported": false,
             "overlayAsset": null,
             "department": "Womenswear",
-            "notes": "Reassigned from Vans in Sprint 3: the Vans product URL returns a genuine 404. Zara womenswear shoes is verified reachable."
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-slip-on",
-            "name": "Canvas Slip-On",
-            "retailer": "Old Navy",
+            "name": "Classic Slip-On · Turtle Dove White",
+            "retailer": "Vans",
             "slot": "shoes",
-            "price": 29,
-            "productUrl": null,
-            "priceRetrievedAt": "2026-11-18",
+            "price": 70,
+            "productUrl": "https://www.vans.com/en-us/p/shoes/icons/classic-slip-on-5315/classic-slip-on-shoe-VN000DAH89F",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
                 "White"
             ],
@@ -522,20 +516,20 @@
                 "Minimalist",
                 "Trendy"
             ],
-            "image": null,
+            "image": "/catalog/p-slip-on-retailer.png",
             "arSupported": false,
             "overlayAsset": null,
-            "notes": "Lowest-cost footwear, which keeps two casual outfits under the $90 scenario ceiling.",
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-sandals",
-            "name": "Strappy Heeled Sandal",
-            "retailer": "Mango",
+            "name": "Vacation Sandal · Black Leather",
+            "retailer": "Everlane",
             "slot": "shoes",
-            "price": 79,
-            "productUrl": "https://shop.mango.com/us/en/p/women/shoes/heels/strappy-heeled-sandal_17057708",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 101.0,
+            "productUrl": "https://www.everlane.com/products/womens-vacation-sandal-black-leather",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
                 "Black"
             ],
@@ -543,172 +537,167 @@
                 "Trendy",
                 "Classic"
             ],
-            "image": null,
+            "image": "/catalog/p-sandals-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-pumps",
-            "name": "Pointed Leather Pumps",
-            "retailer": "Sam Edelman",
+            "name": "Pointed-Toe Slingback Heel · Black Leather",
+            "retailer": "Everlane",
             "slot": "shoes",
-            "price": 85,
-            "productUrl": null,
-            "priceRetrievedAt": "2026-11-18",
+            "price": 119.0,
+            "productUrl": "https://www.everlane.com/products/womens-pointed-toe-slingback-heel-black",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
                 "Black"
             ],
             "styles": [
                 "Classic"
             ],
-            "image": null,
+            "image": "/catalog/p-pumps-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-scarf",
-            "name": "Printed Silk Scarf",
-            "retailer": "& Other Stories",
+            "name": "Plush Alpaca Scarf · Bone / Black",
+            "retailer": "Everlane",
             "slot": "accessory",
-            "price": 59,
-            "productUrl": "https://www.stories.com/en_usd/accessories/scarves/product.printed-silk-scarf.multi.1142644001.html",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 32,
+            "productUrl": "https://www.everlane.com/products/womens-plush-alpaca-scarf-bone-black",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Colorful",
-                "Earth Tones"
+                "White",
+                "Black"
             ],
             "styles": [
                 "Bohemian"
             ],
-            "image": null,
+            "image": "/catalog/p-scarf-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-hoops",
-            "name": "Gold Vermeil Hoops",
+            "name": "Bold Huggie Hoops · Gold Vermeil",
             "retailer": "Mejuri",
             "slot": "accessory",
-            "price": 68,
-            "productUrl": null,
-            "priceRetrievedAt": "2026-11-18",
+            "price": 88.5,
+            "productUrl": "https://mejuri.com/products/bold-hoops?variant=51078022398136",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Colorful"
+                "Earth Tones"
             ],
             "styles": [
                 "Trendy",
                 "Classic"
             ],
-            "image": null,
+            "image": "/catalog/p-hoops-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "notes": "EDGE CASE — no valid product page. The shop link must be hidden, never rendered disabled-but-clickable or pointed at a placeholder.",
-            "department": "Womenswear"
+            "department": "Womenswear",
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-tee-heavy",
-            "name": "Heavyweight Cotton Tee",
-            "retailer": "Uniqlo",
+            "name": "Relaxed Heavyweight Tee · Deep Navy",
+            "retailer": "Everlane",
             "slot": "top",
             "department": "Menswear",
-            "price": 24.9,
-            "productUrl": null,
-            "retailerUrl": "https://www.uniqlo.com/us/en/men/t-shirts",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 29.0,
+            "productUrl": "https://www.everlane.com/products/mens-relaxed-heavyweight-tee-deep-navy",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "White",
-                "Black"
+                "Navy"
             ],
             "styles": [
                 "Minimalist",
                 "Classic"
             ],
-            "image": null,
+            "image": "/catalog/m-tee-heavy-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "notes": "Menswear baseline tee, mirrors p-tee-cotton in weight class."
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-oxford",
-            "name": "Cotton Oxford Shirt",
-            "retailer": "Banana Republic",
+            "name": "Classic Oxford Shirt · White · Standard",
+            "retailer": "Everlane",
             "slot": "top",
             "department": "Menswear",
-            "price": 68,
-            "productUrl": null,
-            "retailerUrl": "https://bananarepublic.gap.com/browse/division.do?cid=5155",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 39.0,
+            "productUrl": "https://www.everlane.com/products/mens-organic-oxford-shirt-white",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "White",
-                "Navy"
+                "White"
             ],
             "styles": [
                 "Classic",
                 "Minimalist"
             ],
-            "image": null,
+            "image": "/catalog/m-oxford-retailer.jpg",
             "arSupported": false,
-            "overlayAsset": null
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-linen-shirt",
-            "name": "Linen Camp Shirt",
-            "retailer": "Zara",
+            "name": "Resort Shirt in Linen · Natural Chambray",
+            "retailer": "Everlane",
             "slot": "top",
             "department": "Menswear",
-            "price": 45.9,
-            "productUrl": null,
-            "retailerUrl": "https://www.zara.com/us/en/man-shirts-l737.html",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 26.0,
+            "productUrl": "https://www.everlane.com/products/mens-linen-ss-camp-shirt-natural-chambray",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Beige",
-                "Earth Tones"
+                "Beige"
             ],
             "styles": [
                 "Bohemian",
                 "Trendy"
             ],
-            "image": null,
+            "image": "/catalog/m-linen-shirt-retailer.jpg",
             "arSupported": false,
-            "overlayAsset": null
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-merino-crew",
-            "name": "Merino Crewneck Sweater",
-            "retailer": "Uniqlo",
+            "name": "Cable Crew Neck in Wool Cashmere · Charcoal",
+            "retailer": "Everlane",
             "slot": "top",
             "department": "Menswear",
-            "price": 49.9,
-            "productUrl": null,
-            "retailerUrl": "https://www.uniqlo.com/us/en/men/",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 119,
+            "productUrl": "https://www.everlane.com/products/m-swtr-wlc-cbl-ls-thndr",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Navy",
-                "Black",
-                "Beige"
+                "Gray"
             ],
             "styles": [
                 "Minimalist",
                 "Classic"
             ],
-            "image": null,
+            "image": "/catalog/m-merino-crew-retailer.jpg",
             "arSupported": true,
             "overlayAsset": "/ar/merino-crew.svg",
-            "notes": "AR garment 6 of 7. Menswear knit for the auto-tracking demo."
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-black-tee",
-            "name": "Boxy Boxy Tee",
-            "retailer": "Zara",
+            "name": "Midweight Tee · Black",
+            "retailer": "Everlane",
             "slot": "top",
             "department": "Menswear",
-            "price": 25.9,
-            "productUrl": null,
-            "retailerUrl": "https://www.zara.com/us/en/man-tshirts-l855.html",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 19.0,
+            "productUrl": "https://www.everlane.com/products/mens-classic-tee-black",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
                 "Black"
             ],
@@ -716,337 +705,322 @@
                 "Streetwear",
                 "Trendy"
             ],
-            "image": null,
+            "image": "/catalog/m-black-tee-retailer.jpg",
             "arSupported": false,
-            "overlayAsset": null
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-unstructured-blazer",
-            "name": "Unstructured Cotton Blazer",
-            "retailer": "Massimo Dutti",
+            "name": "Soyeux Linen Linen Blazer · Dark Brown",
+            "retailer": "Everlane",
             "slot": "layer",
             "department": "Menswear",
-            "price": 179,
-            "productUrl": null,
-            "retailerUrl": "https://www.massimodutti.com/us/",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 119.0,
+            "productUrl": "https://www.everlane.com/products/mens-soyeux-linen-linen-blazer-dark-brown",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Navy",
-                "Beige"
+                "Earth Tones"
             ],
             "styles": [
                 "Classic",
                 "Minimalist"
             ],
-            "image": null,
+            "image": "/catalog/m-unstructured-blazer-retailer.jpg",
             "arSupported": true,
             "overlayAsset": "/ar/unstructured-blazer.svg",
-            "notes": "AR garment 7 of 7. Menswear tailoring for the AR demo."
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-tux-jacket",
-            "name": "Satin-Lapel Dinner Jacket",
-            "retailer": "Zara",
+            "name": "Black Tuxedo Jacket",
+            "retailer": "SuitShop",
             "slot": "layer",
             "department": "Menswear",
-            "price": 199,
-            "productUrl": null,
-            "priceRetrievedAt": "2026-11-18",
+            "price": 129,
+            "productUrl": "https://suitshop.com/products/mens-black-tuxedo-jacket/",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
                 "Black"
             ],
             "styles": [
                 "Classic"
             ],
-            "image": null,
+            "image": "/catalog/m-tux-jacket-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "notes": "Carries the menswear black-tie outfit under $500.",
-            "notes": "Carries the menswear black-tie outfit under $500. Historical audit landed on a womenswear blazer category."
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-bomber",
-            "name": "Lightweight Bomber Jacket",
-            "retailer": "Zara",
+            "name": "Bomber Jacket · Uniform · Deep Navy",
+            "retailer": "Everlane",
             "slot": "layer",
             "department": "Menswear",
-            "price": 89.9,
-            "productUrl": null,
-            "priceRetrievedAt": "2026-11-18",
+            "price": 42.0,
+            "productUrl": "https://www.everlane.com/products/mens-uniform-bomber-jacket-navy",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Black",
                 "Navy"
             ],
             "styles": [
                 "Streetwear",
                 "Trendy"
             ],
-            "image": null,
+            "image": "/catalog/m-bomber-retailer.jpg",
             "arSupported": false,
             "overlayAsset": null,
-            "notes": "Historical audit landed on a womenswear blazer category."
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-chino",
-            "name": "Slim Cotton Chino",
-            "retailer": "Banana Republic",
+            "name": "Performance Chino · Uniform · Toasted Coconut · Slim",
+            "retailer": "Everlane",
             "slot": "bottom",
             "department": "Menswear",
-            "price": 89,
-            "productUrl": null,
-            "retailerUrl": "https://bananarepublic.gap.com/browse/division.do?cid=5155",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 30.0,
+            "productUrl": "https://www.everlane.com/products/mens-performance-slim-chino-toasted-coconut",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Beige",
-                "Navy"
-            ],
-            "styles": [
-                "Classic",
-                "Minimalist"
-            ],
-            "image": null,
-            "arSupported": false,
-            "overlayAsset": null
-        },
-        {
-            "id": "m-wool-trouser",
-            "name": "Wool-Blend Suit Trouser",
-            "retailer": "Massimo Dutti",
-            "slot": "bottom",
-            "department": "Menswear",
-            "price": 129,
-            "productUrl": null,
-            "retailerUrl": "https://www.massimodutti.com/us/",
-            "priceRetrievedAt": "2026-11-18",
-            "colors": [
-                "Navy",
-                "Black"
-            ],
-            "styles": [
-                "Classic",
-                "Minimalist"
-            ],
-            "image": null,
-            "arSupported": false,
-            "overlayAsset": null
-        },
-        {
-            "id": "m-cargo",
-            "name": "Relaxed Cargo Trouser",
-            "retailer": "Dickies",
-            "slot": "bottom",
-            "department": "Menswear",
-            "price": 69,
-            "productUrl": null,
-            "retailerUrl": "https://www.dickies.com/",
-            "priceRetrievedAt": "2026-11-18",
-            "colors": [
-                "Earth Tones",
-                "Black"
-            ],
-            "styles": [
-                "Streetwear"
-            ],
-            "image": null,
-            "arSupported": false,
-            "overlayAsset": null
-        },
-        {
-            "id": "m-denim",
-            "name": "Straight-Leg Denim",
-            "retailer": "Zara",
-            "slot": "bottom",
-            "department": "Menswear",
-            "price": 98,
-            "productUrl": null,
-            "retailerUrl": "https://www.zara.com/us/en/man-trousers-l838.html",
-            "priceRetrievedAt": "2026-11-18",
-            "colors": [
-                "Navy",
-                "Black"
-            ],
-            "styles": [
-                "Classic",
-                "Streetwear"
-            ],
-            "image": null,
-            "arSupported": false,
-            "overlayAsset": null,
-            "notes": "Reassigned from Levi's in Sprint 3: levi.com returns a genuine 404 for the menswear path and the whole domain is bot-walled. Zara menswear trousers is verified reachable."
-        },
-        {
-            "id": "m-derby",
-            "name": "Leather Derby Shoe",
-            "retailer": "G.H. Bass",
-            "slot": "shoes",
-            "department": "Menswear",
-            "price": 135,
-            "productUrl": null,
-            "retailerUrl": "https://www.ghbass.com/",
-            "priceRetrievedAt": "2026-11-18",
-            "colors": [
-                "Black",
-                "Earth Tones"
-            ],
-            "styles": [
-                "Classic"
-            ],
-            "image": null,
-            "arSupported": false,
-            "overlayAsset": null
-        },
-        {
-            "id": "m-loafer-suede",
-            "name": "Suede Penny Loafer",
-            "retailer": "G.H. Bass",
-            "slot": "shoes",
-            "department": "Menswear",
-            "price": 120,
-            "productUrl": null,
-            "retailerUrl": "https://www.ghbass.com/",
-            "priceRetrievedAt": "2026-11-18",
-            "colors": [
-                "Earth Tones",
                 "Beige"
             ],
             "styles": [
                 "Classic",
                 "Minimalist"
             ],
-            "image": null,
+            "image": "/catalog/m-chino-retailer.jpg",
             "arSupported": false,
-            "overlayAsset": null
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
+        },
+        {
+            "id": "m-wool-trouser",
+            "name": "Tropical Wool Trouser · Heathered Grey",
+            "retailer": "Everlane",
+            "slot": "bottom",
+            "department": "Menswear",
+            "price": 119.0,
+            "productUrl": "https://www.everlane.com/products/mens-tropical-wool-trouser-heathered-grey",
+            "priceRetrievedAt": "2026-11-22",
+            "colors": [
+                "Gray"
+            ],
+            "styles": [
+                "Classic",
+                "Minimalist"
+            ],
+            "image": "/catalog/m-wool-trouser-retailer.jpg",
+            "arSupported": false,
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
+        },
+        {
+            "id": "m-cargo",
+            "name": "Relaxed Cargo Pant · Kalamata",
+            "retailer": "Everlane",
+            "slot": "bottom",
+            "department": "Menswear",
+            "price": 30.0,
+            "productUrl": "https://www.everlane.com/products/mens-relaxed-cargo-pant-kalamata",
+            "priceRetrievedAt": "2026-11-22",
+            "colors": [
+                "Earth Tones"
+            ],
+            "styles": [
+                "Streetwear"
+            ],
+            "image": "/catalog/m-cargo-retailer.jpg",
+            "arSupported": false,
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
+        },
+        {
+            "id": "m-denim",
+            "name": "Classic Straight-Fit Jean · Dark Indigo",
+            "retailer": "Everlane",
+            "slot": "bottom",
+            "department": "Menswear",
+            "price": 59.0,
+            "productUrl": "https://www.everlane.com/products/mens-classic-straight-fit-jean-dark-indigo",
+            "priceRetrievedAt": "2026-11-22",
+            "colors": [
+                "Navy"
+            ],
+            "styles": [
+                "Classic",
+                "Streetwear"
+            ],
+            "image": "/catalog/m-denim-retailer.jpg",
+            "arSupported": false,
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
+        },
+        {
+            "id": "m-derby",
+            "name": "Collegium Moc Toe Derby · Pebbled Nero",
+            "retailer": "Everlane",
+            "slot": "shoes",
+            "department": "Menswear",
+            "price": 289,
+            "productUrl": "https://www.everlane.com/products/mens-ftwr-cgm-moc-derb-blk",
+            "priceRetrievedAt": "2026-11-22",
+            "colors": [
+                "Black"
+            ],
+            "styles": [
+                "Classic"
+            ],
+            "image": "/catalog/m-derby-retailer.jpg",
+            "arSupported": false,
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
+        },
+        {
+            "id": "m-loafer-suede",
+            "name": "Larson Weejuns Penny Loafer · Melon",
+            "retailer": "G.H. Bass",
+            "slot": "shoes",
+            "department": "Menswear",
+            "price": 195,
+            "productUrl": "https://www.ghbass.com/products/men-larson-weejuns-penny-loafer-melon",
+            "priceRetrievedAt": "2026-11-22",
+            "colors": [
+                "Colorful"
+            ],
+            "styles": [
+                "Classic",
+                "Minimalist"
+            ],
+            "image": "/catalog/m-loafer-suede-retailer.jpg",
+            "arSupported": false,
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-low-sneaker",
-            "name": "Leather Court Sneaker",
+            "name": "Authentic Shoe · Black",
             "retailer": "Vans",
             "slot": "shoes",
             "department": "Menswear",
-            "price": 75,
-            "productUrl": null,
-            "retailerUrl": "https://www.vans.com/en-us/shoes-c00081",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 60,
+            "productUrl": "https://www.vans.com/en-us/p/shoes/icons/authentic-5310/authentic-shoe-VN000Z4PBLK",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "White",
                 "Black"
             ],
             "styles": [
                 "Streetwear",
                 "Minimalist"
             ],
-            "image": null,
+            "image": "/catalog/m-low-sneaker-retailer.png",
             "arSupported": false,
-            "overlayAsset": null
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-chelsea",
-            "name": "Chelsea Boot",
-            "retailer": "Zara",
+            "name": "Cavalier Chelsea Boot · Black",
+            "retailer": "Thursday Boot Company",
             "slot": "shoes",
             "department": "Menswear",
-            "price": 99.9,
-            "productUrl": null,
-            "retailerUrl": "https://www.zara.com/us/en/man-shoes-l769.html",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 199,
+            "productUrl": "https://thursdayboots.com/products/mens-cavalier-chelsea-boot-black",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Black",
-                "Earth Tones"
+                "Black"
             ],
             "styles": [
                 "Classic",
                 "Trendy"
             ],
-            "image": null,
+            "image": "/catalog/m-chelsea-retailer.jpg",
             "arSupported": false,
-            "overlayAsset": null
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-belt",
-            "name": "Full-Grain Leather Belt",
-            "retailer": "Massimo Dutti",
+            "name": "Black Leather Belt",
+            "retailer": "Suitsupply",
             "slot": "accessory",
             "department": "Menswear",
-            "price": 59,
-            "productUrl": null,
-            "retailerUrl": "https://www.massimodutti.com/us/",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 99,
+            "productUrl": "https://suitsupply.com/en-us/men/accessories/belts/black-belt/ABE10002999.html",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Black",
-                "Earth Tones"
+                "Black"
             ],
             "styles": [
                 "Classic",
                 "Minimalist"
             ],
-            "image": null,
+            "image": "/catalog/m-belt-retailer.jpg",
             "arSupported": false,
-            "overlayAsset": null
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-watch",
-            "name": "Minimal Field Watch",
-            "retailer": "Nordstrom",
+            "name": "Expedition Scout 40mm Leather Strap Watch",
+            "retailer": "Timex",
             "slot": "accessory",
             "department": "Menswear",
-            "price": 145,
-            "productUrl": null,
-            "retailerUrl": "https://www.nordstrom.com/browse/men/accessories/watches",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 95,
+            "productUrl": "https://timex.com/products/expedition-scout-40mm-leather-strap-watch-t49963",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
                 "Black",
-                "Beige"
+                "Earth Tones"
             ],
             "styles": [
                 "Minimalist",
                 "Classic"
             ],
-            "image": null,
+            "image": "/catalog/m-watch-retailer.png",
             "arSupported": false,
-            "overlayAsset": null
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-scarf",
-            "name": "Wool Muffler",
-            "retailer": "Uniqlo",
+            "name": "Cabin Scarf · Heathered Soot",
+            "retailer": "Everlane",
             "slot": "accessory",
             "department": "Menswear",
-            "price": 29.9,
-            "productUrl": null,
-            "retailerUrl": "https://www.uniqlo.com/us/en/men/",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 59.0,
+            "productUrl": "https://www.everlane.com/products/mens-gifting-scarf-heather-soot",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Earth Tones",
-                "Navy"
+                "Gray"
             ],
             "styles": [
                 "Minimalist",
                 "Classic"
             ],
-            "image": null,
+            "image": "/catalog/m-scarf-retailer.jpg",
             "arSupported": false,
-            "overlayAsset": null
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "m-pocket-square",
-            "name": "Silk Pocket Square",
-            "retailer": "Nordstrom",
+            "name": "White Cotton Pocket Square",
+            "retailer": "Suitsupply",
             "slot": "accessory",
             "department": "Menswear",
-            "price": 35,
-            "productUrl": null,
-            "retailerUrl": "https://www.nordstrom.com/browse/men/accessories",
-            "priceRetrievedAt": "2026-11-18",
+            "price": 29,
+            "productUrl": "https://suitsupply.com/en-us/men/accessories/handkerchiefs/white-pocket-square/PS984.html",
+            "priceRetrievedAt": "2026-11-22",
             "colors": [
-                "Colorful",
-                "Navy"
+                "White"
             ],
             "styles": [
                 "Classic"
             ],
-            "image": null,
+            "image": "/catalog/m-pocket-square-retailer.jpg",
             "arSupported": false,
-            "overlayAsset": null
+            "overlayAsset": null,
+            "productUrlVerifiedAt": "2026-11-22"
         },
         {
             "id": "p-garden-jersey",

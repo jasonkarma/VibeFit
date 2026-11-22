@@ -35,19 +35,16 @@ uses Everlane's front-facing gallery photo for the same navy sweater, clipped to
 the garment on the try-on stage. The product pages provide the model and color
 reference for the bundled images.
 
-## Remaining catalog
+## Catalog 1.5.0-sprint3
 
-The catalog now has twelve links marked **View item**, 13 candidates marked
-**Check item**, 20 retailer links marked **Browse**, and 12 unavailable
-destinations. The earlier audit showed mismatches for `p-breton`, `p-silk-cami`,
-`p-moto`, `p-cargo`, `p-silk-skirt`, `m-tux-jacket`, and `m-bomber`. The
-November 22 recheck found a 404 for `p-wool-blazer` and `p-pumps`, a 410 for
-`p-tux-blazer`, and an Old Navy redirect to its no-results page for `p-slip-on`.
-Those destinations have been removed. The historical report preserves the
-original observations.
+All 57 catalog entries now point to retailer product pages and bundle a matching
+retailer image. Retired, blocked, and category-only listings were replaced with
+current products in the same garment categories where possible. These can differ
+in brand, fabric, cut, and price from the original seed items. Two low-budget
+demo scenarios use updated budget values to reflect the new listings.
 
-The HTTP run before the wedding outfit update returned inconclusive results
-for the 13 remaining candidates. The 90% charter target remains open.
+The catalog uses price snapshots. A link verification records product identity
+and does not measure future availability.
 
 ## Run the audit
 

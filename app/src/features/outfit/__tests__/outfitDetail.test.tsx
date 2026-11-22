@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { App } from '@/App';
 import { usePreferencesStore } from '@/store/preferencesStore';
 import { catalog } from '@/data/catalog';
+import { rankedOutfitById } from '@/engine/lookup';
 import { EMPTY_PREFERENCES, NO_COLOR_PREFERENCE } from '@/types/domain';
 
 /**
@@ -111,7 +112,7 @@ describe('Story 6 — outfit details', () => {
         expect(screen.getByRole('meter')).toBeVisible();
     });
 
-    it('lists every garment piece with a photo or Prototype Visual badge (AC 6.3)', async () => {
+    it('lists every garment piece with a product photo (AC 6.3)', async () => {
         seedWorkPreferences();
         usePreferencesStore.getState().generate();
 
@@ -122,7 +123,8 @@ describe('Story 6 — outfit details', () => {
 
         expect(within(list).getAllByRole('listitem')).toHaveLength(outfit.itemIds.length);
 
-        expect(within(list).getAllByText(/prototype visual/i)).toHaveLength(outfit.itemIds.length - 1);
+        expect(within(list).getAllByRole('img')).toHaveLength(outfit.itemIds.length);
+        expect(within(list).queryByText(/prototype visual/i)).toBeNull();
         expect(within(list).getByRole('img', { name: 'Whitney Weejuns Penny Loafer · Black' }))
             .toHaveAttribute('src', '/catalog/ghbass-whitney-weejuns-black.jpg');
 
@@ -226,11 +228,11 @@ describe('Story 7 — itemised USD pricing', () => {
         renderAt('/results/o-08');
 
         const total = await screen.findByTestId('outfit-total');
-        // poplin 59 + blazer 139 + trousers 89 + loafers 195 + hoops 68
-        expect(total).toHaveTextContent('$550.00');
+        // shirt 49 + blazer 119 + trousers 53 + loafers 195 + hoops 88.50
+        expect(total).toHaveTextContent('$504.50');
 
         expect(screen.getByRole('heading', { name: /total outfit price/i })).toBeVisible();
-        // $550 against a $400 budget is over.
+        // $504.50 against a $400 budget is over.
         expect(screen.getByTestId('budget-verdict')).toHaveTextContent(/over your budget/i);
         expect(screen.queryByTestId('partial-total-notice')).toBeNull();
     });
@@ -258,8 +260,8 @@ describe('Story 7 — itemised USD pricing', () => {
         expect(screen.getAllByTestId('partial-total-notice')[0]).toHaveTextContent(
             /lower bound/i,
         );
-        // Camisole 88 + sandals 79 + scarf 59 = 226.
-        expect(screen.getByTestId('outfit-total')).toHaveTextContent('$226.00');
+        // Camisole 41 + sandals 101 + scarf 32 = 174.
+        expect(screen.getByTestId('outfit-total')).toHaveTextContent('$174.00');
         // No budget verdict is offered, because the real cost is unknown.
         expect(screen.queryByTestId('budget-verdict')).toBeNull();
     });
@@ -273,7 +275,7 @@ describe('Story 7 — itemised USD pricing', () => {
         const list = await screen.findByRole('list', { name: /garments in this outfit/i });
         const labels = within(list).getAllByText(/sample price • retrieved/i);
         expect(labels.length).toBeGreaterThan(0);
-        expect(labels[0]).toHaveTextContent('Sample Price • Retrieved 2026-11-18');
+        expect(labels[0]).toHaveTextContent('Sample Price • Retrieved 2026-11-22');
     });
 });
 
@@ -287,9 +289,9 @@ describe('Story 8 — retailer shopping links', () => {
         const list = await screen.findByRole('list', { name: /garments in this outfit/i });
 
         const poplinCard = list.querySelector('[data-testid="outfit-item-p-poplin"]') as HTMLElement;
-        const link = within(poplinCard).getByRole('link', { name: /check item at arket/i });
+        const link = within(poplinCard).getByRole('link', { name: /view item at everlane/i });
 
-        expect(link).toHaveAttribute('href', 'https://www.arket.com/en_us/womens/shirts/product.oversized-poplin-shirt.white.1132458001.html');
+        expect(link).toHaveAttribute('href', 'https://www.everlane.com/products/womens-relaxed-oxford-shirt-white');
         expect(link).toHaveAttribute('target', '_blank');
         // `noopener` prevents tabnabbing; `noreferrer` stops referrer leakage.
         expect(link.getAttribute('rel')).toContain('noopener');
@@ -299,6 +301,13 @@ describe('Story 8 — retailer shopping links', () => {
     it('suppresses the link entirely for the seeded null-URL item (AC 8b.2)', async () => {
         seedWorkPreferences();
         usePreferencesStore.getState().generate();
+
+        const entry = rankedOutfitById('o-08', usePreferencesStore.getState().preferences, catalog)!;
+        usePreferencesStore.setState({
+            results: [{ ...entry, items: entry.items.map((item) =>
+                item.id === 'p-hoops' ? { ...item, productUrl: null } : item,
+            ) }],
+        });
 
         renderAt('/results/o-08');
 

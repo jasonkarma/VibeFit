@@ -15,7 +15,7 @@ interface AlignmentControlsProps {
 }
 
 interface SliderSpec {
-    key: keyof OverlayTransform;
+    key: keyof typeof TRANSFORM_LIMITS;
     label: string;
     hint: string;
     /** Suffix shown next to the live value. */

@@ -160,14 +160,14 @@ describe('retailer selector (Sprint 3)', () => {
         renderAt();
 
         const group = screen.getByRole('group', { name: /preferred retailers/i });
-        const zara = within(group).getByRole('button', { name: /^Zara$/i });
+        const vans = within(group).getByRole('button', { name: /^Vans$/i });
 
-        await user.click(zara);
-        expect(zara).toHaveAttribute('aria-pressed', 'true');
-        expect(usePreferencesStore.getState().preferences.preferredRetailers).toEqual(['Zara']);
+        await user.click(vans);
+        expect(vans).toHaveAttribute('aria-pressed', 'true');
+        expect(usePreferencesStore.getState().preferences.preferredRetailers).toEqual(['Vans']);
 
-        await user.click(zara);
-        expect(zara).toHaveAttribute('aria-pressed', 'false');
+        await user.click(vans);
+        expect(vans).toHaveAttribute('aria-pressed', 'false');
         expect(usePreferencesStore.getState().preferences.preferredRetailers).toEqual([]);
     });
 
@@ -176,7 +176,7 @@ describe('retailer selector (Sprint 3)', () => {
         renderAt();
 
         const group = screen.getByRole('group', { name: /preferred retailers/i });
-        await user.click(within(group).getByRole('button', { name: /^Zara$/i }));
+        await user.click(within(group).getByRole('button', { name: /^Vans$/i }));
 
         await user.click(screen.getByRole('button', { name: /include all retailers/i }));
         expect(usePreferencesStore.getState().preferences.preferredRetailers).toEqual([]);
@@ -221,7 +221,7 @@ describe('garment imagery on result cards (Sprint 3)', () => {
         const photoUrl = '/catalog/poplin-fixture.webp';
         const items = entry.items.map((item) =>
             item.id === 'p-poplin' ? { ...item, image: photoUrl } :
-            item.id === 'p-hoops' ? { ...item, retailerUrl: 'https://example.com/earrings' } :
+            item.id === 'p-hoops' ? { ...item, productUrl: null, retailerUrl: 'https://example.com/earrings' } :
             item.id === 'p-straight-trouser' ? { ...item, productUrl: null } : item,
         );
         usePreferencesStore.setState({ results: [{ ...entry, items }] });
@@ -231,19 +231,19 @@ describe('garment imagery on result cards (Sprint 3)', () => {
         const card = await screen.findByRole('article', { name: entry.outfit.name });
         const pieces = within(card).getByRole('list', { name: `Products in ${entry.outfit.name}` });
         expect(within(pieces).getAllByRole('listitem')).toHaveLength(items.length);
-        expect(within(card).getAllByRole('img', { name: 'Oversized Poplin Shirt' })).toHaveLength(2);
-        const photo = within(pieces).getByRole('img', { name: 'Oversized Poplin Shirt' });
+        expect(within(card).getAllByRole('img', { name: 'Must-Have Oxford Shirt · White' })).toHaveLength(2);
+        const photo = within(pieces).getByRole('img', { name: 'Must-Have Oxford Shirt · White' });
         expect(photo).toHaveAttribute('src', photoUrl);
-        const shop = within(pieces).getByRole('link', { name: /check item at arket.*oversized poplin shirt/i });
+        const shop = within(pieces).getByRole('link', { name: /view item at everlane.*must-have oxford shirt/i });
         expect(shop).toHaveAttribute('href', items.find((item) => item.id === 'p-poplin')!.productUrl);
         expect(shop).toHaveAttribute('target', '_blank');
         expect(shop).toHaveAttribute('rel', 'noopener noreferrer');
-        expect(within(pieces).getByRole('link', { name: /browse mejuri.*gold vermeil hoops/i }))
+        expect(within(pieces).getByRole('link', { name: /browse mejuri.*bold huggie hoops/i }))
             .toHaveAttribute('href', 'https://example.com/earrings');
-        expect(within(pieces).getAllByText('Link Unavailable')).toHaveLength(2);
+        expect(within(pieces).getAllByText('Link Unavailable')).toHaveLength(1);
 
         fireEvent.error(photo);
-        expect(within(pieces).getByRole('img', { name: /oversized poplin shirt.*illustrative/i })).toBeVisible();
+        expect(within(pieces).getByRole('img', { name: /must-have oxford shirt.*illustrative/i })).toBeVisible();
         expect(within(card).getByText(`${items.length} pieces`)).toBeVisible();
     });
 
@@ -368,10 +368,10 @@ describe('shoulder tracking control (Sprint 3)', () => {
 
         expect(screen.getByTestId('overlay-value-offsetY')).toHaveTextContent('24%');
         expect(screen.getByTestId('overlay-value-scale')).toHaveTextContent('75%');
-        const toggle = screen.getByRole('button', { name: /tracking off/i });
-        expect(toggle).toHaveAttribute('aria-pressed', 'false');
+        const toggle = screen.getByRole('button', { name: /tracking on/i });
+        expect(toggle).toHaveAttribute('aria-pressed', 'true');
         await user.click(toggle);
-        expect(screen.getByRole('button', { name: /tracking on/i })).toHaveAttribute('aria-pressed', 'true');
+        expect(screen.getByRole('button', { name: /tracking off/i })).toHaveAttribute('aria-pressed', 'false');
 
         // The manual override still exists alongside it — this is the requirement
         // that automatic tracking must not replace manual control.

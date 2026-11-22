@@ -42,7 +42,7 @@ it('refreshes retailer destinations in saved recommendations without reranking',
         state: {
             results: [{
                 ...original,
-                items: [{ ...product, productUrl: product.retailerUrl, retailerUrl: undefined }],
+                items: [{ ...product, productUrl: null, retailerUrl: 'https://www.everlane.com/collections/womens-pants' }],
             }],
         },
     });
@@ -52,7 +52,7 @@ it('refreshes retailer destinations in saved recommendations without reranking',
     const [result] = usePreferencesStore.getState().results;
     expect(result.outfit.id).toBe(original.outfit.id);
     expect(result.matchScore).toBe(original.matchScore);
-    expect(result.items[0]).toMatchObject({ productUrl: null, retailerUrl: product.retailerUrl });
+    expect(result.items[0]).toMatchObject({ productUrl: product.productUrl, retailerUrl: undefined });
 });
 
 it('reruns stored recommendations against current garment prices when the catalog changes', async () => {

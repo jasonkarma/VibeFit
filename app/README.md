@@ -52,9 +52,8 @@ public/ar/       five hand-authored SVG garment overlays
   Items without either destination show **Link Unavailable**.
 - **Camera is consent-gated.** `getUserMedia` is only reachable through the consent
   card. Video is never recorded, stored, or uploaded; tracks are stopped on unmount.
-- **Catalog media.** Neutral Layers, Garden Formal, and Bomber Wedding have
-  matching retailer photos for every piece. Items without photography use
-  illustrations.
+- **Catalog media.** All 57 products in the current catalog have matching
+  retailer photos. Missing or failed image loads use illustrative fallbacks.
 
 Design and motion rules live in [`../plans/sprint-1-plan.md`](../plans/sprint-1-plan.md);
 Sprint 2 architecture and decisions in
@@ -91,3 +90,22 @@ image is fitted to the stage and aligned to its bottom edge. Check alignment in
 camera and silhouette modes. The live overlay preserves visible fabric details from the
 photo and tracks shoulder position and scale. Fit, drape, and occlusion require
 additional rendering and garment data.
+
+
+## Live tracking and a 3D try-on path
+
+Camera try-on uses MediaPipe Pose Landmarker to track both shoulders, rotate and
+scale one garment, and hide its overlay when the pose is lost. The model and
+WebAssembly runtime load from the app. Frames stay in the browser.
+
+The current garment layer is a flat product photo or an illustration. For a 3D
+pilot, source one garment with a front and back texture, a rigged GLB, and a
+known real-world size. A browser renderer can drive its rig with shoulder,
+elbow, and torso landmarks. Add person segmentation or a depth mask to put hands
+and arms in front. Check motion and occlusion with a real webcam before adding
+another garment. Accurate fit and drape need garment measurements and material
+properties. The combined look is the whole-outfit preview.
+
+The bundled Pose Landmarker Lite model is the float16 version 1 from the
+[MediaPipe model documentation](https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker#models).
+Its SHA-256 is `59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a`.

@@ -1,9 +1,12 @@
 import { projectShouldersToStage, type ShoulderEstimate } from './shoulderTracking';
 
+import { garmentPoseFromLandmarks } from './garmentPose';
+
 interface Landmark {
     x: number;
     y: number;
     visibility: number;
+    z?: number;
 }
 
 export function shouldersFromLandmarks(
@@ -12,7 +15,7 @@ export function shouldersFromLandmarks(
 ): ShoulderEstimate | null {
     const left = pose?.[11];
     const right = pose?.[12];
-    if (!left || !right) return null;
+    if (!pose || !left || !right) return null;
 
     const first = projectShouldersToStage({ centerX: left.x, centerY: left.y, width: 0, confidence: left.visibility }, video);
     const second = projectShouldersToStage({ centerX: right.x, centerY: right.y, width: 0, confidence: right.visibility }, video);
@@ -31,6 +34,7 @@ export function shouldersFromLandmarks(
         centerY,
         width: Math.hypot(dx, dy),
         confidence: Math.min(a.confidence, b.confidence),
+        garmentPose: garmentPoseFromLandmarks(pose, video),
         rotation: -Math.atan2(dy, dx) * 180 / Math.PI,
     };
 }

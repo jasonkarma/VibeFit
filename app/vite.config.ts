@@ -43,6 +43,7 @@ export default defineConfig(({ mode }) => {
 
     return {
         plugins: [react(), lumiaHealthPlugin(Boolean(serverKey))],
+        optimizeDeps: { include: ['@mediapipe/tasks-vision', 'three'] },
 
         resolve: {
             alias: {

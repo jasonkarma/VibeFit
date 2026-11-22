@@ -109,3 +109,17 @@ properties. The combined look is the whole-outfit preview.
 The bundled Pose Landmarker Lite model is the float16 version 1 from the
 [MediaPipe model documentation](https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker#models).
 Its SHA-256 is `59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a`.
+
+### 3D sweater pilot
+
+Open **Soft Business** from Menswear, Work, Smart Casual with a budget of at
+least $284. Open camera try-on, enable the camera, then select **Try 3D sweater**.
+The WebGL renderer uses a reconstructed crewneck mesh with a knit texture
+sampled from the retailer's photo. Shoulder, hip, elbow, and wrist landmarks
+drive the torso and articulated sleeves. If body tracking or WebGL is
+unavailable, use the 2D preview.
+
+This pilot approximates geometry and appearance. It has no retailer-supplied
+pattern, fabric simulation, or depth-based occlusion against the user's hands
+and clothing. Camera frames stay in the browser. The combined look remains the
+whole-outfit styling preview.

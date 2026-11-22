@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Camera, CameraOff, ScanFace, TriangleAlert } from 'lucide-react';
 import type { Product } from '@/types/domain';
 import { cn } from '@/lib/cn';
@@ -10,6 +10,9 @@ import { DEFAULT_OVERLAY_TRANSFORM, overlayStyle, type OverlayTransform } from '
 import { AR_GARMENTS, defaultArGarment } from './arGarments';
 import { useShoulderTracking } from './useShoulderTracking';
 import { AUTO_FOLLOW_CONFIDENCE } from './shoulderTracking';
+
+const Sweater3D = lazy(() => import('./Sweater3D'));
+const SWEATER_3D_PRODUCT = 'm-soft-crew';
 
 const CAMERA_ALIGNMENT: OverlayTransform = {
     ...DEFAULT_OVERLAY_TRANSFORM,
@@ -62,6 +65,9 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
 
     const [autoTrackEnabled, setAutoTrackEnabled] = useState(true);
     const [hasManualOverride, setHasManualOverride] = useState(false);
+    const [prefer3D, setPrefer3D] = useState(false);
+    const [webglUnavailable, setWebglUnavailable] = useState(false);
+    const handleWebglUnavailable = useCallback(() => setWebglUnavailable(true), []);
 
     const handleTrackedTransform = useCallback(
         (next: Pick<OverlayTransform, 'scale' | 'offsetX' | 'offsetY' | 'rotation'>) => {
@@ -83,6 +89,9 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
     });
     const waitingForPose = showCamera && autoTrackEnabled && !hasManualOverride &&
         (tracking.status === 'loading' || tracking.status === 'searching');
+    const canUse3D = showCamera && selected?.id === SWEATER_3D_PRODUCT && Boolean(photoOverlay);
+    const show3D = canUse3D && prefer3D && autoTrackEnabled && !hasManualOverride &&
+        tracking.status !== 'unavailable' && !webglUnavailable;
 
     /** Any slider movement returns control to the user. */
     function handleManualTransform(next: OverlayTransform) {
@@ -238,7 +247,16 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                             )}
 
                             {/* Garment overlay */}
-                            {selected && overlay && (
+                            {show3D && photoOverlay && (
+                                <Suspense fallback={null}>
+                                    <Sweater3D
+                                        pose={tracking.autoFollowing ? tracking.estimate?.garmentPose : undefined}
+                                        textureUrl={photoOverlay}
+                                        onUnavailable={handleWebglUnavailable}
+                                    />
+                                </Suspense>
+                            )}
+                            {!show3D && selected && overlay && (
                                 <img
                                     src={overlay}
                                     alt={`${selected.name} overlay`}
@@ -258,7 +276,8 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                             )}
 
                             <span className="absolute left-2 top-2 rounded-pill border border-champagne/35 bg-obsidian/80 px-2 py-0.5 font-data text-[0.5625rem] uppercase tracking-[0.12em] text-champagne/90 backdrop-blur-md">
-                                {photoOverlay ? '2D product overlay' : overlay ? 'Illustrative Prototype' : 'Overlay unavailable'}
+                                {show3D ? '3D reconstruction' : photoOverlay ? '2D product overlay' :
+                                    overlay ? 'Illustrative Prototype' : 'Overlay unavailable'}
                             </span>
 
                             {camera.status === 'requesting' && (
@@ -311,6 +330,29 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                             <p className="mt-2 text-center font-data text-[0.5625rem] uppercase tracking-[0.1em] text-obsidian-500">
                                 Video stays in this tab · nothing recorded or uploaded
                             </p>
+                        )}
+                        {canUse3D && (
+                            <div className="mt-3 text-center">
+                                <button
+                                    type="button"
+                                    disabled={webglUnavailable || tracking.status === 'unavailable'}
+                                    onClick={() => {
+                                        setPrefer3D(!show3D);
+                                        if (!show3D) handleResumeTracking();
+                                    }}
+                                    className="rounded-pill border border-violet/40 bg-violet/15 px-3 py-1.5 text-xs text-violet disabled:opacity-60"
+                                >
+                                    {show3D ? 'Switch to 2D photo' : 'Try 3D sweater'}
+                                </button>
+                                {(webglUnavailable || tracking.status === 'unavailable') && (
+                                    <p className="mt-1 text-xs text-obsidian-400">3D is unavailable here. Use the 2D preview.</p>
+                                )}
+                                {show3D && (
+                                    <p className="mt-1 text-xs text-obsidian-400">
+                                        Step back until your shoulders and arms are visible. Garment fit is approximate.
+                                    </p>
+                                )}
+                            </div>
                         )}
                     </div>
 
@@ -403,11 +445,13 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                         </section>
                     )}
 
-                    <AlignmentControls
-                        value={transform}
-                        initialAlignment={showCamera ? CAMERA_ALIGNMENT : DEFAULT_OVERLAY_TRANSFORM}
-                        onChange={handleManualTransform}
-                    />
+                    {!show3D && (
+                        <AlignmentControls
+                            value={transform}
+                            initialAlignment={showCamera ? CAMERA_ALIGNMENT : DEFAULT_OVERLAY_TRANSFORM}
+                            onChange={handleManualTransform}
+                        />
+                    )}
                 </>
             )}
         </div>

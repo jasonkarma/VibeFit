@@ -1,6 +1,9 @@
+import type { GarmentPose } from './garmentPose';
+
 /** A normalised shoulder estimate, independent of pixel dimensions. */
 export interface ShoulderEstimate {
     rotation?: number;
+    garmentPose?: GarmentPose;
     /** Centre of the shoulder line, 0–1 across the frame width. */
     centerX: number;
     /** Shoulder line height, 0–1 down the frame height. */

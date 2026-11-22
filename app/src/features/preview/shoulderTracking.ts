@@ -1,9 +1,10 @@
-import type { GarmentPose } from './garmentPose';
+import type { PhotoAnchor } from './photoAnchors';
 
 /** A normalised shoulder estimate, independent of pixel dimensions. */
 export interface ShoulderEstimate {
     rotation?: number;
-    garmentPose?: GarmentPose;
+    /** Front collar point in unmirrored, cropped stage coordinates. */
+    neckline?: { x: number; y: number };
     /** Centre of the shoulder line, 0–1 across the frame width. */
     centerX: number;
     /** Shoulder line height, 0–1 down the frame height. */
@@ -42,23 +43,24 @@ export function projectShouldersToStage(
  * it: a wider detected span scales the garment up, a subject off-centre shifts it,
  * and a lower shoulder line moves it down.
  *
- * `baseWidth` is the reference span at which the garment renders at 100% — roughly
- * a person standing at conversational distance from a laptop camera. Everything
- * else is expressed relative to that, which keeps the numbers stable across camera
- * resolutions and aspect ratios.
+ * A calibrated photo uses the measured shoulder span and the inner front edge
+ * of its collar. Legacy illustrations retain their existing reference position.
  */
 export function transformFromShoulders(
     estimate: ShoulderEstimate,
-    baseWidth = 0.42,
+    anchor?: PhotoAnchor,
 ): { scale: number; offsetX: number; offsetY: number } {
-    const scaleRatio = clamp(estimate.width / baseWidth, 0.55, 1.9);
+    const scaleRatio = clamp(estimate.width / (anchor?.shoulderSpan ?? 0.42), 0.55, 1.9);
     const scale = clamp(Math.round(scaleRatio * 100), 40, 160);
 
     // A shoulder centre above 0.5 means the subject is in the upper frame; the
     // garment should move up with them. Multiplication converts a 0–1 position into
     // the ±50% slider range.
-    const offsetX = clamp(Math.round((0.5 - estimate.centerX) * 100), -50, 50);
-    const offsetY = clamp(Math.round((estimate.centerY - 0.28) * 100), -50, 50);
+    const target = anchor && estimate.neckline;
+    const x = target ? 1 - target.x - anchor.x : 0.5 - estimate.centerX;
+    const y = target ? target.y - anchor.y : estimate.centerY - 0.28;
+    const offsetX = clamp(Math.round(x * 100), -50, 50);
+    const offsetY = clamp(Math.round(y * 100), -50, 50);
 
     return { scale, offsetX, offsetY };
 }

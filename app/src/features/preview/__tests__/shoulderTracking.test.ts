@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { transformFromShoulders, projectShouldersToStage, type ShoulderEstimate } from '../shoulderTracking';
 import { shouldersFromLandmarks } from '../poseGeometry';
+import { photoAnchor } from '../photoAnchors';
 
 const viewport = { videoWidth: 1000, videoHeight: 800, clientWidth: 600, clientHeight: 800 };
 
@@ -25,6 +26,25 @@ it('requires two plausible shoulders inside the camera crop', () => {
     expect(shouldersFromLandmarks(undefined, viewport)).toBeNull();
     expect(shouldersFromLandmarks(landmarks(0.03, 0.45), viewport)).toBeNull();
     expect(shouldersFromLandmarks(landmarks(0.36, 0.03), viewport)).toBeNull();
+});
+
+it('places the actual sweater collar above the detected shoulder joints', () => {
+    const stage = { videoWidth: 600, videoHeight: 800, clientWidth: 600, clientHeight: 800 };
+    const visible = landmarks(0.31, 0.57);
+    visible[12] = { x: 0.71, y: 0.57, visibility: 1 };
+    visible[9] = { x: 0.47, y: 0.37, visibility: 1 };
+    visible[10] = { x: 0.55, y: 0.37, visibility: 1 };
+    const estimate = shouldersFromLandmarks(visible, stage)!;
+    const anchor = photoAnchor('/catalog/m-soft-crew-flat.jpg')!;
+    const transform = transformFromShoulders(estimate, anchor);
+
+    expect(estimate.neckline?.y).toBeCloseTo(0.498, 3);
+    expect(anchor.y + transform.offsetY / 100).toBeCloseTo(estimate.neckline!.y, 2);
+    expect(anchor.x + transform.offsetX / 100).toBeCloseTo(0.49, 2);
+    expect(transform.scale).toBe(88);
+
+    visible[9].visibility = 0.3;
+    expect(shouldersFromLandmarks(visible, stage)?.neckline).toBeUndefined();
 });
 
 describe('transformFromShoulders — mapping', () => {

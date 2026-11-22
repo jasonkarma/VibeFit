@@ -81,8 +81,8 @@ photo to `public/catalog/`. Set `image` to its app path, such as
 use that photo.
 
 For a supported top or jacket, export a front-facing, background-free PNG or
-WebP on a 3:4 transparent canvas. Center the shoulders at about 28% of the canvas
-height and use the existing SVG overlays as placement guides. Put the cutout in
+WebP on a 3:4 transparent canvas. Trace the front collar opening and record its
+position and the shoulder span in `src/features/preview/photoAnchors.ts`. Put the cutout in
 `public/ar/`, set `photoOverlayAsset` to its app path, and enable `arSupported`.
 An existing `overlayAsset` serves as the fallback. For an opaque photo, add a
 `photoOverlayOutline` of garment boundary points in stage percentages. The masked
@@ -94,8 +94,10 @@ additional rendering and garment data.
 
 ## Live tracking and a 3D try-on path
 
-Camera try-on uses MediaPipe Pose Landmarker to track both shoulders, rotate and
-scale one garment, and hide its overlay when the pose is lost. The model and
+Camera try-on uses MediaPipe Pose Landmarker to track both shoulders and facial
+landmarks. For calibrated retailer photos it aligns the front collar to an
+estimated neckline and scales the garment to the wearer's shoulder span. The
+overlay pauses when the face or shoulders leave the frame. The model and
 WebAssembly runtime load from the app. Frames stay in the browser.
 
 The current garment layer is a flat product photo or an illustration. For a 3D
@@ -110,16 +112,10 @@ The bundled Pose Landmarker Lite model is the float16 version 1 from the
 [MediaPipe model documentation](https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker#models).
 Its SHA-256 is `59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a`.
 
-### 3D sweater pilot
+### Product-specific 3D assets
 
-Open **Soft Business** from Menswear, Work, Smart Casual with a budget of at
-least $284. Open camera try-on, enable the camera, then select **Try 3D sweater**.
-The WebGL renderer uses a reconstructed crewneck mesh with a knit texture
-sampled from the retailer's photo. Shoulder, hip, elbow, and wrist landmarks
-drive the torso and articulated sleeves. If body tracking or WebGL is
-unavailable, use the 2D preview.
-
-This pilot approximates geometry and appearance. It has no retailer-supplied
-pattern, fabric simulation, or depth-based occlusion against the user's hands
-and clothing. Camera frames stay in the browser. The combined look remains the
-whole-outfit styling preview.
+An exact-product 3D release requires a textured garment model matched to the
+retailer SKU and colorway, plus calibrated dimensions and a rig for posing.
+Everlane's public No-Sweat Sweater listing supplies six images. It has no
+downloadable 3D garment media. The camera flow therefore uses the original
+retailer flat-lay as a 2D photo preview.

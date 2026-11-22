@@ -187,7 +187,7 @@ it('uses an exact-product cutout on the live camera stage and falls back if it f
     const overlay = screen.getByTestId('ar-overlay');
     expect(overlay).toHaveAttribute('src', '/catalog/everlane-cashmere-slim-crew-navy-flat.png');
     expect(overlay.style.clipPath).toMatch(/^polygon\(/);
-    expect(screen.getByText('2D product overlay')).toBeVisible();
+    expect(screen.getByText('2D product photo')).toBeVisible();
 
     fireEvent.error(overlay);
     expect(screen.getByTestId('ar-overlay')).toHaveAttribute('src', '/ar/cashmere-crewneck.svg');

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { AUTO_FOLLOW_CONFIDENCE, transformFromShoulders, type ShoulderEstimate } from './shoulderTracking';
+import type { PhotoAnchor } from './photoAnchors';
 import type { OverlayTransform } from './overlayTransform';
 import type { createPoseTracker } from './poseLandmarker';
 
@@ -12,10 +13,11 @@ interface UseShoulderTrackingOptions {
     videoRef: React.RefObject<HTMLVideoElement | null>;
     active: boolean;
     enabled: boolean;
+    anchor?: PhotoAnchor;
     onTransform: (transform: TrackedTransform) => void;
 }
 
-export function useShoulderTracking({ videoRef, active, enabled, onTransform }: UseShoulderTrackingOptions) {
+export function useShoulderTracking({ videoRef, active, enabled, anchor, onTransform }: UseShoulderTrackingOptions) {
     const [status, setStatus] = useState<TrackingStatus>('off');
     const [estimate, setEstimate] = useState<ShoulderEstimate | null>(null);
     const onTransformRef = useRef(onTransform);
@@ -46,12 +48,13 @@ export function useShoulderTracking({ videoRef, active, enabled, onTransform }: 
                 try {
                     const next = tracker.detect(video, now);
                     setEstimate(next);
-                    if (!next || next.confidence < AUTO_FOLLOW_CONFIDENCE) {
+                    if (!next || next.confidence < AUTO_FOLLOW_CONFIDENCE ||
+                        (anchor && (!next.neckline || next.width / anchor.shoulderSpan > 1.6))) {
                         hits = 0;
                         previous = undefined;
                         setStatus('searching');
                     } else if (++hits >= 3) {
-                        const raw = { ...transformFromShoulders(next), rotation: next.rotation ?? 0 };
+                        const raw = { ...transformFromShoulders(next, anchor), rotation: next.rotation ?? 0 };
                         const smooth = (key: keyof TrackedTransform) =>
                             previous ? previous[key] + (raw[key] - previous[key]) * 0.38 : raw[key];
                         previous = { scale: smooth('scale'), offsetX: smooth('offsetX'), offsetY: smooth('offsetY'), rotation: smooth('rotation') };
@@ -89,7 +92,7 @@ export function useShoulderTracking({ videoRef, active, enabled, onTransform }: 
             window.cancelAnimationFrame(frame);
             tracker?.close();
         };
-    }, [active, enabled, videoRef]);
+    }, [active, enabled, anchor, videoRef]);
 
     return { status, estimate, autoFollowing: status === 'tracking' };
 }

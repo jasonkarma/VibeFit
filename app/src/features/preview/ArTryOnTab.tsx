@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Camera, CameraOff, ScanFace, TriangleAlert } from 'lucide-react';
 import type { Product } from '@/types/domain';
 import { cn } from '@/lib/cn';
@@ -10,9 +10,7 @@ import { DEFAULT_OVERLAY_TRANSFORM, overlayStyle, type OverlayTransform } from '
 import { AR_GARMENTS, defaultArGarment } from './arGarments';
 import { useShoulderTracking } from './useShoulderTracking';
 import { AUTO_FOLLOW_CONFIDENCE } from './shoulderTracking';
-
-const Sweater3D = lazy(() => import('./Sweater3D'));
-const SWEATER_3D_PRODUCT = 'm-soft-crew';
+import { photoAnchor } from './photoAnchors';
 
 const CAMERA_ALIGNMENT: OverlayTransform = {
     ...DEFAULT_OVERLAY_TRANSFORM,
@@ -60,15 +58,12 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
     const illustration = selected?.overlayAsset;
     const overlay = photoOverlay ?? (illustration && !failedOverlay[illustration] ? illustration : null);
     const outline = photoOverlay ? selected?.photoOverlayOutline : undefined;
+    const anchor = photoAnchor(photoOverlay);
 
     const videoRef = useRef<HTMLVideoElement | null>(null);
 
     const [autoTrackEnabled, setAutoTrackEnabled] = useState(true);
     const [hasManualOverride, setHasManualOverride] = useState(false);
-    const [prefer3D, setPrefer3D] = useState(false);
-    const [webglUnavailable, setWebglUnavailable] = useState(false);
-    const handleWebglUnavailable = useCallback(() => setWebglUnavailable(true), []);
-
     const handleTrackedTransform = useCallback(
         (next: Pick<OverlayTransform, 'scale' | 'offsetX' | 'offsetY' | 'rotation'>) => {
             setTransform((current) => ({
@@ -86,12 +81,10 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
         active: showCamera,
         enabled: autoTrackEnabled && !hasManualOverride,
         onTransform: handleTrackedTransform,
+        anchor,
     });
     const waitingForPose = showCamera && autoTrackEnabled && !hasManualOverride &&
-        (tracking.status === 'loading' || tracking.status === 'searching');
-    const canUse3D = showCamera && selected?.id === SWEATER_3D_PRODUCT && Boolean(photoOverlay);
-    const show3D = canUse3D && prefer3D && autoTrackEnabled && !hasManualOverride &&
-        tracking.status !== 'unavailable' && !webglUnavailable;
+        tracking.status !== 'tracking' && tracking.status !== 'unavailable';
 
     /** Any slider movement returns control to the user. */
     function handleManualTransform(next: OverlayTransform) {
@@ -237,26 +230,17 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                                 >
                                     <ScanFace className="h-2.5 w-2.5" aria-hidden="true" />
                                     {tracking.autoFollowing
-                                        ? 'Shoulder estimate'
+                                        ? 'Following your pose'
                                         : tracking.status === 'loading'
                                             ? 'Loading body tracking'
                                             : tracking.status === 'searching'
-                                            ? 'Finding shoulders'
+                                            ? anchor ? 'Adjust camera framing' : 'Finding shoulders'
                                             : 'Manual alignment'}
                                 </span>
                             )}
 
                             {/* Garment overlay */}
-                            {show3D && photoOverlay && (
-                                <Suspense fallback={null}>
-                                    <Sweater3D
-                                        pose={tracking.autoFollowing ? tracking.estimate?.garmentPose : undefined}
-                                        textureUrl={photoOverlay}
-                                        onUnavailable={handleWebglUnavailable}
-                                    />
-                                </Suspense>
-                            )}
-                            {!show3D && selected && overlay && (
+                            {selected && overlay && (
                                 <img
                                     src={overlay}
                                     alt={`${selected.name} overlay`}
@@ -267,7 +251,7 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                                         ...(waitingForPose && { opacity: 0 }),
                                         ...(outline && {
                                             objectPosition: 'center bottom',
-                                            transformOrigin: '50% 28%',
+                                            transformOrigin: anchor ? `${anchor.x * 100}% ${anchor.y * 100}%` : '50% 28%',
                                             clipPath: `polygon(${outline.map(([x, y]) => `${x}% ${y}%`).join(', ')})`,
                                         }),
                                     }}
@@ -276,8 +260,7 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                             )}
 
                             <span className="absolute left-2 top-2 rounded-pill border border-champagne/35 bg-obsidian/80 px-2 py-0.5 font-data text-[0.5625rem] uppercase tracking-[0.12em] text-champagne/90 backdrop-blur-md">
-                                {show3D ? '3D reconstruction' : photoOverlay ? '2D product overlay' :
-                                    overlay ? 'Illustrative Prototype' : 'Overlay unavailable'}
+                                {photoOverlay ? '2D product photo' : overlay ? 'Illustrative Prototype' : 'Overlay unavailable'}
                             </span>
 
                             {camera.status === 'requesting' && (
@@ -331,29 +314,6 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                                 Video stays in this tab · nothing recorded or uploaded
                             </p>
                         )}
-                        {canUse3D && (
-                            <div className="mt-3 text-center">
-                                <button
-                                    type="button"
-                                    disabled={webglUnavailable || tracking.status === 'unavailable'}
-                                    onClick={() => {
-                                        setPrefer3D(!show3D);
-                                        if (!show3D) handleResumeTracking();
-                                    }}
-                                    className="rounded-pill border border-violet/40 bg-violet/15 px-3 py-1.5 text-xs text-violet disabled:opacity-60"
-                                >
-                                    {show3D ? 'Switch to 2D photo' : 'Try 3D sweater'}
-                                </button>
-                                {(webglUnavailable || tracking.status === 'unavailable') && (
-                                    <p className="mt-1 text-xs text-obsidian-400">3D is unavailable here. Use the 2D preview.</p>
-                                )}
-                                {show3D && (
-                                    <p className="mt-1 text-xs text-obsidian-400">
-                                        Step back until your shoulders and arms are visible. Garment fit is approximate.
-                                    </p>
-                                )}
-                            </div>
-                        )}
                     </div>
 
                     {selected && (
@@ -393,7 +353,7 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                                         {hasManualOverride
                                             ? 'Paused while you align it by hand. Resume to let it follow you again.'
                                             : tracking.autoFollowing
-                                                ? `Following your shoulders. Confidence ${Math.round(
+                                                ? `Following your pose. Confidence ${Math.round(
                                                     (tracking.estimate?.confidence ?? 0) * 100,
                                                 )}%.`
                                                 : tracking.status === 'unavailable'
@@ -401,7 +361,7 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                                                     : tracking.status === 'loading'
                                                         ? 'Loading the on-device body tracker.'
                                                         : autoTrackEnabled
-                                                            ? 'Face the camera with both shoulders visible.'
+                                                            ? anchor ? 'Face the camera at eye level. Keep your mouth and both shoulders in frame.' : 'Face the camera with both shoulders visible.'
                                                             : 'Use the alignment controls to position the collar below your chin.'}
                                     </p>
                                 </div>
@@ -437,7 +397,7 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                             </div>
 
                             <p className="mt-2 font-data text-[0.5625rem] uppercase tracking-[0.1em] text-obsidian-500">
-                                Estimates a shoulder line from the frame on your device · nothing is
+                                Tracks your pose on this device · nothing is
                                 uploaded or stored ·{' '}
                                 {Math.round(AUTO_FOLLOW_CONFIDENCE * 100)}% confidence required to move
                                 the garment
@@ -445,13 +405,11 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                         </section>
                     )}
 
-                    {!show3D && (
-                        <AlignmentControls
-                            value={transform}
-                            initialAlignment={showCamera ? CAMERA_ALIGNMENT : DEFAULT_OVERLAY_TRANSFORM}
-                            onChange={handleManualTransform}
-                        />
-                    )}
+                    <AlignmentControls
+                        value={transform}
+                        initialAlignment={showCamera ? CAMERA_ALIGNMENT : DEFAULT_OVERLAY_TRANSFORM}
+                        onChange={handleManualTransform}
+                    />
                 </>
             )}
         </div>

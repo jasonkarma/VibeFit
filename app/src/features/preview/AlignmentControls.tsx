@@ -8,6 +8,7 @@ import {
 
 interface AlignmentControlsProps {
     value: OverlayTransform;
+    initialAlignment?: OverlayTransform;
     onChange: (next: OverlayTransform) => void;
     /** Names the control so screen-reader users know which way is "up". */
     className?: string;
@@ -39,12 +40,12 @@ const SLIDERS: SliderSpec[] = [
     { key: 'opacity', label: 'Opacity', hint: 'Garment transparency', unit: '%' },
 ];
 
-export function AlignmentControls({ value, onChange, className }: AlignmentControlsProps) {
+export function AlignmentControls({ value, initialAlignment = DEFAULT_OVERLAY_TRANSFORM, onChange, className }: AlignmentControlsProps) {
     const isDefault =
-        value.scale === DEFAULT_OVERLAY_TRANSFORM.scale &&
-        value.offsetX === DEFAULT_OVERLAY_TRANSFORM.offsetX &&
-        value.offsetY === DEFAULT_OVERLAY_TRANSFORM.offsetY &&
-        value.opacity === DEFAULT_OVERLAY_TRANSFORM.opacity;
+        value.scale === initialAlignment.scale &&
+        value.offsetX === initialAlignment.offsetX &&
+        value.offsetY === initialAlignment.offsetY &&
+        value.opacity === initialAlignment.opacity;
 
     return (
         <section
@@ -67,7 +68,7 @@ export function AlignmentControls({ value, onChange, className }: AlignmentContr
 
                 <button
                     type="button"
-                    onClick={() => onChange({ ...DEFAULT_OVERLAY_TRANSFORM })}
+                    onClick={() => onChange({ ...initialAlignment })}
                     disabled={isDefault}
                     className="inline-flex shrink-0 items-center gap-1.5 rounded-pill border border-white/10 px-3 py-1.5 font-sans text-[0.75rem] text-obsidian-400 transition-colors hover:border-white/25 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
                 >

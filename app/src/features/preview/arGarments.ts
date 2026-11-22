@@ -31,7 +31,7 @@ export function arGarmentsFrom(catalog: Catalog): Product[] {
 export const AR_GARMENTS: Product[] = arGarmentsFrom(defaultCatalog);
 
 /** Number of catalog garments with a try-on asset. */
-export const AR_GARMENT_TARGET_COUNT = 9;
+export const AR_GARMENT_TARGET_COUNT = 10;
 
 /** Minimum supported garments per department. Guards the filter from a dead end. */
 export const AR_GARMENTS_PER_DEPARTMENT_MIN = 1;

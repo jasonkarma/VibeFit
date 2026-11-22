@@ -8,6 +8,10 @@ The historical [browser report](product-link-audit.json) for catalog `1.1.0-spri
 
 ## Verified outfits
 
+Soft Business uses an Everlane cotton crewneck, Everlane slim chinos, and black
+G.H. Bass Larson loafers. The verified sample total is $284. The try-on overlay
+uses the official flat-lay image of the exact sweater.
+
 Garden Formal and Bomber Wedding now also have verified retailer pages and
 matching photos for every piece. The November 22 price snapshots total $222
 and $385 respectively. These outfits use current retail selections in the same
@@ -33,7 +37,7 @@ reference for the bundled images.
 
 ## Remaining catalog
 
-The catalog now has ten links marked **View item**, 13 candidates marked
+The catalog now has twelve links marked **View item**, 13 candidates marked
 **Check item**, 20 retailer links marked **Browse**, and 12 unavailable
 destinations. The earlier audit showed mismatches for `p-breton`, `p-silk-cami`,
 `p-moto`, `p-cargo`, `p-silk-skirt`, `m-tux-jacket`, and `m-bomber`. The

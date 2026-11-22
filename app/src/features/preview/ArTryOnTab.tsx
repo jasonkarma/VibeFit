@@ -11,6 +11,13 @@ import { AR_GARMENTS, defaultArGarment } from './arGarments';
 import { useShoulderTracking } from './useShoulderTracking';
 import { AUTO_FOLLOW_CONFIDENCE } from './shoulderTracking';
 
+const CAMERA_ALIGNMENT: OverlayTransform = {
+    ...DEFAULT_OVERLAY_TRANSFORM,
+    scale: 75,
+    offsetY: 24,
+    opacity: 100,
+};
+
 interface ArTryOnTabProps {
     /** Every piece of the outfit, so "in this outfit" markers are accurate. */
     items: Product[];
@@ -53,25 +60,19 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
 
     const videoRef = useRef<HTMLVideoElement | null>(null);
 
-    /*
-     * Automatic shoulder tracking (Sprint 3).
-     *
-     * On by default once the camera is live, and switchable off. `hasManualOverride`
-     * is what keeps the two systems from fighting: the moment the user touches a
-     * slider, tracking suspends and stops writing to `transform`, so their adjustment
-     * is final until they explicitly hand control back.
-     *
-     * The callback is wrapped so it also clears the manual flag on resume — a tiny
-     * detail that matters: without it, "Resume tracking" would appear to do nothing
-     * because the very next manual interaction would re-set the flag before the
-     * tracker could write a value.
-     */
-    const [autoTrackEnabled, setAutoTrackEnabled] = useState(true);
+    // Contrast tracking is opt-in because the camera can mistake a head or
+    // the background for shoulders.
+    const [autoTrackEnabled, setAutoTrackEnabled] = useState(false);
     const [hasManualOverride, setHasManualOverride] = useState(false);
 
     const handleTrackedTransform = useCallback(
         (next: Pick<OverlayTransform, 'scale' | 'offsetX' | 'offsetY'>) => {
-            setTransform((current) => ({ ...current, ...next }));
+            setTransform((current) => ({
+                ...current,
+                ...next,
+                scale: Math.min(next.scale, 110),
+                offsetY: Math.max(next.offsetY, 12),
+            }));
         },
         [],
     );
@@ -123,20 +124,16 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
     const showSilhouette = !showCamera;
     const failureReason = camera.reason;
 
-    function handleAllow() {
-        setPrefersSilhouette(false);
-        setHasConsented(true);
-        void camera.request();
-    }
-
     function handleSilhouette() {
         // Choosing the silhouette must not request the camera at all.
+        if (!hasManualOverride) setTransform(DEFAULT_OVERLAY_TRANSFORM);
         setPrefersSilhouette(true);
         setHasConsented(true);
         camera.stop();
     }
 
     function handleUseCamera() {
+        if (!hasManualOverride) setTransform(CAMERA_ALIGNMENT);
         setPrefersSilhouette(false);
         setHasConsented(true);
         void camera.request();
@@ -146,7 +143,7 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
         <div className="flex flex-col gap-5">
             {!hasConsented && (
                 <ConsentCard
-                    onAllow={handleAllow}
+                    onAllow={handleUseCamera}
                     onSilhouette={handleSilhouette}
                     busy={camera.status === 'requesting'}
                 />
@@ -233,7 +230,7 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                                 >
                                     <ScanFace className="h-2.5 w-2.5" aria-hidden="true" />
                                     {tracking.autoFollowing
-                                        ? 'Shoulders locked'
+                                        ? 'Shoulder estimate'
                                         : tracking.status === 'searching'
                                             ? 'Finding shoulders'
                                             : 'Manual alignment'}
@@ -358,7 +355,7 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                                                 )}%.`
                                                 : autoTrackEnabled
                                                     ? 'Looking for your shoulders. Stand centred and face the camera.'
-                                                    : 'Automatic tracking is off. Use the alignment controls below.'}
+                                                    : 'Use the alignment controls to position the collar below your chin. Automatic tracking is experimental.'}
                                     </p>
                                 </div>
 
@@ -401,7 +398,11 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                         </section>
                     )}
 
-                    <AlignmentControls value={transform} onChange={handleManualTransform} />
+                    <AlignmentControls
+                        value={transform}
+                        initialAlignment={showCamera ? CAMERA_ALIGNMENT : DEFAULT_OVERLAY_TRANSFORM}
+                        onChange={handleManualTransform}
+                    />
                 </>
             )}
         </div>

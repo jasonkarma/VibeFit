@@ -144,6 +144,22 @@ describe('Story 10 AC1 — preview route and navigation', () => {
 });
 
 describe('Story 10 AC2 — combined look', () => {
+    it('shows the Soft Business product photos and uses the photographed sweater for try-on', async () => {
+        const user = userEvent.setup();
+        renderAt('/results/om-08/preview');
+
+        expect(await screen.findByRole('img', { name: 'No-Sweat Cotton Sweater · Black' }))
+            .toHaveAttribute('src', '/catalog/m-soft-crew.jpg');
+        expect(screen.getByRole('img', { name: 'Transit Slim Chino · Deep Navy' })).toBeVisible();
+        expect(screen.getByRole('img', { name: 'Larson Weejuns Penny Loafer · Black' })).toBeVisible();
+
+        await user.click(screen.getByRole('tab', { name: /ar try-on/i }));
+        await user.click(screen.getByRole('button', { name: /use silhouette mode/i }));
+        const garment = await screen.findByTestId('ar-overlay');
+        expect(garment).toHaveAttribute('src', '/catalog/m-soft-crew-flat.jpg');
+        expect(garment.style.clipPath).toMatch(/^polygon\(/);
+    });
+
     it('assembles every piece with product photography where available', async () => {
         renderAt('/results/o-08/preview');
 

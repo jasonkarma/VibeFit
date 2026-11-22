@@ -366,14 +366,12 @@ describe('shoulder tracking control (Sprint 3)', () => {
             expect(screen.getByRole('heading', { name: /automatic shoulder tracking/i })).toBeVisible();
         });
 
-        // Tracking is on by default and can be switched off.
-        const toggle = screen.getByRole('button', { name: /tracking on/i });
-        expect(toggle).toHaveAttribute('aria-pressed', 'true');
+        expect(screen.getByTestId('overlay-value-offsetY')).toHaveTextContent('24%');
+        expect(screen.getByTestId('overlay-value-scale')).toHaveTextContent('75%');
+        const toggle = screen.getByRole('button', { name: /tracking off/i });
+        expect(toggle).toHaveAttribute('aria-pressed', 'false');
         await user.click(toggle);
-        expect(screen.getByRole('button', { name: /tracking off/i })).toHaveAttribute(
-            'aria-pressed',
-            'false',
-        );
+        expect(screen.getByRole('button', { name: /tracking on/i })).toHaveAttribute('aria-pressed', 'true');
 
         // The manual override still exists alongside it — this is the requirement
         // that automatic tracking must not replace manual control.

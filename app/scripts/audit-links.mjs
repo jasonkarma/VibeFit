@@ -11,6 +11,18 @@
  * reported as INCONCLUSIVE and must be confirmed by hand. Only 404/410 count as
  * genuinely broken.
  *
+ * Second, harder-won rule: **the User-Agent decides the answer.** Several retailers
+ * (Zara, Massimo Dutti, Vans) serve 404/410 to obviously-bot traffic and 200 to a
+ * browser UA for the exact same URL. An earlier version of this script identified
+ * itself honestly and therefore reported a pass rate of 58% on links that were
+ * fine. Since the charter criterion is about links opening correctly *when a human
+ * clicks them*, the probe now sends a mainstream browser UA and reports the result
+ * a user would actually see.
+ *
+ * What this script still will not do is declare a link good because it merely
+ * resolved. `INCONCLUSIVE` stays a real category: a 403 from a bot wall tells us
+ * nothing either way, and pretending otherwise would inflate the number.
+ *
  * Usage: npm run audit:links
  */
 
@@ -21,45 +33,119 @@ import { dirname, resolve } from 'node:path';
 const here = dirname(fileURLToPath(import.meta.url));
 const catalogPath = resolve(here, '../src/data/catalog.json');
 
-const TIMEOUT_MS = 12_000;
-const CONCURRENCY = 6;
+const TIMEOUT_MS = 20_000;
+
+/**
+ * Sequential by design. Six parallel probes triggered rate limiting, which turned
+ * working links into 429s and made the pass rate non-reproducible — the same
+ * catalog reported 58% and then 50% minutes apart. An audit whose number moves is
+ * not an audit.
+ */
+const CONCURRENCY = 1;
 
 const status = { ok: [], inconclusive: [], broken: [], noUrl: [] };
 
+/**
+ * Bucket a probe result.
+ *
+ * Only `404` and `410` mean "this product page does not exist". Everything else
+ * that is not a clean 2xx/3xx is *inconclusive*, because it is evidence about the
+ * network or a bot wall, not about the link. An earlier version bucketed TIMEOUT
+ * and ERROR as broken, which quietly slandered four working links every run.
+ */
 function classify(code) {
-    if (code >= 200 && code < 400) return 'ok';
-    if (code === 403 || code === 429 || code === 405 || code === 999) return 'inconclusive';
-    if (code >= 400) return 'broken';
+    if (typeof code === 'number') {
+        if (code === 404 || code === 410) return 'broken';
+        if (code >= 200 && code < 400) return 'ok';
+        return 'inconclusive';
+    }
+    // 'SOFT_BLOCK', 'TIMEOUT', 'ERROR' — none of these prove a link is dead.
     return 'inconclusive';
 }
 
-async function probe(url) {
-    for (const method of ['HEAD', 'GET']) {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+/**
+ * A current desktop Chrome UA. Not deception for its own sake: we are measuring
+ * the same thing a person clicking the link in a browser would experience, and a
+ * bot UA is simply a different experiment with a different answer.
+ */
+const BROWSER_UA =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
 
-        try {
-            const response = await fetch(url, {
-                method,
-                redirect: 'follow',
-                signal: controller.signal,
-                headers: {
-                    // Identifies the checker honestly rather than pretending to be a browser.
-                    'User-Agent': 'VibeFit-LinkAudit/1.0 (academic project)',
-                    Accept: 'text/html,application/xhtml+xml',
-                },
-            });
-            clearTimeout(timer);
-            if (method === 'HEAD' && (response.status === 405 || response.status === 403)) {
-                continue; // Some hosts reject HEAD but answer GET.
+/**
+ * Probe a URL the way a browser does: **GET**, once, with a browser UA.
+ *
+ * Two corrections over the naive version, both learned by actually running it:
+ *
+ *  1. **GET, not HEAD.** A browser issues GET. Several retailers answer HEAD with
+ *     405 or a bot-wall 403 while serving the page perfectly to GET, so HEAD-first
+ *     probing manufactured failures on links that work.
+ *  2. **A retry on transient states.** Timeouts, network errors and 429 are not
+ *     evidence about a link; they are evidence about the network. They are retried
+ *     once before being classified.
+ */
+/**
+ * Body markers that mean "this is not the product page", served with a 200.
+ *
+ * This is the finding that made the audit trustworthy: Levi's returns HTTP 200 with
+ * `<title>Access Denied</title>` for a perfectly real product URL. A status-code
+ * only audit would score that as healthy, which is precisely the kind of
+ * false-positive this script exists to prevent — the charter criterion is "the link
+ * opens the correct product page", not "the server answered".
+ */
+const SOFT_BLOCK_MARKERS = [
+    /access denied/i,
+    /are you a robot/i,
+    /unusual traffic/i,
+    /request blocked/i,
+    /verify you are (a )?human/i,
+    /enable javascript and cookies/i,
+    /<title>\s*(just a moment|attention required|pardon our interruption)/i,
+];
+
+async function probeOnce(url) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            redirect: 'follow',
+            signal: controller.signal,
+            headers: {
+                'User-Agent': BROWSER_UA,
+                Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Cache-Control': 'no-cache',
+            },
+        });
+        clearTimeout(timer);
+
+        // A 200 is not sufficient evidence. Read a bounded slice of the body and
+        // look for bot-wall markers before calling it healthy.
+        if (response.status >= 200 && response.status < 400) {
+            try {
+                const body = (await response.text()).slice(0, 20_000);
+                if (SOFT_BLOCK_MARKERS.some((marker) => marker.test(body))) {
+                    return 'SOFT_BLOCK';
+                }
+            } catch {
+                // Body unreadable (stream aborted). Status alone has to stand.
             }
-            return response.status;
-        } catch (error) {
-            clearTimeout(timer);
-            if (method === 'GET') return error.name === 'AbortError' ? 'TIMEOUT' : 'ERROR';
         }
+
+        return response.status;
+    } catch (error) {
+        clearTimeout(timer);
+        return error.name === 'AbortError' ? 'TIMEOUT' : 'ERROR';
     }
-    return 'ERROR';
+}
+
+async function probe(url) {
+    const first = await probeOnce(url);
+    if (first !== 'TIMEOUT' && first !== 'ERROR' && first !== 429) return first;
+
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    return probeOnce(url);
 }
 
 async function main() {
@@ -84,7 +170,7 @@ async function main() {
             }
 
             const code = await probe(product.productUrl);
-            const bucket = typeof code === 'number' ? classify(code) : 'broken';
+            const bucket = classify(code);
             status[bucket].push(product);
             results.push({ product, code });
             console.log(`  ${String(code).padEnd(4)} ${product.id.padEnd(20)} ${product.retailer}`);

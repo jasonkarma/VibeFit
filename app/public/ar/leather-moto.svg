@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500" role="img" aria-label="Leather moto jacket overlay">
+  <title>Leather Moto Jacket — illustrative overlay</title>
+  <defs>
+    <linearGradient id="motoFill" x1="0.1" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#26262B" />
+      <stop offset="45%" stop-color="#18181C" />
+      <stop offset="100%" stop-color="#0C0C0E" />
+    </linearGradient>
+    <linearGradient id="motoGloss" x1="0" y1="0" x2="0.8" y2="0.9">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.16" />
+      <stop offset="40%" stop-color="#FFFFFF" stop-opacity="0.02" />
+      <stop offset="100%" stop-color="#E5C158" stop-opacity="0.14" />
+    </linearGradient>
+  </defs>
+
+  <!-- Cropped, boxy moto body -->
+  <path d="M200 40 c-30 0-54 10-72 20
+           L82 86 c-16 8-23 22-25 38
+           l-13 120 c-2 14 9 25 22 24 13-1 21-10 23-23
+           l12-98 10 172 c1 15 9 23 24 23
+           h84 c15 0 23-8 24-23 l10-172 12 98
+           c2 13 10 22 23 23 13 1 24-10 22-24
+           l-13-120 c-2-16-9-30-25-38
+           L272 60 c-18-10-42-20-72-20 Z"
+        fill="url(#motoFill)" stroke="#E5C158" stroke-opacity="0.5" stroke-width="2.5" stroke-linejoin="round" />
+
+  <!-- Asymmetric zip: the defining moto line -->
+  <path d="M214 62 L186 340" stroke="#E5C158" stroke-opacity="0.45" stroke-width="2.4" stroke-linecap="round" />
+  <g stroke="#E5C158" stroke-opacity="0.28" stroke-width="1.2">
+    <path d="M211 84 L189 96" />
+    <path d="M210 108 L188 120" />
+    <path d="M208 132 L186 144" />
+    <path d="M207 156 L185 168" />
+    <path d="M206 180 L184 192" />
+    <path d="M204 204 L182 216" />
+    <path d="M203 228 L181 240" />
+  </g>
+
+  <!-- Notched lapels / collar -->
+  <path d="M200 44 L164 60 l-10 54 44 34 Z"
+        fill="#1F1F24" stroke="#E5C158" stroke-opacity="0.4" stroke-width="1.8" stroke-linejoin="round" />
+  <path d="M200 44 L236 60 l10 54 -44 34 Z"
+        fill="#1F1F24" stroke="#E5C158" stroke-opacity="0.4" stroke-width="1.8" stroke-linejoin="round" />
+
+  <!-- Shoulder epaulettes -->
+  <path d="M104 92 l46 -18" stroke="#E5C158" stroke-opacity="0.35" stroke-width="2.2" stroke-linecap="round" />
+  <path d="M296 92 l-46 -18" stroke="#E5C158" stroke-opacity="0.35" stroke-width="2.2" stroke-linecap="round" />
+
+  <!-- Zip pockets -->
+  <path d="M126 250 l34 26" stroke="#E5C158" stroke-opacity="0.32" stroke-width="2" stroke-linecap="round" />
+  <path d="M274 250 l-34 26" stroke="#E5C158" stroke-opacity="0.32" stroke-width="2" stroke-linecap="round" />
+
+  <!-- Leather gloss -->
+  <path d="M200 40 L82 86 l-8 70 c44-34 84-48 126-48 s82 14 126 48 l-8-70 Z" fill="url(#motoGloss)" />
+</svg>

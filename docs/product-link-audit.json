@@ -1,0 +1,346 @@
+{
+  "auditedAt": "2026-11-19T00:03:48.330Z",
+  "catalogVersion": "1.1.0-sprint3",
+  "method": "headless Chrome --dump-dom (real browser engine)",
+  "summary": {
+    "withUrl": 46,
+    "ok": 26,
+    "percent": 57,
+    "byBucket": {
+      "OK": 26,
+      "SOFT_BLOCK": 12,
+      "NOT_FOUND": 2,
+      "ERROR": 6,
+      "NO_URL": 1
+    }
+  },
+  "results": [
+    {
+      "id": "p-tee-cotton",
+      "retailer": "Uniqlo",
+      "url": "https://www.uniqlo.com/us/en/products/E422992-000/00",
+      "title": "Unisex Crew Neck T-Shirt | UNIQLO US",
+      "bucket": "OK"
+    },
+    {
+      "id": "p-breton",
+      "retailer": "Uniqlo",
+      "url": "https://www.uniqlo.com/us/en/products/E460522-000/00",
+      "title": "Women's HEATTECH Pile Lined Tights | Extra Warm | UNIQLO US",
+      "bucket": "OK"
+    },
+    {
+      "id": "p-poplin",
+      "retailer": "ARKET",
+      "url": "https://www.arket.com/en_us/womens/shirts/product.oversized-poplin-shirt.white.1132458001.html",
+      "title": "Access Denied",
+      "bucket": "SOFT_BLOCK"
+    },
+    {
+      "id": "p-rib-crew",
+      "retailer": "COS",
+      "url": "https://www.cos.com/en_usd/women/womenswear/tops/product.ribbed-long-sleeve-top.beige.1176482001.html",
+      "title": "Access Denied",
+      "bucket": "SOFT_BLOCK"
+    },
+    {
+      "id": "p-silk-cami",
+      "retailer": "Reformation",
+      "url": "https://www.thereformation.com/products/ines-silk-camisole/1312345.html",
+      "title": "Vintage Alia Dress - Sustainable Vintage | Reformation",
+      "bucket": "OK"
+    },
+    {
+      "id": "p-draped-top",
+      "retailer": "Mango",
+      "url": "https://shop.mango.com/us/en/p/women/t-shirts-and-tops/draped-jersey-top_17010523",
+      "title": "403: Forbidden",
+      "bucket": "OK"
+    },
+    {
+      "id": "p-rib-tank",
+      "retailer": "Weekday",
+      "url": "https://www.weekday.com/en_usd/women/tops/product.cropped-rib-tank.white.1163254001.html",
+      "title": "Access Denied",
+      "bucket": "SOFT_BLOCK"
+    },
+    {
+      "id": "p-cashmere",
+      "retailer": "Everlane",
+      "url": "https://www.everlane.com/collections/womens-knitwear",
+      "title": "404 Not Found\n – Everlane",
+      "bucket": "NOT_FOUND"
+    },
+    {
+      "id": "p-satin-cami",
+      "retailer": "& Other Stories",
+      "url": "https://www.stories.com/en_usd/clothing/tops/product.satin-camisole.black.1158288001.html",
+      "title": "Access Denied",
+      "bucket": "SOFT_BLOCK"
+    },
+    {
+      "id": "p-wool-blazer",
+      "retailer": "Massimo Dutti",
+      "url": "https://www.massimodutti.com/us/wool-blend-blazer-l00432085",
+      "title": "Massimo Dutti",
+      "bucket": "OK"
+    },
+    {
+      "id": "p-tux-blazer",
+      "retailer": "Theory",
+      "url": "https://www.theory.com/womens-blazers/structured-tuxedo-blazer.html",
+      "title": "Access Denied",
+      "bucket": "SOFT_BLOCK"
+    },
+    {
+      "id": "p-moto",
+      "retailer": "Zara",
+      "url": "https://www.zara.com/us/en/leather-moto-jacket-p05634024.html",
+      "title": "Search engine | ZARA United States",
+      "bucket": "OK"
+    },
+    {
+      "id": "p-denim-jacket",
+      "retailer": "Levi's",
+      "url": "https://www.levi.com/US/en_US/clothing/women/outerwear/oversized-trucker-jacket/p/299450008",
+      "title": "Access Denied",
+      "bucket": "SOFT_BLOCK"
+    },
+    {
+      "id": "p-straight-trouser",
+      "retailer": "COS",
+      "url": "https://www.cos.com/en_usd/women/womenswear/trousers/product.straight-leg-trousers.beige.1190452001.html",
+      "title": "Access Denied",
+      "bucket": "SOFT_BLOCK"
+    },
+    {
+      "id": "p-chino",
+      "retailer": "Uniqlo",
+      "url": "https://www.uniqlo.com/us/en/products/E461663-000/00",
+      "title": "Women's Chino Pants | UNIQLO US",
+      "bucket": "OK"
+    },
+    {
+      "id": "p-midi-skirt",
+      "retailer": "ARKET",
+      "url": "https://www.arket.com/en_us/women/skirts/product.pleated-midi-skirt.black.1120458001.html",
+      "title": "Access Denied",
+      "bucket": "SOFT_BLOCK"
+    },
+    {
+      "id": "p-crepe-trouser",
+      "retailer": "Banana Republic",
+      "url": "https://bananarepublic.gap.com/browse/product.do?pid=506738002",
+      "title": "",
+      "bucket": "ERROR"
+    },
+    {
+      "id": "p-cargo",
+      "retailer": "Zara",
+      "url": "https://www.zara.com/us/en/man-trousers-l838.html",
+      "title": "Men's Pants | ZARA United States",
+      "bucket": "OK"
+    },
+    {
+      "id": "p-linen-trouser",
+      "retailer": "Everlane",
+      "url": "https://www.everlane.com/collections/womens-pants",
+      "title": "Women's Trousers & Dress Pants | Chinos, Wide-Leg & More | Everlane (231 Products)",
+      "bucket": "OK"
+    },
+    {
+      "id": "p-silk-skirt",
+      "retailer": "Reformation",
+      "url": "https://www.thereformation.com/products/luna-silk-skirt/1312101.html",
+      "title": "Kinny Top",
+      "bucket": "OK"
+    },
+    {
+      "id": "p-loafers",
+      "retailer": "G.H. Bass",
+      "url": "https://www.ghbass.com/collections/womens",
+      "title": "404 Not Found\n – G.H.BASS",
+      "bucket": "NOT_FOUND"
+    },
+    {
+      "id": "p-sneakers",
+      "retailer": "Zara",
+      "url": "https://www.zara.com/us/en/woman-shoes-l1251.html",
+      "title": "Women's Shoes | ZARA United States",
+      "bucket": "OK"
+    },
+    {
+      "id": "p-slip-on",
+      "retailer": "Old Navy",
+      "url": "https://oldnavy.gap.com/browse/product.do?pid=510055002",
+      "title": "Back Button",
+      "bucket": "OK"
+    },
+    {
+      "id": "p-sandals",
+      "retailer": "Mango",
+      "url": "https://shop.mango.com/us/en/p/women/shoes/heels/strappy-heeled-sandal_17057708",
+      "title": "403: Forbidden",
+      "bucket": "OK"
+    },
+    {
+      "id": "p-pumps",
+      "retailer": "Sam Edelman",
+      "url": "https://www.samedelman.com/product/womens-hazel-pump-30195/black-leather-ec0109960",
+      "title": "",
+      "bucket": "ERROR"
+    },
+    {
+      "id": "p-scarf",
+      "retailer": "& Other Stories",
+      "url": "https://www.stories.com/en_usd/accessories/scarves/product.printed-silk-scarf.multi.1142644001.html",
+      "title": "Access Denied",
+      "bucket": "SOFT_BLOCK"
+    },
+    {
+      "id": "p-hoops",
+      "retailer": "Mejuri",
+      "bucket": "NO_URL"
+    },
+    {
+      "id": "m-tee-heavy",
+      "retailer": "Uniqlo",
+      "url": "https://www.uniqlo.com/us/en/men/t-shirts",
+      "title": "Access Denied",
+      "bucket": "SOFT_BLOCK"
+    },
+    {
+      "id": "m-oxford",
+      "retailer": "Banana Republic",
+      "url": "https://bananarepublic.gap.com/browse/division.do?cid=5155",
+      "title": "",
+      "bucket": "ERROR"
+    },
+    {
+      "id": "m-linen-shirt",
+      "retailer": "Zara",
+      "url": "https://www.zara.com/us/en/man-shirts-l737.html",
+      "title": "Men's Shirts | ZARA United States",
+      "bucket": "OK"
+    },
+    {
+      "id": "m-merino-crew",
+      "retailer": "Uniqlo",
+      "url": "https://www.uniqlo.com/us/en/men/",
+      "title": "Access Denied",
+      "bucket": "SOFT_BLOCK"
+    },
+    {
+      "id": "m-black-tee",
+      "retailer": "Zara",
+      "url": "https://www.zara.com/us/en/man-tshirts-l855.html",
+      "title": "Men's T-shirts | ZARA United States",
+      "bucket": "OK"
+    },
+    {
+      "id": "m-unstructured-blazer",
+      "retailer": "Massimo Dutti",
+      "url": "https://www.massimodutti.com/us/",
+      "title": "Massimo Dutti United States | New Collection | Online Store",
+      "bucket": "OK"
+    },
+    {
+      "id": "m-tux-jacket",
+      "retailer": "Zara",
+      "url": "https://www.zara.com/us/en/man-blazers-l1055.html",
+      "title": "Women's Blazers | ZARA United States",
+      "bucket": "OK"
+    },
+    {
+      "id": "m-bomber",
+      "retailer": "Zara",
+      "url": "https://www.zara.com/us/en/man-blazers-l1055.html",
+      "title": "Women's Blazers | ZARA United States",
+      "bucket": "OK"
+    },
+    {
+      "id": "m-chino",
+      "retailer": "Banana Republic",
+      "url": "https://bananarepublic.gap.com/browse/division.do?cid=5155",
+      "title": "",
+      "bucket": "ERROR"
+    },
+    {
+      "id": "m-wool-trouser",
+      "retailer": "Massimo Dutti",
+      "url": "https://www.massimodutti.com/us/",
+      "title": "Massimo Dutti United States | New Collection | Online Store",
+      "bucket": "OK"
+    },
+    {
+      "id": "m-cargo",
+      "retailer": "Dickies",
+      "url": "https://www.dickies.com/",
+      "title": "",
+      "bucket": "ERROR"
+    },
+    {
+      "id": "m-denim",
+      "retailer": "Zara",
+      "url": "https://www.zara.com/us/en/man-trousers-l838.html",
+      "title": "Men's Pants | ZARA United States",
+      "bucket": "OK"
+    },
+    {
+      "id": "m-derby",
+      "retailer": "G.H. Bass",
+      "url": "https://www.ghbass.com/",
+      "title": "G.H.BASS: Crafted with intention for the past 150 years.",
+      "bucket": "OK"
+    },
+    {
+      "id": "m-loafer-suede",
+      "retailer": "G.H. Bass",
+      "url": "https://www.ghbass.com/",
+      "title": "G.H.BASS: Crafted with intention for the past 150 years.",
+      "bucket": "OK"
+    },
+    {
+      "id": "m-low-sneaker",
+      "retailer": "Vans",
+      "url": "https://www.vans.com/en-us/shoes-c00081",
+      "title": "",
+      "bucket": "ERROR"
+    },
+    {
+      "id": "m-chelsea",
+      "retailer": "Zara",
+      "url": "https://www.zara.com/us/en/man-shoes-l769.html",
+      "title": "Men´s Shoes | ZARA United States",
+      "bucket": "OK"
+    },
+    {
+      "id": "m-belt",
+      "retailer": "Massimo Dutti",
+      "url": "https://www.massimodutti.com/us/",
+      "title": "Massimo Dutti United States | New Collection | Online Store",
+      "bucket": "OK"
+    },
+    {
+      "id": "m-watch",
+      "retailer": "Nordstrom",
+      "url": "https://www.nordstrom.com/browse/men/accessories/watches",
+      "title": "Nordstrom",
+      "bucket": "OK"
+    },
+    {
+      "id": "m-scarf",
+      "retailer": "Uniqlo",
+      "url": "https://www.uniqlo.com/us/en/men/",
+      "title": "Access Denied",
+      "bucket": "SOFT_BLOCK"
+    },
+    {
+      "id": "m-pocket-square",
+      "retailer": "Nordstrom",
+      "url": "https://www.nordstrom.com/browse/men/accessories",
+      "title": "Nordstrom",
+      "bucket": "OK"
+    }
+  ]
+}

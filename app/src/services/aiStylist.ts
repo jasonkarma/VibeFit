@@ -1,11 +1,14 @@
 import { z } from 'zod';
 import {
     COLOR_OPTIONS,
+    DEPARTMENTS,
     DRESS_CODES,
     NO_COLOR_PREFERENCE,
     OCCASIONS,
+    RETAILERS,
     STYLE_PREFERENCES,
     type ColorPreference,
+    type Department,
     type DressCode,
     type Occasion,
     type RankedOutfit,
@@ -124,6 +127,8 @@ const envelopeSchema = z.object({
             budget: z.unknown().optional(),
             styles: z.unknown().optional(),
             colors: z.unknown().optional(),
+            department: z.unknown().optional(),
+            preferredRetailers: z.unknown().optional(),
         })
         .optional(),
     needsClarification: z.boolean().optional(),
@@ -161,6 +166,47 @@ function asOccasion(value: unknown): Occasion | null {
 function asDressCode(value: unknown): DressCode | null {
     if (value === null) return null;
     return DRESS_CODES.includes(value as DressCode) ? (value as DressCode) : null;
+}
+
+/**
+ * Department must be one of the three known strings.
+ *
+ * Returning `undefined` (not `null`) on an unrecognised value is deliberate: it
+ * means "this field is unusable, do not patch it". `null` would mean "the user has
+ * no department preference", which is a real, different state — and the model
+ * should never be able to clear a preference by emitting garbage.
+ */
+function asDepartment(value: unknown): Department | undefined {
+    if (typeof value !== 'string') return undefined;
+    return DEPARTMENTS.includes(value as Department) ? (value as Department) : undefined;
+}
+
+/**
+ * Retailer list validation.
+ *
+ * Three filters, all necessary:
+ *   1. keep only exact members of the `RETAILERS` vocabulary — a model-invented shop
+ *      would create a filter matching nothing, which reads as a broken app;
+ *   2. de-duplicate, because a repeated name would produce a duplicated chip;
+ *   3. cap at the vocabulary size, so a pathological response cannot render a
+ *      thousand pills.
+ *
+ * An empty result after filtering returns `undefined` (don't patch), not `[]`
+ * (which would mean "clear the filter") — clearing a user's shop choice because the
+ * model hallucinated is exactly the kind of silent state loss the store is built to
+ * prevent.
+ */
+function asRetailers(value: unknown): string[] | undefined {
+    if (!Array.isArray(value)) return undefined;
+
+    const known = new Set<string>(RETAILERS);
+    const seen = new Set<string>();
+    for (const entry of value) {
+        if (typeof entry === 'string' && known.has(entry)) seen.add(entry);
+    }
+
+    if (seen.size === 0) return undefined;
+    return Array.from(seen).sort();
 }
 
 /** Keeps only known styles, de-duplicated, capped at the vocabulary size. */
@@ -271,6 +317,27 @@ export function interpretParseResponse(
             if (!unchanged) {
                 patch.colors = colors;
                 appliedFields.push(`Color → ${colors.join(', ')}`);
+            }
+        }
+
+        // Sprint 3 — department. Optional field: `undefined` means the model said
+        // nothing usable, so it must not touch what the user already chose.
+        const department = asDepartment(prefs.department);
+        if (department !== undefined && department !== current.department) {
+            patch.department = department;
+            appliedFields.push(`Department → ${department}`);
+        }
+
+        // Sprint 3 — preferred retailers.
+        const retailers = asRetailers(prefs.preferredRetailers);
+        if (retailers) {
+            const existing = current.preferredRetailers ?? [];
+            const unchanged =
+                retailers.length === existing.length &&
+                retailers.every((entry) => existing.includes(entry));
+            if (!unchanged) {
+                patch.preferredRetailers = retailers;
+                appliedFields.push(`Shops → ${retailers.join(', ')}`);
             }
         }
 

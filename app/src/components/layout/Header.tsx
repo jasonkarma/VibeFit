@@ -26,7 +26,7 @@ export function Header({ homeHref = '/preferences' }: HeaderProps) {
             <div className="flex items-center gap-2 rounded-pill border border-white/10 bg-white/[0.03] px-3 py-1.5 backdrop-blur-xl">
                 <Sparkles className="h-3 w-3 text-violet" aria-hidden="true" />
                 <span className="font-data text-[0.625rem] uppercase tracking-[0.12em] text-obsidian-400">
-                    Sprint 1 Prototype
+                    Sprint 2 Prototype
                 </span>
             </div>
         </header>

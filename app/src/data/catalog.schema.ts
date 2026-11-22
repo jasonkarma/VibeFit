@@ -2,7 +2,9 @@ import { z } from 'zod';
 import {
     COLOR_OPTIONS,
     DRESS_CODES,
+    GARMENT_DEPARTMENTS,
     OCCASIONS,
+    RETAILERS,
     SLOTS,
     STYLE_PREFERENCES,
 } from '@/types/domain';
@@ -17,12 +19,15 @@ const dressCodeSchema = z.enum(DRESS_CODES);
 const styleSchema = z.enum(STYLE_PREFERENCES);
 const colorSchema = z.enum(COLOR_OPTIONS);
 const slotSchema = z.enum(SLOTS);
+const departmentSchema = z.enum(GARMENT_DEPARTMENTS);
 
 export const productSchema = z.object({
     id: z.string().min(1),
     name: z.string().min(1),
     retailer: z.string().min(1),
     slot: slotSchema,
+    /** A garment belongs to exactly one department; `All` is never valid here. */
+    department: departmentSchema,
     /** Deliberately nullable: unknown price must never be invented. */
     price: z.number().nonnegative().nullable(),
     /** Deliberately nullable: no valid page means no shop link. */
@@ -40,6 +45,7 @@ export const outfitSchema = z.object({
     id: z.string().min(1),
     name: z.string().min(1),
     tagline: z.string().min(1),
+    department: departmentSchema,
     occasions: z.array(occasionSchema).min(1),
     dressCodes: z.array(dressCodeSchema).min(1),
     styles: z.array(styleSchema).min(1),
@@ -75,19 +81,79 @@ export function validateCatalogIntegrity(input: CatalogInput): string[] {
         problems.push('Duplicate outfit ids found in catalog.');
     }
 
+    /*
+     * Retailer vocabulary check (Sprint 3).
+     *
+     * The retailer filter is a closed list: it drives the preference UI, the prompt
+     * vocabulary handed to the model, and the validation of what the model returns.
+     * A catalog row using a retailer outside that list would be permanently
+     * invisible whenever the filter is active, and the model could never express
+     * it — so this is a hard failure rather than a warning.
+     */
+    const knownRetailers = new Set<string>(RETAILERS);
+
+    for (const product of input.products) {
+        if (!knownRetailers.has(product.retailer)) {
+            problems.push(
+                `Product "${product.id}" uses retailer "${product.retailer}" which is not in RETAILERS.`,
+            );
+        }
+    }
+
     for (const outfit of input.outfits) {
+        const items = outfit.itemIds
+            .map((id) => input.products.find((p) => p.id === id))
+            .filter((product): product is NonNullable<typeof product> => Boolean(product));
+
         for (const itemId of outfit.itemIds) {
             if (!productIds.has(itemId)) {
                 problems.push(`Outfit "${outfit.id}" references unknown product "${itemId}".`);
             }
         }
+
         // An outfit needs at least a top, a bottom, and shoes to be wearable.
-        const slots = outfit.itemIds
-            .map((id) => input.products.find((p) => p.id === id)?.slot)
-            .filter(Boolean);
+        const slots = items.map((item) => item.slot);
         for (const required of ['top', 'bottom', 'shoes'] as const) {
             if (!slots.includes(required)) {
                 problems.push(`Outfit "${outfit.id}" is missing a ${required}.`);
+            }
+        }
+
+        /*
+         * Department coherence.
+         *
+         * An outfit tagged Menswear that contains womenswear pieces would render a
+         * detail page claiming one department while listing garments from another —
+         * and, worse, would leak through the department filter. This is the check
+         * that keeps that from ever shipping.
+         */
+        const mismatched = items.filter((item) => item.department !== outfit.department);
+        if (mismatched.length > 0) {
+            problems.push(
+                `Outfit "${outfit.id}" is ${outfit.department} but contains ${mismatched
+                    .map((item) => `${item.id} (${item.department})`)
+                    .join(', ')}.`,
+            );
+        }
+    }
+
+    /*
+     * Coverage check: the department filter must never be a dead end. Every
+     * occasion needs at least one outfit in each department, or choosing a
+     * department would strand the user with an empty result set that the relax
+     * options cannot rescue honestly.
+     */
+    for (const department of GARMENT_DEPARTMENTS) {
+        const inDepartment = input.outfits.filter((outfit) => outfit.department === department);
+        if (inDepartment.length === 0) {
+            problems.push(`No outfits exist for department "${department}".`);
+            continue;
+        }
+        for (const occasion of OCCASIONS) {
+            if (!inDepartment.some((outfit) => outfit.occasions.includes(occasion))) {
+                problems.push(
+                    `Department "${department}" has no outfit for occasion "${occasion}".`,
+                );
             }
         }
     }

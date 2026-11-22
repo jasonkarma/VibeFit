@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500" role="img" aria-label="Structured tuxedo blazer overlay">
+  <title>Structured Tuxedo Blazer — illustrative overlay</title>
+  <defs>
+    <linearGradient id="tuxFill" x1="0.15" y1="0" x2="0.45" y2="1">
+      <stop offset="0%" stop-color="#17171A" />
+      <stop offset="55%" stop-color="#101013" />
+      <stop offset="100%" stop-color="#0A0A0C" />
+    </linearGradient>
+    <linearGradient id="tuxSatin" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#E5C158" stop-opacity="0.55" />
+      <stop offset="60%" stop-color="#C9A63F" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#E5C158" stop-opacity="0.4" />
+    </linearGradient>
+  </defs>
+
+  <!-- Crisp, narrow body: structured shoulder line -->
+  <path d="M200 34 c-28 0-50 10-68 20
+           L88 80 c-15 8-21 21-23 36
+           l-13 118 c-2 13 8 24 21 23 12-1 19-9 21-22
+           l11-92 9 240 c1 14 9 22 23 22
+           h54 l-12-252 -12-64 Z"
+        fill="url(#tuxFill)" stroke="#E5C158" stroke-opacity="0.5" stroke-width="2.5" stroke-linejoin="round" />
+  <path d="M200 34 c28 0 50 10 68 20
+           L312 80 c15 8 21 21 23 36
+           l13 118 c2 13-8 24-21 23-12-1-19-9-21-22
+           l-11-92-9 240 c-1 14-9 22-23 22
+           h-54 l12-252 12-64 Z"
+        fill="url(#tuxFill)" stroke="#E5C158" stroke-opacity="0.5" stroke-width="2.5" stroke-linejoin="round" />
+
+  <!-- Satin shawl-ish peak lapels -->
+  <path d="M200 38 L158 54 l-6 100 48 62 22-146 Z" fill="url(#tuxSatin)" />
+  <path d="M200 38 L242 54 l6 100 -48 62 -22-146 Z" fill="url(#tuxSatin)" />
+
+  <!-- Sharp structured shoulder seam -->
+  <path d="M96 82 L158 54" stroke="#E5C158" stroke-opacity="0.3" stroke-width="1.6" />
+  <path d="M304 82 L242 54" stroke="#E5C158" stroke-opacity="0.3" stroke-width="1.6" />
+
+  <!-- Covered placket + single button -->
+  <path d="M200 216 v96" stroke="#E5C158" stroke-opacity="0.22" stroke-width="1.4" />
+  <circle cx="200" cy="248" r="5.5" fill="#E5C158" fill-opacity="0.9" />
+
+  <!-- Jetted pockets, no flaps -->
+  <path d="M126 306 h50" stroke="#E5C158" stroke-opacity="0.3" stroke-width="2" stroke-linecap="round" />
+  <path d="M224 306 h50" stroke="#E5C158" stroke-opacity="0.3" stroke-width="2" stroke-linecap="round" />
+
+  <!-- Neck line -->
+  <path d="M158 50 c15 22 27 30 42 30 s27-8 42-30"
+        fill="none" stroke="#09090B" stroke-opacity="0.9" stroke-width="9" stroke-linecap="round" />
+</svg>

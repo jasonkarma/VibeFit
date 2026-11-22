@@ -66,6 +66,58 @@ export const COLOR_SWATCHES: Record<ColorOption, string> = {
 export const SLOTS = ['top', 'layer', 'bottom', 'shoes', 'accessory'] as const;
 export type Slot = (typeof SLOTS)[number];
 
+/**
+ * Sprint 3 — department / gender preference.
+ *
+ * `All` is the preference value meaning "no filter", and it is the default. That
+ * choice is deliberate: a new field must not change the behaviour of an existing
+ * saved session or break the Sprint 1/2 suites, and "don't narrow my results" is
+ * the correct behaviour for a user who has not expressed a preference.
+ *
+ * Products and outfits are never tagged `All` — a garment belongs to a department.
+ * Only the *preference* can be unconstrained.
+ */
+export const DEPARTMENTS = ['All', 'Womenswear', 'Menswear'] as const;
+export type Department = (typeof DEPARTMENTS)[number];
+
+/** The concrete departments a garment can belong to (never `All`). */
+export const GARMENT_DEPARTMENTS = ['Womenswear', 'Menswear'] as const;
+export type GarmentDepartment = (typeof GARMENT_DEPARTMENTS)[number];
+
+export const DEFAULT_DEPARTMENT: Department = 'All';
+
+/**
+ * Retailers available as an optional filter. Kept as a closed list so the filter
+ * UI, the prompt vocabulary, and the model's output validation all agree.
+ *
+ * Sorted alphabetically for display; the catalog's actual retailer strings are the
+ * source of truth and are asserted against this list in `catalog.schema.ts`.
+ */
+export const RETAILERS = [
+    '& Other Stories',
+    'ARKET',
+    'Banana Republic',
+    'COS',
+    'Dickies',
+    'Everlane',
+    'G.H. Bass',
+    'J.Crew',
+    "Levi's",
+    'Mango',
+    'Massimo Dutti',
+    'Mejuri',
+    'Nordstrom',
+    'Old Navy',
+    'Reformation',
+    'Sam Edelman',
+    'Theory',
+    'Uniqlo',
+    'Vans',
+    'Weekday',
+    'Zara',
+] as const;
+export type Retailer = (typeof RETAILERS)[number];
+
 /** Human labels for garment slots, used in detail views and reason strings. */
 export const SLOT_LABELS: Record<Slot, string> = {
     top: 'Top',
@@ -80,6 +132,8 @@ export interface Product {
     name: string;
     retailer: string;
     slot: Slot;
+    /** Which department this garment belongs to. Never `All`. */
+    department: GarmentDepartment;
     /** `null` means the price is genuinely unknown — never substitute a number. */
     price: number | null;
     /** `null` means there is no valid product page — hide the shop link. */
@@ -102,6 +156,8 @@ export interface Outfit {
     id: string;
     name: string;
     tagline: string;
+    /** Which department this outfit is styled for. Never `All`. */
+    department: GarmentDepartment;
     occasions: Occasion[];
     dressCodes: DressCode[];
     styles: StylePreference[];
@@ -130,6 +186,14 @@ export interface UserPreferences {
     budget: number | null;
     styles: StylePreference[];
     colors: ColorPreference[];
+    /** Sprint 3. `All` means no filter; optional and defaulted. */
+    department: Department;
+    /**
+     * Sprint 3. Empty array means "all retailers" — the same as never filtering.
+     * Modelling "no preference" as empty rather than as a list of every retailer
+     * keeps the filter honest when the catalog grows.
+     */
+    preferredRetailers: string[];
 }
 
 export const EMPTY_PREFERENCES: UserPreferences = {
@@ -139,10 +203,12 @@ export const EMPTY_PREFERENCES: UserPreferences = {
     budget: null,
     styles: [],
     colors: [],
+    department: DEFAULT_DEPARTMENT,
+    preferredRetailers: [],
 };
 
 export type PreferenceErrors = Partial<
-    Record<'occasion' | 'dressCode' | 'budget' | 'styles' | 'colors', string>
+    Record<'occasion' | 'dressCode' | 'budget' | 'styles' | 'colors' | 'department' | 'preferredRetailers', string>
 >;
 
 export interface RankedOutfit {
@@ -162,9 +228,11 @@ export interface FilterDiagnostics {
     /** Number of outfits surviving each successive filter. */
     occasion: number;
     dressCode: number;
+    department: number;
     budget: number;
     style: number;
     color: number;
+    retailer: number;
     total: number;
 }
 

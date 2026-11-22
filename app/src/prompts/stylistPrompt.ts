@@ -1,8 +1,10 @@
 import {
     COLOR_OPTIONS,
+    DEPARTMENTS,
     DRESS_CODES,
     NO_COLOR_PREFERENCE,
     OCCASIONS,
+    RETAILERS,
     STYLE_PREFERENCES,
     type Catalog,
     type RankedOutfit,
@@ -45,6 +47,8 @@ export interface StylistResponseShape {
         budget?: number | null;
         styles?: string[];
         colors?: string[];
+        department?: string | null;
+        preferredRetailers?: string[];
     };
     /** True when the model needs more information before it can help. */
     needsClarification?: boolean;
@@ -59,9 +63,13 @@ occasion: ${OCCASIONS.map((o) => `"${o}"`).join(' | ')}
 dressCode: ${DRESS_CODES.map((d) => `"${d}"`).join(' | ')}
 styles (multi): ${STYLE_PREFERENCES.map((s) => `"${s}"`).join(' | ')}
 colors (multi): ${COLOR_OPTIONS.map((c) => `"${c}"`).join(' | ')} | "${NO_COLOR_PREFERENCE}"
+department: ${DEPARTMENTS.map((d) => `"${d}"`).join(' | ')}
+retailers (multi): ${RETAILERS.map((r) => `"${r}"`).join(' | ')}
 
 "${NO_COLOR_PREFERENCE}" is exclusive: if you include it, include no other color.
 budget: a positive number in whole US dollars, or null.
+department: "All" means no preference. Only set "Womenswear" or "Menswear" when the user states it ("men's", "women's", "for him/her"). Never infer it from the garment type.
+retailers: only the exact shop names listed above. Omit the key entirely if the user names no shop.
 `.trim();
 
 /**
@@ -81,6 +89,8 @@ HARD RULES
 2. Only set preference fields the user actually mentioned or unambiguously implied. Never reset a field they did not mention — the app preserves everything else automatically.
 3. Follow-up messages may be relative: "make it cheaper" means reduce the current budget (given below) by about 20%; "something fancier" means step the dress code one level more formal. Use the CURRENT STATE supplied with each message.
 4. Never mention prices, products, or outfits in this mode. You are only extracting preferences.
+5. Department is a statement about the person, not the garment. "A blazer for work" does NOT mean Menswear. Only an explicit "men's", "women's", "for him", "for her" sets it. If unsure, omit it.
+6. Retailer names must match the vocabulary exactly ("& Other Stories", "G.H. Bass", "Levi's"). If the user names a shop that is not listed, do not substitute a similar one — omit the key and mention in the reply that you cannot filter by that shop.
 
 ${PREFERENCE_SCHEMA}
 
@@ -103,18 +113,18 @@ export function buildRankSystemPrompt(): string {
     return `You are VibeFit's styling assistant. Your job is to rank outfit options the user can already afford and has already been matched with.
 
 HARD RULES
-1. You may ONLY reference outfits from the CANDIDATES list. Never invent an outfit, an ID, a garment, a price, or a retailer.
-2. Never state a price. The app displays prices itself, and a number you write may be wrong. Refer to the budget qualitatively: "comfortably within budget", "close to your limit".
-3. Rank the candidates by how well they suit the stated occasion, dress code, style, and color preferences. Best first. Include at most 6.
-4. Each reason must be one short sentence (under 110 characters) that explains WHY this outfit suits this specific user. Cite the occasion, the formality, the style, or the palette. Do not be generic ("looks great").
-5. If the candidate list is empty, say plainly that nothing matched and suggest which single constraint to relax. Return an empty rankings array.
-6. Write in second person, warm and concise. No exclamation marks. No emoji.
+    1. You may ONLY reference outfits from the CANDIDATES list.Never invent an outfit, an ID, a garment, a price, or a retailer.
+2. Never state a price.The app displays prices itself, and a number you write may be wrong.Refer to the budget qualitatively: "comfortably within budget", "close to your limit".
+3. Rank the candidates by how well they suit the stated occasion, dress code, style, and color preferences.Best first.Include at most 6.
+    4. Each reason must be one short sentence(under 110 characters) that explains WHY this outfit suits this specific user.Cite the occasion, the formality, the style, or the palette.Do not be generic("looks great").
+5. If the candidate list is empty, say plainly that nothing matched and suggest which single constraint to relax.Return an empty rankings array.
+6. Write in second person, warm and concise.No exclamation marks.No emoji.
 
 Return ONLY valid JSON, no markdown fences, no commentary, matching:
-{
-  "reply": "one short sentence summarising the selection",
-  "rankings": [{ "outfitId": "<id from CANDIDATES>", "reason": "<why it suits them>" }]
-}`;
+    {
+        "reply": "one short sentence summarising the selection",
+            "rankings": [{ "outfitId": "<id from CANDIDATES>", "reason": "<why it suits them>" }]
+    } `;
 }
 
 /**
@@ -145,11 +155,11 @@ export function buildRankUserPrompt(preferences: UserPreferences, candidates: Ra
 
     return [
         'USER PREFERENCES',
-        `occasion: ${preferences.occasion ?? 'unspecified'}`,
-        `dressCode: ${preferences.dressCode ?? 'unspecified'}`,
-        `budget: ${preferences.budget !== null ? `${formatUsd(preferences.budget)} total` : 'unspecified'}`,
-        `styles: ${preferences.styles.length ? preferences.styles.join(', ') : 'none set'}`,
-        `colors: ${preferences.colors.length ? preferences.colors.join(', ') : 'none set'}`,
+        `occasion: ${preferences.occasion ?? 'unspecified'} `,
+        `dressCode: ${preferences.dressCode ?? 'unspecified'} `,
+        `budget: ${preferences.budget !== null ? `${formatUsd(preferences.budget)} total` : 'unspecified'} `,
+        `styles: ${preferences.styles.length ? preferences.styles.join(', ') : 'none set'} `,
+        `colors: ${preferences.colors.length ? preferences.colors.join(', ') : 'none set'} `,
         '',
         'CANDIDATES (the only outfits you may reference)',
         JSON.stringify(candidateList, null, 2),
@@ -163,11 +173,11 @@ export function buildRankUserPrompt(preferences: UserPreferences, candidates: Ra
 export function buildParseUserPrompt(message: string, current: UserPreferences): string {
     return [
         'CURRENT STATE',
-        `occasion: ${current.occasion ?? 'not set'}`,
-        `dressCode: ${current.dressCode ?? 'not set'}`,
-        `budget: ${current.budget !== null ? formatUsd(current.budget) : 'not set'}`,
-        `styles: ${current.styles.length ? current.styles.join(', ') : 'not set'}`,
-        `colors: ${current.colors.length ? current.colors.join(', ') : 'not set'}`,
+        `occasion: ${current.occasion ?? 'not set'} `,
+        `dressCode: ${current.dressCode ?? 'not set'} `,
+        `budget: ${current.budget !== null ? formatUsd(current.budget) : 'not set'} `,
+        `styles: ${current.styles.length ? current.styles.join(', ') : 'not set'} `,
+        `colors: ${current.colors.length ? current.colors.join(', ') : 'not set'} `,
         '',
         'USER MESSAGE',
         message,

@@ -3,14 +3,16 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type {
     ChatTurn,
     ColorPreference,
+    Department,
     DressCode,
+    FilterDiagnostics,
     Occasion,
     PreferenceErrors,
     RankedOutfit,
     StylePreference,
     UserPreferences,
 } from '@/types/domain';
-import { EMPTY_PREFERENCES, NO_COLOR_PREFERENCE } from '@/types/domain';
+import { DEFAULT_DEPARTMENT, EMPTY_PREFERENCES, NO_COLOR_PREFERENCE } from '@/types/domain';
 import { catalog } from '@/data/catalog';
 import { recommendOutfits } from '@/engine/recommend';
 import { computeRelaxOptions } from '@/engine/relax';
@@ -34,14 +36,7 @@ export interface PreferenceState {
     /** Errors are only revealed after a submit attempt or an explicit blur. */
     hasSubmitted: boolean;
     results: RankedOutfit[];
-    resultDiagnostics: {
-        occasion: number;
-        dressCode: number;
-        budget: number;
-        style: number;
-        color: number;
-        total: number;
-    } | null;
+    resultDiagnostics: FilterDiagnostics | null;
     lastGeneratedAt: number | null;
     chatLog: ChatTurn[];
 
@@ -63,6 +58,12 @@ export interface PreferenceState {
     toggleStyle: (style: StylePreference) => void;
     toggleColor: (color: ColorPreference) => void;
     setNoColorPreference: () => void;
+    /** Sprint 3 — optional department; `All` clears the filter. */
+    setDepartment: (department: Department) => void;
+    /** Sprint 3 — optional retailer filter; empty means all retailers. */
+    toggleRetailer: (retailer: string) => void;
+    /** Sprint 3 — clear the retailer filter ("Include all retailers"). */
+    clearRetailers: () => void;
 
     /** Apply a multi-field patch, used by the chat parser and relax buttons. */
     applyPatch: (patch: Partial<UserPreferences>) => void;
@@ -84,6 +85,18 @@ export interface PreferenceState {
 }
 
 const STORAGE_KEY = 'vibefit:sprint1:v1';
+
+/**
+ * Persisted shape version.
+ *
+ * Bumped to 2 in Sprint 3 for `department` and `preferredRetailers`. The migration
+ * below is what keeps an existing Sprint 1/2 browser session working: without it, a
+ * returning user would hydrate a preferences object with the new fields missing,
+ * and `preferences.department` would be `undefined` — silently failing the
+ * department filter in a way no test would catch, because fresh state is always
+ * correct.
+ */
+const PERSIST_VERSION = 2;
 
 export const usePreferencesStore = create<PreferenceState>()(
     persist(
@@ -172,6 +185,46 @@ export const usePreferencesStore = create<PreferenceState>()(
                 set((state) => ({
                     preferences: { ...state.preferences, colors: [NO_COLOR_PREFERENCE] },
                     errors: omit(state.errors, 'colors'),
+                })),
+
+            /*
+             * Sprint 3 department. Optional by design: `All` is a real choice that
+             * means "don't narrow my results", not a missing value, so it clears the
+             * field error the same way any other valid selection does.
+             *
+             * 'department' is not in `PreferenceErrors` as a *required* field —
+             * validation never demands it — but it is listed so an error could be
+             * cleared if a future rule ever adds one.
+             */
+            setDepartment: (department) =>
+                set((state) => ({
+                    preferences: { ...state.preferences, department },
+                    errors: omit(state.errors, 'department'),
+                })),
+
+            /*
+             * Retailer filter. Toggling the last retailer OFF must return to "all
+             * retailers", which the empty array already means — so no special case
+             * is needed, and no "select all" sentinel can drift out of sync with the
+             * catalog the way a stored list of every retailer would.
+             */
+            toggleRetailer: (retailer) =>
+                set((state) => {
+                    const current = state.preferences.preferredRetailers;
+                    const selected = current.includes(retailer);
+                    const preferredRetailers = selected
+                        ? current.filter((entry) => entry !== retailer)
+                        : [...current, retailer];
+                    return {
+                        preferences: { ...state.preferences, preferredRetailers },
+                        errors: omit(state.errors, 'preferredRetailers'),
+                    };
+                }),
+
+            clearRetailers: () =>
+                set((state) => ({
+                    preferences: { ...state.preferences, preferredRetailers: [] },
+                    errors: omit(state.errors, 'preferredRetailers'),
                 })),
 
             applyPatch: (patch) =>
@@ -308,7 +361,32 @@ export const usePreferencesStore = create<PreferenceState>()(
                 lastGeneratedAt: state.lastGeneratedAt,
                 chatLog: state.chatLog,
             }),
-            version: 1,
+            version: PERSIST_VERSION,
+            /**
+             * Forward-migrate an older persisted payload.
+             *
+             * `persistedState` is typed `unknown` on purpose: trusting its shape is
+             * exactly how a migration crashes for the users it exists to protect.
+             * Each step fills in fields that did not exist yet and leaves every
+             * choice the user already made untouched.
+             */
+            migrate: (persistedState: unknown, oldVersion: number) => {
+                const state = (persistedState ?? {}) as {
+                    preferences?: Partial<UserPreferences>;
+                };
+
+                if (oldVersion < 2) {
+                    const preferences = state.preferences ?? {};
+                    // Sessions created before Sprint 3 have no department. `All`
+                    // reproduces their previous behaviour exactly, so their saved
+                    // results stay valid.
+                    preferences.department = preferences.department ?? DEFAULT_DEPARTMENT;
+                    preferences.preferredRetailers = preferences.preferredRetailers ?? [];
+                    state.preferences = preferences;
+                }
+
+                return state as unknown as PreferenceState;
+            },
         },
     ),
 );

@@ -45,9 +45,11 @@ export function recommendOutfits(
     const emptyDiagnostics: FilterDiagnostics = {
         occasion: 0,
         dressCode: 0,
+        department: 0,
         budget: 0,
         style: 0,
         color: 0,
+        retailer: 0,
         total: catalog.outfits.length,
     };
 
@@ -62,8 +64,20 @@ export function recommendOutfits(
     // Stage 2 — dress code.
     const byDressCode = byOccasion.filter((o) => o.dressCodes.includes(prefs.dressCode!));
 
+    /*
+     * Stage 2b — department (Sprint 3).
+     *
+     * `All` means "no filter" and is the default, so this stage is a no-op for any
+     * session that never touched the selector. That is the whole reason the
+     * preference defaults to `All` rather than to a concrete department.
+     */
+    const byDepartment =
+        prefs.department === 'All'
+            ? byDressCode
+            : byDressCode.filter((outfit) => outfit.department === prefs.department);
+
     // Stage 3 — budget. Unknown prices are excluded from the total, never guessed.
-    const priced = byDressCode.map((outfit) => {
+    const priced = byDepartment.map((outfit) => {
         const items = outfit.itemIds
             .map((id) => productMap.get(id))
             .filter((item): item is Product => Boolean(item));
@@ -95,16 +109,48 @@ export function recommendOutfits(
         ? byStyle.filter(({ outfit }) => outfit.colors.some((c) => concreteColors.includes(c as never)))
         : byStyle;
 
+    /*
+     * Stage 6 — preferred retailers (Sprint 3).
+     *
+     * Runs LAST, deliberately. A retailer filter is the most opinionated constraint
+     * a user can set (it narrows to a handful of shops), so running it before the
+     * scoring and style/colour stages would make a zero-result set almost
+     * un-diagnosable: the user would be told no outfit fits their budget when the
+     * real cause is that they picked one shop.
+     *
+     * Ordering it last also keeps the diagnostics honest — every earlier stage
+     * reports the count a user would get if they relaxed *only* the retailer filter,
+     * which is exactly what the "Include all retailers" escape hatch needs.
+     *
+     * Match rule: an outfit qualifies when **at least one** of its pieces is sold by
+     * a chosen retailer.
+     *
+     * The stricter reading ("every piece must come from a chosen shop") is tempting
+     * but wrong in practice: almost no outfit is single-retailer, so picking one
+     * shop would return nothing and the feature would look broken. "Show me Zara"
+     * means "include looks that feature Zara", not "only fully-Zara outfits". The
+     * preference UI states this rule in words so it is never a surprise.
+     */
+    const preferredRetailers = prefs.preferredRetailers ?? [];
+    const byRetailer =
+        preferredRetailers.length === 0
+            ? byColor
+            : byColor.filter(({ items }) =>
+                items.some((item) => preferredRetailers.includes(item.retailer)),
+            );
+
     const diagnostics: FilterDiagnostics = {
         occasion: byOccasion.length,
         dressCode: byDressCode.length,
+        department: byDepartment.length,
         budget: withinBudget.length,
         style: byStyle.length,
         color: byColor.length,
+        retailer: byRetailer.length,
         total: catalog.outfits.length,
     };
 
-    const candidates: Candidate[] = byColor.map(({ outfit, items, knownTotal, priceComplete }) => {
+    const candidates: Candidate[] = byRetailer.map(({ outfit, items, knownTotal, priceComplete }) => {
         const scored = scoreOutfit({ outfit, knownTotal, priceComplete }, prefs);
         return { outfit, items, knownTotal, priceComplete, ...scored };
     });

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500" role="img" aria-label="Unstructured cotton blazer overlay">
+  <title>Unstructured Cotton Blazer — menswear overlay</title>
+  <defs>
+    <linearGradient id="usbFill" x1="0.1" y1="0" x2="0.45" y2="1">
+      <stop offset="0%" stop-color="#2C3B58" />
+      <stop offset="60%" stop-color="#22304A" />
+      <stop offset="100%" stop-color="#18223A" />
+    </linearGradient>
+    <linearGradient id="usbLapel" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#35476A" />
+      <stop offset="100%" stop-color="#24304A" />
+    </linearGradient>
+  </defs>
+
+  <!-- Two open front panels, straighter and longer than the womenswear blazer -->
+  <path d="M200 34 c-32 0-56 10-74 18
+           L76 76 c-17 8-23 22-25 38
+           l-14 122 c-2 14 9 25 22 24 13-1 21-10 23-23
+           l12-96 10 240 c1 16 9 24 24 24
+           h58 l-16-258 -12-64 Z"
+        fill="url(#usbFill)" stroke="#E5C158" stroke-opacity="0.45" stroke-width="2.5" stroke-linejoin="round" />
+  <path d="M200 34 c32 0 56 10 74 18
+           L324 76 c17 8 23 22 25 38
+           l14 122 c2 14-9 25-22 24-13-1-21-10-23-23
+           l-12-96-10 240 c-1 16-9 24-24 24
+           h-58 l16-258 12-64 Z"
+        fill="url(#usbFill)" stroke="#E5C158" stroke-opacity="0.45" stroke-width="2.5" stroke-linejoin="round" />
+
+  <!-- Notch lapels -->
+  <path d="M200 38 L156 54 l-4 92 52 68 20-142 Z"
+        fill="url(#usbLapel)" stroke="#E5C158" stroke-opacity="0.32" stroke-width="1.7" stroke-linejoin="round" />
+  <path d="M200 38 L244 54 l4 92 -52 68 -20-142 Z"
+        fill="url(#usbLapel)" stroke="#E5C158" stroke-opacity="0.32" stroke-width="1.7" stroke-linejoin="round" />
+
+  <!-- Collar roll -->
+  <path d="M156 50 c14 21 27 29 44 29 s30-8 44-29"
+        fill="none" stroke="#0A0E18" stroke-opacity="0.7" stroke-width="10" stroke-linecap="round" />
+
+  <!-- Two-button closure: the classic menswear signal -->
+  <circle cx="200" cy="244" r="5.5" fill="#E5C158" fill-opacity="0.85" />
+  <circle cx="200" cy="284" r="5.5" fill="#E5C158" fill-opacity="0.85" />
+
+  <!-- Flap pockets -->
+  <path d="M122 306 h54" stroke="#E5C158" stroke-opacity="0.33" stroke-width="2.2" stroke-linecap="round" />
+  <path d="M224 306 h54" stroke="#E5C158" stroke-opacity="0.33" stroke-width="2.2" stroke-linecap="round" />
+
+  <!-- Shoulder seam -->
+  <path d="M90 78 L156 54" stroke="#E5C158" stroke-opacity="0.26" stroke-width="1.5" />
+  <path d="M310 78 L244 54" stroke="#E5C158" stroke-opacity="0.26" stroke-width="1.5" />
+</svg>

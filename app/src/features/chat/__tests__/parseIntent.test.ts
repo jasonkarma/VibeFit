@@ -5,6 +5,7 @@ import { parseChatMessage } from '../parseIntent';
 const blank: UserPreferences = { ...EMPTY_PREFERENCES };
 
 const filled: UserPreferences = {
+    ...EMPTY_PREFERENCES,
     occasion: 'Work',
     dressCode: 'Business Formal',
     budget: 300,

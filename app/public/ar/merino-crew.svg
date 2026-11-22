@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500" role="img" aria-label="Merino crewneck sweater overlay">
+  <title>Merino Crewneck Sweater — menswear overlay</title>
+  <defs>
+    <linearGradient id="merinoFill" x1="0.1" y1="0" x2="0.4" y2="1">
+      <stop offset="0%" stop-color="#2A3350" />
+      <stop offset="55%" stop-color="#1F2740" />
+      <stop offset="100%" stop-color="#161C2E" />
+    </linearGradient>
+    <linearGradient id="merinoSheen" x1="0" y1="0" x2="0.9" y2="0.5">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.14" />
+      <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.02" />
+      <stop offset="100%" stop-color="#E5C158" stop-opacity="0.10" />
+    </linearGradient>
+  </defs>
+
+  <!-- Straight-cut menswear body: squarer shoulders, longer hem -->
+  <path d="M200 36
+           c-30 0-54 8-72 16
+           L78 70 c-16 7-22 21-24 37
+           l-14 118 c-2 14 9 24 22 23 12-1 20-9 22-22
+           l12-94 8 246 c1 16 9 24 24 24
+           h144 c15 0 23-8 24-24 l8-246 12 94
+           c2 13 10 21 22 22 13 1 24-9 22-23
+           l-14-118 c-2-16-8-30-24-37
+           L272 52 c-18-8-42-16-72-16 Z"
+        fill="url(#merinoFill)" stroke="#E5C158" stroke-opacity="0.45" stroke-width="2.5" stroke-linejoin="round" />
+
+  <!-- Ribbed crew collar -->
+  <path d="M150 42 c16 18 32 26 50 26 s34-8 50-26"
+        fill="none" stroke="#0A0E18" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round" />
+  <path d="M150 42 c16 18 32 26 50 26 s34-8 50-26"
+        fill="none" stroke="#E5C158" stroke-opacity="0.45" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- Ribbed hem band -->
+  <rect x="104" y="330" width="192" height="16" fill="#0A0E18" fill-opacity="0.28" />
+  <path d="M104 335 h192 M104 341 h192" stroke="#0A0E18" stroke-opacity="0.35" stroke-width="1.2" />
+
+  <!-- Cuffs -->
+  <path d="M62 200 l-3 30" stroke="#0A0E18" stroke-opacity="0.45" stroke-width="1.6" />
+  <path d="M338 200 l3 30" stroke="#0A0E18" stroke-opacity="0.45" stroke-width="1.6" />
+
+  <path d="M200 36 L78 70 l-6 68 c42-26 84-38 128-38 s86 12 128 38 l-6-68 Z" fill="url(#merinoSheen)" />
+</svg>

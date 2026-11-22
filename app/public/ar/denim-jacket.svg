@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500" role="img" aria-label="Oversized denim jacket overlay">
+  <title>Oversized Denim Jacket — illustrative overlay</title>
+  <defs>
+    <linearGradient id="denimFill" x1="0.1" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#3C5578" />
+      <stop offset="50%" stop-color="#2C4363" />
+      <stop offset="100%" stop-color="#22354F" />
+    </linearGradient>
+    <linearGradient id="denimWash" x1="0" y1="0" x2="1" y2="0.5">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.12" />
+      <stop offset="55%" stop-color="#FFFFFF" stop-opacity="0.01" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.08" />
+    </linearGradient>
+  </defs>
+
+  <!-- Oversized body: dropped shoulder, wide hem -->
+  <path d="M200 38 c-34 0-60 12-80 22
+           L74 88 c-18 9-26 24-28 42
+           l-14 128 c-2 15 10 26 24 25 14-1 23-11 25-25
+           l12-104 12 186 c1 16 10 24 26 24
+           h134 c16 0 25-8 26-24 l12-186 12 104
+           c2 14 11 24 25 25 14 1 26-10 24-25
+           l-14-128 c-2-18-10-33-28-42
+           L280 60 c-20-10-46-22-80-22 Z"
+        fill="url(#denimFill)" stroke="#E5C158" stroke-opacity="0.5" stroke-width="2.5" stroke-linejoin="round" />
+
+  <!-- Pointed collar, worn open -->
+  <path d="M200 40 L160 56 l-12 58 52 40 Z"
+        fill="#31496B" stroke="#E5C158" stroke-opacity="0.42" stroke-width="1.8" stroke-linejoin="round" />
+  <path d="M200 40 L240 56 l12 58 -52 40 Z"
+        fill="#31496B" stroke="#E5C158" stroke-opacity="0.42" stroke-width="1.8" stroke-linejoin="round" />
+
+  <!-- Placket with buttons -->
+  <path d="M200 154 v176" stroke="#0F1A2A" stroke-opacity="0.5" stroke-width="2" />
+  <g fill="#E5C158" fill-opacity="0.7">
+    <circle cx="214" cy="192" r="4" />
+    <circle cx="214" cy="240" r="4" />
+    <circle cx="214" cy="288" r="4" />
+    <circle cx="214" cy="330" r="4" />
+  </g>
+
+  <!-- Chest flap pockets: the classic trucker signature -->
+  <path d="M118 196 h58 v22 h-58 Z" fill="#22354F" stroke="#E5C158" stroke-opacity="0.35" stroke-width="1.6" />
+  <path d="M224 196 h58 v22 h-224" stroke="none" />
+  <path d="M224 196 h58 v22 h-58 Z" fill="#22354F" stroke="#E5C158" stroke-opacity="0.35" stroke-width="1.6" />
+  <path d="M118 218 h58" stroke="#E5C158" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round" />
+  <path d="M224 218 h58" stroke="#E5C158" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round" />
+
+  <!-- Waistband -->
+  <path d="M110 336 h180" stroke="#0F1A2A" stroke-opacity="0.55" stroke-width="2.4" />
+  <path d="M110 346 h180" stroke="#0F1A2A" stroke-opacity="0.3" stroke-width="1.4" />
+
+  <!-- Denim wash highlight -->
+  <path d="M200 38 L74 88 l-8 76 c46-34 90-50 134-50 s88 16 134 50 l-8-76 Z" fill="url(#denimWash)" />
+
+  <!-- Stitch detail -->
+  <g stroke="#E5C158" stroke-opacity="0.22" stroke-width="1.2" stroke-dasharray="5 5">
+    <path d="M90 120 l6 120" />
+    <path d="M310 120 l-6 120" />
+  </g>
+</svg>

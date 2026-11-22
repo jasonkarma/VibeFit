@@ -41,8 +41,34 @@ export function computeRelaxOptions(
     const candidates: Candidate[] = [];
     const hasColorConstraint = wantsSpecificColor(prefs);
     const hasStyleConstraint = prefs.styles.length > 0;
+    const hasRetailerConstraint = (prefs.preferredRetailers ?? []).length > 0;
 
-    // --- Single-field relaxations -------------------------------------------------
+    /*
+     * --- Single-field relaxations ------------------------------------------------
+     *
+     * Retailer first, and with disruption 0.
+     *
+     * A shop preference is the least intimate thing a user tells us — it is a
+     * convenience, not a taste — and it is also the constraint most likely to zero
+     * out a result set, because it can narrow 35 outfits to two. If a user picks
+     * Zara and sees nothing, the single most useful thing we can offer is "include
+     * all retailers", and it should not be ranked below dropping their colour
+     * preference or raising their budget.
+     */
+    if (hasRetailerConstraint) {
+        candidates.push(
+            buildCandidate(
+                'include-all-retailers',
+                'Include all retailers',
+                (count) => `Show ${pluralize(count, 'outfit')} across every shop`,
+                { preferredRetailers: [] },
+                0,
+                prefs,
+                catalog,
+                limit,
+            ),
+        );
+    }
 
     if (hasColorConstraint) {
         candidates.push(
@@ -115,6 +141,10 @@ export function computeRelaxOptions(
         const dropStyleAndColor: Partial<UserPreferences> = {
             styles: [],
             colors: ['No Color Preference'],
+            // A retailer filter is the cheapest thing to drop in a combined fix too;
+            // leaving it in place would make every progressive option below collapse
+            // to zero results as well.
+            preferredRetailers: [],
         };
 
         if (hasStyleConstraint || hasColorConstraint) {

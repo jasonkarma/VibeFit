@@ -283,3 +283,40 @@ describe('full flow — generate, retain, refine', () => {
         expect(await screen.findByText(/tell us about the occasion/i)).toBeVisible();
     });
 });
+
+describe('Sprint 2 — results to detail round trip', () => {
+    beforeEach(() => usePreferencesStore.getState().reset());
+
+    it('opens a detail page and returns without regenerating results (Story 6 AC1, AC4)', async () => {
+        const user = userEvent.setup();
+        renderApp();
+
+        await completeFullPreferenceSet(user);
+        await user.click(screen.getByRole('button', { name: /generate outfits/i }));
+        await screen.findByRole('list', { name: /recommended outfits/i });
+
+        const generatedAt = usePreferencesStore.getState().lastGeneratedAt;
+        const resultIds = usePreferencesStore.getState().results.map((entry) => entry.outfit.id);
+
+        // Open the first recommendation.
+        const grid = screen.getByRole('list', { name: /recommended outfits/i });
+        const firstCard = within(grid).getAllByRole('listitem')[0];
+        await user.click(within(firstCard).getByRole('button'));
+
+        // The detail screen is genuinely a new destination.
+        expect(
+            await screen.findByRole('list', { name: /garments in this outfit/i }),
+        ).toBeVisible();
+        expect(screen.getByRole('button', { name: /back to recommendations/i })).toBeVisible();
+
+        await user.click(screen.getByRole('button', { name: /back to recommendations/i }));
+        await screen.findByRole('list', { name: /recommended outfits/i });
+
+        // The cached generation survived the round trip untouched — including the
+        // timestamp, which is what proves results were not silently rebuilt.
+        const state = usePreferencesStore.getState();
+        expect(state.lastGeneratedAt).toBe(generatedAt);
+        expect(state.results.map((entry) => entry.outfit.id)).toEqual(resultIds);
+        expect(state.preferences.occasion).toBe('Wedding');
+    });
+});

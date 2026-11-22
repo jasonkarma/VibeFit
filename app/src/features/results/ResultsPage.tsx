@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import type { RankedOutfit } from '@/types/domain';
@@ -55,20 +55,50 @@ export function ResultsPage() {
         [preferences],
     );
 
-    // A preference change made on the results screen (via chat) re-runs the engine
-    // immediately, so the user sees the effect without pressing anything.
-    useEffect(() => {
-        if (lastGeneratedAt === null || !hasRequiredInputs) return;
-        generate();
-        // Deliberately keyed on the preference signature only; `generate` is stable.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
+    /**
+     * Preference signature. Changes whenever a preference that affects ranking
+     * changes, and only then.
+     */
+    const preferenceSignature = [
         preferences.occasion,
         preferences.dressCode,
         preferences.budget,
         preferences.styles.join('|'),
         preferences.colors.join('|'),
-    ]);
+    ].join('::');
+
+    /**
+     * Remember the signature of the *previous* render.
+     *
+     * Why: this effect must fire when a preference changes (Story 9 AC3), but must
+     * NOT fire on mount. Returning from an outfit detail page remounts this
+     * component, and re-running `generate()` there would clear `aiReasons` and
+     * `aiOrder` and bill a fresh live model call — for a result set the user never
+     * asked to change. Story 6 AC4 requires the cached results to survive that round
+     * trip, so the guard has to be real rather than relying on the engine happening
+     * to be deterministic.
+     *
+     * A ref, not state: mutating it must not itself schedule a render.
+     */
+    const lastSignatureRef = useRef<string | null>(null);
+
+    // A preference change made on the results screen (via chat) re-runs the engine
+    // immediately, so the user sees the effect without pressing anything.
+    useEffect(() => {
+        if (lastGeneratedAt === null || !hasRequiredInputs) return;
+
+        const previous = lastSignatureRef.current;
+        lastSignatureRef.current = preferenceSignature;
+
+        // First render after mount: record the signature, leave the cached results
+        // exactly as they are.
+        if (previous === null) return;
+        if (previous === preferenceSignature) return;
+
+        generate();
+        // Keyed on the preference signature only; `generate` is stable.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [preferenceSignature, lastGeneratedAt, hasRequiredInputs]);
 
     /**
      * Ask the live model to rank and explain this result set.
@@ -112,10 +142,15 @@ export function ResultsPage() {
         generate();
     }
 
-    function handleOpenOutfit(_entry: RankedOutfit) {
-        // Sprint 2 replaces this with the outfit detail route. Kept as an explicit
-        // no-op-with-intent rather than a dead click: the card is a real button and
-        // its aria-label already describes what Sprint 2 will open.
+    /**
+     * Open the outfit detail route (Story 6 AC1).
+     *
+     * Navigation only — no state change. The store keeps `results` and
+     * `lastGeneratedAt` untouched so pressing "Back to Recommendations" restores the
+     * exact grid, scores and AI reasons the user left (AC 6.4).
+     */
+    function handleOpenOutfit(entry: RankedOutfit) {
+        navigate(`/results/${entry.outfit.id}`);
     }
 
     return (
@@ -183,8 +218,8 @@ export function ResultsPage() {
                     </motion.ul>
 
                     <p className="mt-6 text-center text-[0.6875rem] text-obsidian-500">
-                        Sample catalog · prices retrieved {catalog.priceRetrievedAt} · AR try-on arrives in
-                        Sprint 2
+                        Sample catalog · prices retrieved {catalog.priceRetrievedAt} · select an outfit
+                        for itemised pricing, retailer links and AR try-on
                     </p>
                 </>
             )}

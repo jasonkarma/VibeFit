@@ -11,6 +11,8 @@ import { OccasionSelector } from './OccasionSelector';
 import { DressCodeSelector } from './DressCodeSelector';
 import { BudgetInput } from './BudgetInput';
 import { StyleColorSelector } from './StyleColorSelector';
+import { DepartmentSelector } from './DepartmentSelector';
+import { RetailerSelector } from './RetailerSelector';
 
 /**
  * Preference entry screen — Stories 1, 2, 3, 4 plus the charter's conversational
@@ -31,6 +33,9 @@ export function PreferencesPage() {
     const toggleStyle = usePreferencesStore((state) => state.toggleStyle);
     const toggleColor = usePreferencesStore((state) => state.toggleColor);
     const setNoColorPreference = usePreferencesStore((state) => state.setNoColorPreference);
+    const setDepartment = usePreferencesStore((state) => state.setDepartment);
+    const toggleRetailer = usePreferencesStore((state) => state.toggleRetailer);
+    const clearRetailers = usePreferencesStore((state) => state.clearRetailers);
     const applyPatch = usePreferencesStore((state) => state.applyPatch);
     const validateAll = usePreferencesStore((state) => state.validateAll);
     const generate = usePreferencesStore((state) => state.generate);
@@ -61,8 +66,8 @@ export function PreferencesPage() {
                     Tell us about the occasion
                 </h1>
                 <p className="mt-3 text-sm leading-relaxed text-obsidian-400">
-                    Four quick choices. Or skip ahead and describe the event in the bar below — it fills
-                    in the same fields.
+                    Four quick choices, plus two optional ones if you want to narrow things down. Or
+                    skip ahead and describe the event in the bar below — it fills in the same fields.
                 </p>
             </div>
 
@@ -127,6 +132,52 @@ export function PreferencesPage() {
                         onNoColorPreference={setNoColorPreference}
                     />
                 </Surface>
+
+                {/*
+                  Sprint 3 optional filters.
+
+                  Grouped after the four required fields and below a divider labelled
+                  "Optional", because they are the only inputs on this screen that
+                  cannot block generation. Presenting them as a fifth and sixth step
+                  would imply they are required and make the form feel longer than it
+                  is.
+                */}
+                <div className="pt-2">
+                    <div className="mb-4 flex items-center gap-3">
+                        <span className="h-px flex-1 bg-white/10" aria-hidden="true" />
+                        <span className="font-data text-[0.625rem] uppercase tracking-[0.14em] text-obsidian-500">
+                            Optional — narrow further
+                        </span>
+                        <span className="h-px flex-1 bg-white/10" aria-hidden="true" />
+                    </div>
+
+                    <div className="space-y-4">
+                        <Surface as="section" aria-labelledby="department-heading">
+                            <SectionHeading
+                                title="Department"
+                                storyKey="SPRINT-3"
+                                description="Optional. Leave on All unless you want one department only."
+                            />
+                            <DepartmentSelector
+                                value={preferences.department}
+                                onChange={setDepartment}
+                            />
+                        </Surface>
+
+                        <Surface as="section" aria-labelledby="retailers-heading">
+                            <SectionHeading
+                                title="Preferred retailers"
+                                storyKey="SPRINT-3"
+                                description="Optional. Pick the shops you actually buy from, or leave it empty for everything."
+                            />
+                            <RetailerSelector
+                                value={preferences.preferredRetailers}
+                                onToggle={toggleRetailer}
+                                onClear={clearRetailers}
+                            />
+                        </Surface>
+                    </div>
+                </div>
             </div>
 
             <div className="sticky bottom-24 mt-8 flex justify-end">

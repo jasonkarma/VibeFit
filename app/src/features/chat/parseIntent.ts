@@ -1,10 +1,13 @@
 import {
     COLOR_OPTIONS,
+    DEFAULT_DEPARTMENT,
     DRESS_CODES,
     NO_COLOR_PREFERENCE,
     OCCASIONS,
+    RETAILERS,
     STYLE_PREFERENCES,
     type ColorPreference,
+    type Department,
     type DressCode,
     type Occasion,
     type StylePreference,
@@ -87,6 +90,74 @@ const BUDGET_PATTERNS = [
     /\b(\d[\d,]*(?:\.\d{1,2})?)\s?(?:dollars|usd|bucks)\b/i,
 ];
 
+/**
+ * Department synonyms (Sprint 3).
+ *
+ * The `\b` before `men'?s` is load-bearing: without it, "women's" contains "men's"
+ * as a substring and every womenswear request would be read as menswear. With the
+ * boundary, the matched token must start at a word edge, and in "women's" the
+ * letters "men" are preceded by "o".
+ *
+ * "All" is matched proactively too, so a user can undo a department choice in
+ * conversation rather than being stuck with it until they reload the screen.
+ */
+const DEPARTMENT_SYNONYMS: Array<[RegExp, Department]> = [
+    [/\b(wom[ae]n'?s(?:wear)?|for women|ladies|womenswear)\b/i, 'Womenswear'],
+    [/\b(men'?s(?:wear)?|for men|gents|menswear)\b/i, 'Menswear'],
+    [/\b(any department|either department|all departments|no department preference)\b/i, 'All'],
+];
+
+/**
+ * Retailer synonyms (Sprint 3).
+ *
+ * Derived from the closed `RETAILERS` vocabulary rather than hand-written, so a
+ * retailer added to the catalog becomes chattable automatically and the parser can
+ * never drift from the filter it feeds.
+ *
+ * Each retailer gets a tolerant pattern: the full name, plus the first word when it
+ * is distinctive ("& Other Stories" → "other stories", "Massimo Dutti" → "massimo").
+ * Very short or generic names are matched only in full, because "cos" or "gap" as a
+ * bare substring would misfire inside ordinary words.
+ */
+const RETAILER_PATTERNS: Array<[RegExp, string]> = RETAILERS.flatMap((retailer) => {
+    /*
+     * Anchoring rule: `\b` is only valid next to a word character.
+     *
+     * "& Other Stories" starts with `&`, which is not a word character, so
+     * `\b&` can never match — JavaScript would require a word character before the
+     * `&`. That single mistake made the retailer unreachable by name. Instead of
+     * hand-casing it, each end is anchored conditionally based on whether the
+     * adjacent character is a word character.
+     */
+    const escaped = retailer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const startsWithWord = /^\w/.test(retailer);
+    const endsWithWord = /\w$/.test(retailer);
+    const left = startsWithWord ? '\\b' : '';
+    const right = endsWithWord ? '\\b' : '';
+
+    const patterns: Array<[RegExp, string]> = [
+        [new RegExp(`${left}${escaped}${right}`, 'i'), retailer],
+    ];
+
+    /*
+     * A distinctive first word, so "Massimo" and "Massimo Dutti" both work.
+     * Skipped for names whose first token is generic ("&", "G.H.") or too short to
+     * be unambiguous.
+     */
+    const firstWord = retailer.split(' ')[0];
+    if (firstWord.length >= 5 && /^\w/.test(firstWord) && firstWord !== retailer) {
+        const escapedWord = firstWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        patterns.push([new RegExp(`\\b${escapedWord}\\b`, 'i'), retailer]);
+    }
+
+    // Colloquial shortenings a user will actually type.
+    if (retailer === 'Nordstrom') patterns.push([/\bnordstrom'?s?\b/i, retailer]);
+    if (retailer === '& Other Stories') patterns.push([/\bother stories\b/i, retailer]);
+    if (retailer === 'G.H. Bass') patterns.push([/\b(gh ?bass|bass weejuns)\b/i, retailer]);
+
+    return patterns;
+});
+
 /** Follow-up refinements that need context from the current state. */
 const CHEAPER = /\b(cheaper|less expensive|lower budget|something cheap|more affordable|tighten)\b/i;
 const FANCier = /\b(fancier|dressier|more formal|elevate|step it up)\b/i;
@@ -126,6 +197,10 @@ export function parseChatMessage(
                 budgetInput: '',
                 styles: [],
                 colors: [],
+                // Reset restores the defaults, not "unset": department returns to
+                // `All` and the retailer filter to "any shop".
+                department: DEFAULT_DEPARTMENT,
+                preferredRetailers: [],
             },
             reply: 'Cleared everything. Where are you headed?',
             appliedFields: ['Occasion', 'Dress code', 'Budget', 'Style', 'Color'],
@@ -147,6 +222,21 @@ export function parseChatMessage(
         if (pattern.test(input) && current.dressCode !== dressCode) {
             patch.dressCode = dressCode;
             appliedFields.push(`Dress code → ${dressCode}`);
+            break;
+        }
+    }
+
+    /*
+     * --- Department (Sprint 3) ---
+     *
+     * Credited to the user's words, not inferred from the occasion: assuming
+     * menswear because the message says "suit" would be a guess about the person,
+     * not about the outfit. Only an explicit mention sets it.
+     */
+    for (const [pattern, department] of DEPARTMENT_SYNONYMS) {
+        if (pattern.test(input) && current.department !== department) {
+            patch.department = department;
+            appliedFields.push(`Department → ${department}`);
             break;
         }
     }
@@ -180,6 +270,29 @@ export function parseChatMessage(
         if (!unchanged) {
             patch.colors = next;
             appliedFields.push(`Color → ${next.join(', ')}`);
+        }
+    }
+
+    /*
+     * --- Retailers (Sprint 3) ---
+     *
+     * Multi-select, unioned with whatever is already selected rather than replacing
+     * it: "also Zara" is the common phrasing, and silently dropping Uniqlo because
+     * the second message only mentioned Zara would be a small betrayal of the
+     * partial-patch promise the whole store is built around.
+     */
+    const matchedRetailers = new Set<string>(current.preferredRetailers ?? []);
+    for (const [pattern, retailer] of RETAILER_PATTERNS) {
+        if (pattern.test(input)) matchedRetailers.add(retailer);
+    }
+    if (matchedRetailers.size > 0) {
+        const next = Array.from(matchedRetailers).sort();
+        const unchanged =
+            next.length === (current.preferredRetailers ?? []).length &&
+            next.every((entry) => (current.preferredRetailers ?? []).includes(entry));
+        if (!unchanged) {
+            patch.preferredRetailers = next;
+            appliedFields.push(`Shops → ${next.join(', ')}`);
         }
     }
 

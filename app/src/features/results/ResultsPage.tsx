@@ -218,13 +218,13 @@ export function ResultsPage() {
                     </motion.ul>
 
                     <p className="mt-6 text-center text-[0.6875rem] text-obsidian-500">
-                        Sample catalog · prices retrieved {catalog.priceRetrievedAt} · select an outfit
-                        for itemised pricing, retailer links and AR try-on
+                        Prices are snapshots. Each item shows its retrieval date and retailer link where available.
                     </p>
                 </>
             )}
 
             <ChatDock
+                initiallyOpen={false}
                 preferences={preferences}
                 onApplyPatch={applyPatch}
                 chatLog={chatLog}

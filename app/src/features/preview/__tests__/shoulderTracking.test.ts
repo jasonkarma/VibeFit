@@ -4,6 +4,7 @@ import {
     MIN_CONFIDENCE,
     estimateShouldersFromFrame,
     transformFromShoulders,
+    projectShouldersToStage,
     type ShoulderEstimate,
 } from '../shoulderTracking';
 
@@ -201,4 +202,18 @@ describe('transformFromShoulders — mapping', () => {
         // report but not confident enough to move the garment.
         expect(AUTO_FOLLOW_CONFIDENCE).toBeGreaterThan(MIN_CONFIDENCE);
     });
+});
+
+it('projects a landscape camera frame onto the cropped portrait stage before mirroring', () => {
+    const estimate = { centerX: 0.4, centerY: 0.28, width: 0.2, confidence: 0.9 };
+    const projected = projectShouldersToStage(estimate, {
+        videoWidth: 1600,
+        videoHeight: 900,
+        clientWidth: 300,
+        clientHeight: 400,
+    });
+    expect(projected.centerX).toBeCloseTo(0.263);
+    expect(projected.centerY).toBe(0.28);
+    expect(transformFromShoulders(projected).offsetX).toBe(24);
+    expect(transformFromShoulders(projected).scale).toBe(113);
 });

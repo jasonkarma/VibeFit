@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Info, TriangleAlert } from 'lucide-react';
 import type { RankedOutfit } from '@/types/domain';
 import { catalog } from '@/data/catalog';
@@ -41,7 +41,8 @@ export function PreviewPage() {
     const preferences = usePreferencesStore((state) => state.preferences);
     const results = usePreferencesStore((state) => state.results);
 
-    const [tab, setTab] = useState<TabId>('combined');
+    const [searchParams] = useSearchParams();
+    const [tab, setTab] = useState<TabId>(() => searchParams.get('mode') === 'ar' ? 'ar' : 'combined');
 
     const hasRequiredInputs = Boolean(
         preferences.occasion && preferences.dressCode && preferences.budget,

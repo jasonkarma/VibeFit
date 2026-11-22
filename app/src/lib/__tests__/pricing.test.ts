@@ -194,12 +194,12 @@ describe('shopping link guards (AC 8b.2)', () => {
     });
 
     it('names the retailer in the button label', () => {
-        expect(shopLinkLabel('COS')).toBe('Shop at COS');
-        expect(shopLinkLabel('  & Other Stories  ')).toBe('Shop at & Other Stories');
+        expect(shopLinkLabel('COS')).toBe('Check item at COS');
+        expect(shopLinkLabel('  & Other Stories  ')).toBe('Check item at & Other Stories');
     });
 
-    it('falls back to a neutral label rather than an empty "Shop at"', () => {
-        expect(shopLinkLabel('   ')).toBe('Shop this piece');
+    it('falls back to a neutral label rather than an empty retailer name', () => {
+        expect(shopLinkLabel('   ')).toBe('Check item');
     });
 });
 

@@ -136,8 +136,12 @@ export interface Product {
     department: GarmentDepartment;
     /** `null` means the price is genuinely unknown — never substitute a number. */
     price: number | null;
-    /** `null` means there is no valid product page — hide the shop link. */
+    /** Item-specific retailer URL, when the catalog has a candidate. */
     productUrl: string | null;
+    /** Date the item and colorway were matched to the retailer page. */
+    productUrlVerifiedAt?: string;
+    /** Storefront or category URL offered as a browse action. */
+    retailerUrl?: string;
     priceRetrievedAt: string | null;
     colors: ColorOption[];
     styles: StylePreference[];
@@ -149,6 +153,10 @@ export interface Product {
     /** Sprint 2 AR scope: only these garments get a try-on overlay. */
     arSupported: boolean;
     overlayAsset: string | null;
+    /** Aligned product photo or transparent cutout for 2D try-on. */
+    photoOverlayAsset?: string;
+    /** Optional outline of the garment in stage percentages, with the photo bottom-aligned. */
+    photoOverlayOutline?: [number, number][];
     notes?: string;
 }
 

@@ -245,8 +245,7 @@ export function OutfitDetailPage() {
             </div>
 
             <p className="mt-8 text-center text-[0.6875rem] leading-relaxed text-obsidian-500">
-                Sample catalog · prices retrieved {catalog.priceRetrievedAt} · visuals are
-                illustrative prototypes, not product photography
+                Prices are snapshots. Each item shows its retrieval date and retailer link where available.
             </p>
         </PageTransition>
     );

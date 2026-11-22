@@ -144,21 +144,40 @@ describe('Story 10 AC1 — preview route and navigation', () => {
 });
 
 describe('Story 10 AC2 — combined look', () => {
-    it('assembles every piece under the prototype label', async () => {
+    it('assembles every piece with product photography where available', async () => {
         renderAt('/results/o-08/preview');
 
         expect(await screen.findByTestId('combined-look-label')).toHaveTextContent(
-            'Illustrative Prototype Preview',
+            'Outfit preview',
         );
 
         const pieceList = screen.getByRole('list', { name: /outfit pieces/i });
         // o-08 has five pieces after the Sprint 2 catalog addition.
         expect(within(pieceList).getAllByRole('listitem')).toHaveLength(5);
 
-        // Every visual is badged as a prototype, and the label is not ambiguous.
         expect(screen.getAllByText(/prototype visual/i).length).toBeGreaterThan(0);
-        expect(screen.getByText(/not product photography/i)).toBeVisible();
+        expect(screen.getByRole('img', { name: 'Whitney Weejuns Penny Loafer · Black' })).toBeVisible();
+        expect(screen.getByText('Product photos where available')).toBeVisible();
     });
+});
+
+it('uses an exact-product cutout on the live camera stage and falls back if it fails', async () => {
+    installCamera({ grant: true });
+    const user = userEvent.setup();
+    renderAt('/results/o-12/preview');
+    await user.click(await screen.findByRole('tab', { name: /ar try-on/i }));
+    await user.click(screen.getByRole('button', { name: /enable camera/i }));
+
+    expect(await screen.findByLabelText('Live camera preview')).toBeVisible();
+    const overlay = screen.getByTestId('ar-overlay');
+    expect(overlay).toHaveAttribute('src', '/catalog/everlane-cashmere-slim-crew-navy-flat.png');
+    expect(overlay.style.clipPath).toMatch(/^polygon\(/);
+    expect(screen.getByText('2D product overlay')).toBeVisible();
+
+    fireEvent.error(overlay);
+    expect(screen.getByTestId('ar-overlay')).toHaveAttribute('src', '/ar/cashmere-crewneck.svg');
+    expect(screen.getByTestId('ar-overlay').style.clipPath).toBe('');
+    expect(screen.getByText('Illustrative Prototype')).toBeVisible();
 });
 
 describe('Story 10 AC4 — privacy consent gate', () => {

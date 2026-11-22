@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { cn } from '@/lib/cn';
 import { SLOT_LABELS, type Slot } from '@/types/domain';
 
@@ -12,21 +13,11 @@ interface PrototypeVisualProps {
     className?: string;
     /** Hides the badge when the caller already shows one nearby. */
     showBadge?: boolean;
+    /** Outfit photography can fill its frame. Product images show the whole item. */
+    cover?: boolean;
 }
 
-/**
- * Garment visual for the prototype.
- *
- * The catalog deliberately carries no product photography (`image: null`
- * throughout). Rendering a broken `<img>` or a blank box would make the detail
- * view look unfinished, and quietly filling the space with stock photography
- * would misrepresent what the user is looking at. So this renders a labelled
- * illustrative tile and says so — "Prototype Visual" is an acceptance criterion,
- * not a decoration.
- *
- * The tile is deterministic: the same slot always produces the same composition,
- * so screenshots and walkthroughs stay stable between runs.
- */
+/** Render catalog photography when available, with a labelled fallback. */
 export function PrototypeVisual({
     slot,
     name,
@@ -34,7 +25,11 @@ export function PrototypeVisual({
     accent,
     className,
     showBadge = true,
+    cover = false,
 }: PrototypeVisualProps) {
+    const [failedImage, setFailedImage] = useState<string | null>(null);
+    const photo = image && image !== failedImage ? image : null;
+
     return (
         <div
             className={cn(
@@ -43,18 +38,19 @@ export function PrototypeVisual({
                 className,
             )}
         >
-            {image ? (
+            {photo ? (
                 <img
-                    src={image}
-                    alt={`${name} — ${SLOT_LABELS[slot].toLowerCase()}`}
+                    src={photo}
+                    alt={name}
                     loading="lazy"
-                    className="h-full w-full object-cover"
+                    onError={() => setFailedImage(photo)}
+                    className={cn('h-full w-full', cover ? 'object-cover' : 'object-contain')}
                 />
             ) : (
                 <SlotGlyph slot={slot} accent={accent} label={name} />
             )}
 
-            {showBadge && (
+            {showBadge && !photo && (
                 <span
                     className={cn(
                         'absolute left-2 top-2 rounded-pill px-2 py-0.5',

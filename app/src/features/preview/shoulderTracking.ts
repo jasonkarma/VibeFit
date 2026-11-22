@@ -213,6 +213,25 @@ export function estimateShouldersFromFrame(
     return { centerX, centerY, width, confidence };
 }
 
+/** Convert normalized camera coordinates to the visible object-cover stage. */
+export function projectShouldersToStage(
+    estimate: ShoulderEstimate,
+    video: Pick<HTMLVideoElement, 'videoWidth' | 'videoHeight' | 'clientWidth' | 'clientHeight'>,
+): ShoulderEstimate {
+    const { videoWidth, videoHeight, clientWidth, clientHeight } = video;
+    if (!videoWidth || !videoHeight || !clientWidth || !clientHeight) return estimate;
+
+    const cover = Math.max(clientWidth / videoWidth, clientHeight / videoHeight);
+    const widthRatio = videoWidth * cover / clientWidth;
+    const heightRatio = videoHeight * cover / clientHeight;
+    return {
+        ...estimate,
+        centerX: 0.5 + (estimate.centerX - 0.5) * widthRatio,
+        centerY: 0.5 + (estimate.centerY - 0.5) * heightRatio,
+        width: estimate.width * widthRatio,
+    };
+}
+
 /**
  * Convert a shoulder estimate into overlay slider values.
  *

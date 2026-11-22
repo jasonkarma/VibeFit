@@ -46,8 +46,7 @@ describe('AR garment inventory', () => {
 
     it('gives every garment a real overlay asset', () => {
         for (const garment of AR_GARMENTS) {
-            expect(garment.overlayAsset).toBeTruthy();
-            expect(garment.overlayAsset).toMatch(/^\/ar\/.+\.svg$/);
+            expect(garment.photoOverlayAsset ?? garment.overlayAsset).toMatch(/^\/(ar|catalog)\/.+/);
         }
     });
 
@@ -56,7 +55,7 @@ describe('AR garment inventory', () => {
         expect(new Set(ids).size).toBe(ids.length);
 
         const expected = catalog.products
-            .filter((product) => product.arSupported && product.overlayAsset)
+            .filter((product) => product.arSupported && (product.overlayAsset || product.photoOverlayAsset))
             .map((product) => product.id);
         expect(ids.sort()).toEqual(expected.sort());
     });
@@ -67,7 +66,7 @@ describe('AR garment inventory', () => {
         const broken = {
             ...catalog,
             products: catalog.products.map((product) =>
-                product.id === 'p-cashmere' ? { ...product, overlayAsset: null } : product,
+                product.id === 'p-cashmere' ? { ...product, overlayAsset: null, photoOverlayAsset: undefined } : product,
             ),
         };
 

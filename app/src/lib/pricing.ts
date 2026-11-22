@@ -108,15 +108,33 @@ export function hasDisplayablePrice(product: Product): boolean {
  * `href="#"` link is worse than no link, because it looks clickable and lies.
  */
 export function hasShoppingLink(product: Product): boolean {
-    const url = product.productUrl?.trim();
-    if (!url) return false;
-    return /^https?:\/\/[^\s]+$/i.test(url);
+    return isShoppingUrl(product.productUrl?.trim());
 }
 
-/** Human label for a shop button, e.g. `Shop at COS`. */
+function isShoppingUrl(url?: string): boolean {
+    return Boolean(url && /^https?:\/\/[^\s]+$/i.test(url));
+}
+
+/** Catalog item links may need a fresh availability and variant check. */
 export function shopLinkLabel(retailer: string): string {
     const name = retailer.trim();
-    return name ? `Shop at ${name}` : 'Shop this piece';
+    return name ? `Check item at ${name}` : 'Check item';
+}
+
+export function shoppingDestination(product: Product): { href: string; label: string } | null {
+    const itemUrl = product.productUrl?.trim();
+    if (itemUrl && hasShoppingLink(product)) {
+        const label = product.productUrlVerifiedAt
+            ? `View item at ${product.retailer}`
+            : shopLinkLabel(product.retailer);
+        return { href: itemUrl, label };
+    }
+
+    const retailerUrl = product.retailerUrl?.trim();
+    if (retailerUrl && isShoppingUrl(retailerUrl)) {
+        return { href: retailerUrl, label: `Browse ${product.retailer}` };
+    }
+    return null;
 }
 
 export interface BudgetVerdict {

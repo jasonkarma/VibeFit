@@ -180,7 +180,7 @@ export function PreferencesPage() {
                 </div>
             </div>
 
-            <div className="sticky bottom-24 mt-8 flex justify-end">
+            <div className="mt-8 flex justify-end">
                 <button
                     type="button"
                     onClick={handleGenerate}

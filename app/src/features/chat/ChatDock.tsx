@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUp, Loader2, Sparkles, Wifi, WifiOff, X } from 'lucide-react';
+import { ArrowUp, ChevronDown, Loader2, Sparkles, Wifi, WifiOff, X } from 'lucide-react';
 import type { AiStatus } from '@/services/aiStylist';
 import type { ChatTurn, UserPreferences } from '@/types/domain';
 import { useMotion } from '@/lib/motion';
@@ -8,6 +8,7 @@ import { cn } from '@/lib/cn';
 import { parseChatMessage } from './parseIntent';
 
 interface ChatDockProps {
+    initiallyOpen?: boolean;
     preferences: UserPreferences;
     onApplyPatch: (patch: Partial<UserPreferences>) => void;
     chatLog: ChatTurn[];
@@ -49,6 +50,7 @@ const SUGGESTIONS = [
  * system.
  */
 export function ChatDock({
+    initiallyOpen = true,
     preferences,
     onApplyPatch,
     chatLog,
@@ -57,6 +59,7 @@ export function ChatDock({
     aiStatus,
 }: ChatDockProps) {
     const { reduced, patch } = useMotion();
+    const [open, setOpen] = useState(initiallyOpen);
     const [value, setValue] = useState('');
     const [focused, setFocused] = useState(false);
     const [pending, setPending] = useState(false);
@@ -67,7 +70,7 @@ export function ChatDock({
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [chatLog.length]);
+    }, [chatLog.length, open]);
 
     useEffect(() => {
         function onKeyDown(event: KeyboardEvent) {
@@ -142,8 +145,16 @@ export function ChatDock({
     const isLive = aiStatus === 'live';
 
     return (
-        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex justify-center px-4 pb-5">
-            <div className="pointer-events-auto w-full max-w-2xl">
+        <details
+            open={open}
+            onToggle={(event) => setOpen(event.currentTarget.open)}
+            className="mt-8 rounded-surface border border-white/10 bg-obsidian/90 [&[open]_.chat-chevron]:rotate-180"
+        >
+            <summary className="flex cursor-pointer list-none items-center justify-between rounded-surface px-4 py-3 text-sm font-medium text-champagne focus-visible:outline focus-visible:outline-champagne [&::-webkit-details-marker]:hidden">
+                <span className="flex items-center gap-2"><Sparkles className="h-4 w-4" aria-hidden="true" /> Style assistant</span>
+                <ChevronDown className="chat-chevron h-4 w-4" aria-hidden="true" />
+            </summary>
+            <div className="mx-auto w-full max-w-2xl px-4 pb-4">
                 {/* Transcript */}
                 {recent.length > 0 && (
                     <div
@@ -274,7 +285,7 @@ export function ChatDock({
                     </span>
                 </div>
             </div>
-        </div>
+        </details>
     );
 }
 

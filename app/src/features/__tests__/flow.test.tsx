@@ -185,7 +185,7 @@ describe('full flow — generate, retain, refine', () => {
         await user.click(screen.getByRole('button', { name: /generate outfits/i }));
 
         const grid = await screen.findByRole('list', { name: /recommended outfits/i });
-        const cards = within(grid).getAllByRole('listitem');
+        const cards = within(grid).getAllByRole('article');
         expect(cards.length).toBeGreaterThan(0);
 
         // Each card exposes a distinct accessible name containing the outfit name.

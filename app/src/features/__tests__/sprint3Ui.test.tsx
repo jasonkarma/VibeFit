@@ -6,6 +6,7 @@ import { App } from '@/App';
 import { usePreferencesStore } from '@/store/preferencesStore';
 import { EMPTY_PREFERENCES } from '@/types/domain';
 import { catalog } from '@/data/catalog';
+import { rankedOutfitById } from '@/engine/lookup';
 
 /**
  * Sprint 3 UI integration: the two optional preference controls, garment imagery on
@@ -203,35 +204,116 @@ describe('retailer selector (Sprint 3)', () => {
 });
 
 describe('garment imagery on result cards (Sprint 3)', () => {
-    it('renders a visual for the hero and for each listed piece', async () => {
-        const user = userEvent.setup();
-        renderAt();
+    it('shows every piece, with photos and shopping destinations on the recommendation itself', async () => {
+        usePreferencesStore.setState({
+            preferences: {
+                ...EMPTY_PREFERENCES,
+                occasion: 'Work',
+                dressCode: 'Business Formal',
+                budgetInput: '400',
+                budget: 400,
+                styles: ['Classic'],
+                colors: ['Navy'],
+            },
+        });
+        usePreferencesStore.getState().generate();
+        const entry = rankedOutfitById('o-08', usePreferencesStore.getState().preferences, catalog)!;
+        const photoUrl = '/catalog/poplin-fixture.webp';
+        const items = entry.items.map((item) =>
+            item.id === 'p-poplin' ? { ...item, image: photoUrl } :
+            item.id === 'p-hoops' ? { ...item, retailerUrl: 'https://example.com/earrings' } :
+            item.id === 'p-straight-trouser' ? { ...item, productUrl: null } : item,
+        );
+        usePreferencesStore.setState({ results: [{ ...entry, items }] });
 
-        await completeRequired(user);
-        await user.click(screen.getByRole('button', { name: /generate outfits/i }));
+        renderAt('/results');
 
-        const grid = await screen.findByRole('list', { name: /recommended outfits/i });
-        const firstCard = within(grid).getAllByRole('listitem')[0];
+        const card = await screen.findByRole('article', { name: entry.outfit.name });
+        const pieces = within(card).getByRole('list', { name: `Products in ${entry.outfit.name}` });
+        expect(within(pieces).getAllByRole('listitem')).toHaveLength(items.length);
+        expect(within(card).getAllByRole('img', { name: 'Oversized Poplin Shirt' })).toHaveLength(2);
+        const photo = within(pieces).getByRole('img', { name: 'Oversized Poplin Shirt' });
+        expect(photo).toHaveAttribute('src', photoUrl);
+        const shop = within(pieces).getByRole('link', { name: /check item at arket.*oversized poplin shirt/i });
+        expect(shop).toHaveAttribute('href', items.find((item) => item.id === 'p-poplin')!.productUrl);
+        expect(shop).toHaveAttribute('target', '_blank');
+        expect(shop).toHaveAttribute('rel', 'noopener noreferrer');
+        expect(within(pieces).getByRole('link', { name: /browse mejuri.*gold vermeil hoops/i }))
+            .toHaveAttribute('href', 'https://example.com/earrings');
+        expect(within(pieces).getAllByText('Link Unavailable')).toHaveLength(2);
 
-        // Every piece contributes a labelled outlined figure, because the catalog
-        // carries no photography. No <img> with a missing src is rendered.
-        const figures = within(firstCard).getAllByRole('img');
-        expect(figures.length).toBeGreaterThan(0);
-        const brokenImages = firstCard.querySelectorAll('img:not([src]), img[src=""]');
-        expect(brokenImages).toHaveLength(0);
+        fireEvent.error(photo);
+        expect(within(pieces).getByRole('img', { name: /oversized poplin shirt.*illustrative/i })).toBeVisible();
+        expect(within(card).getByText(`${items.length} pieces`)).toBeVisible();
     });
 
-    it('states the piece count, including pieces beyond the thumbnail strip', async () => {
-        const user = userEvent.setup();
-        renderAt();
+    it('recommends all three verified Neutral Layers garments with product photos under $300', async () => {
+        usePreferencesStore.setState({
+            preferences: {
+                ...EMPTY_PREFERENCES,
+                occasion: 'Work',
+                dressCode: 'Smart Casual',
+                budgetInput: '300',
+                budget: 300,
+                department: 'Womenswear',
+            },
+        });
+        usePreferencesStore.getState().generate();
+        renderAt('/results');
 
-        await completeRequired(user);
-        await user.click(screen.getByRole('button', { name: /generate outfits/i }));
-
-        const grid = await screen.findByRole('list', { name: /recommended outfits/i });
-        const firstCard = within(grid).getAllByRole('listitem')[0];
-        expect(within(firstCard).getByText(/\d+ pieces/i)).toBeVisible();
+        const card = await screen.findByRole('article', { name: 'Neutral Layers' });
+        const list = within(card).getByRole('list', { name: 'Products in Neutral Layers' });
+        const links = within(list).getAllByRole('link', { name: /^view item at/i });
+        expect(links.map((link) => link.getAttribute('href'))).toEqual([
+            'https://www.everlane.com/products/womens-cashmere-slim-crew-sweater-navy',
+            'https://www.everlane.com/products/womens-wide-leg-pant-stretch-linen-trench-coat-khaki',
+            'https://www.ghbass.com/products/women-whitney-weejuns-penny-loafer-black',
+        ]);
+        expect(within(list).getAllByRole('img').map((photo) => photo.getAttribute('src'))).toEqual([
+            '/catalog/everlane-cashmere-slim-crew-navy.jpg',
+            '/catalog/everlane-wide-leg-stretch-linen-khaki.jpg',
+            '/catalog/ghbass-whitney-weejuns-black.jpg',
+        ]);
+        expect(usePreferencesStore.getState().results.find((entry) => entry.outfit.id === 'o-12'))
+            .toMatchObject({ knownTotal: 295, priceComplete: true });
     });
+});
+
+it('shows the photographed wedding outfits and opens camera try-on without an expanded chat', async () => {
+    const user = userEvent.setup();
+    usePreferencesStore.setState({
+        preferences: {
+            ...EMPTY_PREFERENCES,
+            occasion: 'Wedding',
+            dressCode: 'Smart Casual',
+            budgetInput: '456',
+            budget: 456,
+            styles: ['Trendy'],
+        },
+    });
+    usePreferencesStore.getState().generate();
+    renderAt('/results');
+
+    const assistant = screen.getByText('Style assistant');
+    const disclosure = assistant.closest('details');
+    expect(disclosure).not.toHaveAttribute('open');
+    await user.click(assistant);
+    expect(disclosure).toHaveAttribute('open');
+    await user.click(assistant);
+    expect(disclosure).not.toHaveAttribute('open');
+
+    for (const [name, photoCount] of [['Garden Formal', 3], ['Bomber Wedding', 4]] as const) {
+        const card = screen.getByRole('article', { name });
+        const products = within(card).getByRole('list', { name: `Products in ${name}` });
+        expect(within(products).getAllByRole('link', { name: /^view item/i })).toHaveLength(photoCount);
+        expect(products.querySelectorAll('img[src^="/catalog/"]')).toHaveLength(photoCount);
+    }
+
+    await user.click(screen.getByRole('link', { name: /try on garden formal with camera/i }));
+    expect(await screen.findByRole('tab', { name: /ar try-on/i })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('button', { name: /enable camera/i })).toBeVisible();
+    await user.click(screen.getByRole('button', { name: /use silhouette mode/i }));
+    expect(await screen.findByTestId('ar-overlay')).toHaveAttribute('src', '/catalog/p-garden-jersey-flat.jpg');
 });
 
 describe('shoulder tracking control (Sprint 3)', () => {

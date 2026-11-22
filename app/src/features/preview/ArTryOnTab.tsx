@@ -44,6 +44,12 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
 
     const initialGarment = useMemo(() => defaultArGarment(items, AR_GARMENTS), [items]);
     const [selected, setSelected] = useState<Product | null>(initialGarment);
+    const [failedOverlay, setFailedOverlay] = useState<Record<string, true>>({});
+    const photo = selected?.photoOverlayAsset;
+    const photoOverlay = photo && !failedOverlay[photo] ? photo : null;
+    const illustration = selected?.overlayAsset;
+    const overlay = photoOverlay ?? (illustration && !failedOverlay[illustration] ? illustration : null);
+    const outline = photoOverlay ? selected?.photoOverlayOutline : undefined;
 
     const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -70,9 +76,11 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
         [],
     );
 
+    const showCamera = camera.isActive && !prefersSilhouette;
+
     const tracking = useShoulderTracking({
         videoRef,
-        active: camera.isActive,
+        active: showCamera,
         enabled: autoTrackEnabled && !hasManualOverride,
         onTransform: handleTrackedTransform,
     });
@@ -85,7 +93,7 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
 
     function handleResumeTracking() {
         setHasManualOverride(false);
-        tracking.resume();
+        setAutoTrackEnabled(true);
     }
 
     /**
@@ -112,7 +120,6 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
         };
     }, [camera.stream]);
 
-    const showCamera = camera.isActive && !prefersSilhouette;
     const showSilhouette = !showCamera;
     const failureReason = camera.reason;
 
@@ -234,18 +241,26 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                             )}
 
                             {/* Garment overlay */}
-                            {selected?.overlayAsset && (
+                            {selected && overlay && (
                                 <img
-                                    src={selected.overlayAsset}
+                                    src={overlay}
                                     alt={`${selected.name} overlay`}
                                     data-testid="ar-overlay"
                                     className="pointer-events-none absolute inset-0 h-full w-full object-contain"
-                                    style={overlayStyle(transform)}
+                                    style={{
+                                        ...overlayStyle(transform),
+                                        ...(outline && {
+                                            objectPosition: 'center bottom',
+                                            transformOrigin: '50% 28%',
+                                            clipPath: `polygon(${outline.map(([x, y]) => `${x}% ${y}%`).join(', ')})`,
+                                        }),
+                                    }}
+                                    onError={() => setFailedOverlay((failed) => ({ ...failed, [overlay]: true }))}
                                 />
                             )}
 
                             <span className="absolute left-2 top-2 rounded-pill border border-champagne/35 bg-obsidian/80 px-2 py-0.5 font-data text-[0.5625rem] uppercase tracking-[0.12em] text-champagne/90 backdrop-blur-md">
-                                Illustrative Prototype
+                                {photoOverlay ? '2D product overlay' : overlay ? 'Illustrative Prototype' : 'Overlay unavailable'}
                             </span>
 
                             {camera.status === 'requesting' && (
@@ -341,7 +356,9 @@ export function ArTryOnTab({ items }: ArTryOnTabProps) {
                                                 ? `Following your shoulders. Confidence ${Math.round(
                                                     (tracking.estimate?.confidence ?? 0) * 100,
                                                 )}%.`
-                                                : 'Looking for your shoulders. Stand centred and face the camera.'}
+                                                : autoTrackEnabled
+                                                    ? 'Looking for your shoulders. Stand centred and face the camera.'
+                                                    : 'Automatic tracking is off. Use the alignment controls below.'}
                                     </p>
                                 </div>
 

@@ -13,7 +13,7 @@ import type {
     UserPreferences,
 } from '@/types/domain';
 import { DEFAULT_DEPARTMENT, EMPTY_PREFERENCES, NO_COLOR_PREFERENCE } from '@/types/domain';
-import { catalog } from '@/data/catalog';
+import { catalog, getProduct } from '@/data/catalog';
 import { recommendOutfits } from '@/engine/recommend';
 import { computeRelaxOptions } from '@/engine/relax';
 import { validateBudget, validatePreferences, hasErrors } from '@/features/preferences/validation';
@@ -355,12 +355,40 @@ export const usePreferencesStore = create<PreferenceState>()(
             // submitted flags) is recomputed, so a stale error cannot greet the user
             // on their next visit.
             partialize: (state) => ({
+                catalogVersion: catalog.version,
                 preferences: state.preferences,
                 results: state.results,
                 resultDiagnostics: state.resultDiagnostics,
                 lastGeneratedAt: state.lastGeneratedAt,
                 chatLog: state.chatLog,
             }),
+            merge: (persistedState, currentState) => {
+                const { catalogVersion, ...saved } =
+                    (persistedState ?? {}) as Partial<PreferenceState> & { catalogVersion?: string };
+                const merged = { ...currentState, ...saved };
+
+                // Reprice saved recommendations when the catalog changes so
+                // budget filters and totals reflect the current product listings.
+                if (catalogVersion !== catalog.version && saved.lastGeneratedAt != null) {
+                    const result = recommendOutfits(merged.preferences, catalog);
+                    return { ...merged, results: result.outfits, resultDiagnostics: result.diagnostics };
+                }
+
+                const results = merged.results.map((entry) => ({
+                    ...entry,
+                    items: entry.items.map((item) => {
+                        // Saved rankings can outlive a catalog link or photo update.
+                        const product = getProduct(item.id);
+                        if (!product) return item;
+                        const { productUrl, productUrlVerifiedAt, retailerUrl, image, overlayAsset,
+                            photoOverlayAsset, photoOverlayOutline } = product;
+                        return { ...item, productUrl, productUrlVerifiedAt, retailerUrl, image, overlayAsset,
+                            photoOverlayAsset, photoOverlayOutline };
+                    }),
+                }));
+
+                return { ...merged, results };
+            },
             version: PERSIST_VERSION,
             /**
              * Forward-migrate an older persisted payload.

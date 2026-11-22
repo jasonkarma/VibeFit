@@ -46,13 +46,13 @@ function seedWorkPreferences(budget = 400) {
     });
 }
 
-/** Work / Smart Casual / $300 — surfaces o-12, which holds the null-price item. */
-function seedSmartCasualPreferences() {
+/** Preferences for the outfit with unknown-price linen trousers. */
+function seedPartialPricePreferences() {
     usePreferencesStore.setState({
         preferences: {
             ...EMPTY_PREFERENCES,
-            occasion: 'Work',
-            dressCode: 'Smart Casual',
+            occasion: 'Wedding',
+            dressCode: 'Cocktail',
             budgetInput: '300',
             budget: 300,
             styles: ['Minimalist', 'Bohemian'],
@@ -111,7 +111,7 @@ describe('Story 6 — outfit details', () => {
         expect(screen.getByRole('meter')).toBeVisible();
     });
 
-    it('lists every garment piece with a Prototype Visual badge (AC 6.3)', async () => {
+    it('lists every garment piece with a photo or Prototype Visual badge (AC 6.3)', async () => {
         seedWorkPreferences();
         usePreferencesStore.getState().generate();
 
@@ -122,10 +122,9 @@ describe('Story 6 — outfit details', () => {
 
         expect(within(list).getAllByRole('listitem')).toHaveLength(outfit.itemIds.length);
 
-        // Every piece carries the badge, because no product photography exists.
-        expect(within(list).getAllByText(/prototype visual/i)).toHaveLength(
-            outfit.itemIds.length,
-        );
+        expect(within(list).getAllByText(/prototype visual/i)).toHaveLength(outfit.itemIds.length - 1);
+        expect(within(list).getByRole('img', { name: 'Whitney Weejuns Penny Loafer · Black' }))
+            .toHaveAttribute('src', '/catalog/ghbass-whitney-weejuns-black.jpg');
 
         for (const itemId of outfit.itemIds) {
             expect(list.querySelector(`[data-testid="outfit-item-${itemId}"]`)).not.toBeNull();
@@ -227,20 +226,20 @@ describe('Story 7 — itemised USD pricing', () => {
         renderAt('/results/o-08');
 
         const total = await screen.findByTestId('outfit-total');
-        // poplin 59 + blazer 139 + trousers 89 + loafers 110 + hoops 68
-        expect(total).toHaveTextContent('$465.00');
+        // poplin 59 + blazer 139 + trousers 89 + loafers 195 + hoops 68
+        expect(total).toHaveTextContent('$550.00');
 
         expect(screen.getByRole('heading', { name: /total outfit price/i })).toBeVisible();
-        // $465 against a $400 budget is over.
+        // $550 against a $400 budget is over.
         expect(screen.getByTestId('budget-verdict')).toHaveTextContent(/over your budget/i);
         expect(screen.queryByTestId('partial-total-notice')).toBeNull();
     });
 
     it('flags a partial total for the seeded null-price item (AC 7.3)', async () => {
-        seedSmartCasualPreferences();
+        seedPartialPricePreferences();
         usePreferencesStore.getState().generate();
 
-        renderAt('/results/o-12');
+        renderAt('/results/o-18');
 
         const list = await screen.findByRole('list', { name: /garments in this outfit/i });
 
@@ -259,8 +258,8 @@ describe('Story 7 — itemised USD pricing', () => {
         expect(screen.getAllByTestId('partial-total-notice')[0]).toHaveTextContent(
             /lower bound/i,
         );
-        // Cashmere 98 + loafers 110 = 208.
-        expect(screen.getByTestId('outfit-total')).toHaveTextContent('$208.00');
+        // Camisole 88 + sandals 79 + scarf 59 = 226.
+        expect(screen.getByTestId('outfit-total')).toHaveTextContent('$226.00');
         // No budget verdict is offered, because the real cost is unknown.
         expect(screen.queryByTestId('budget-verdict')).toBeNull();
     });
@@ -288,7 +287,7 @@ describe('Story 8 — retailer shopping links', () => {
         const list = await screen.findByRole('list', { name: /garments in this outfit/i });
 
         const poplinCard = list.querySelector('[data-testid="outfit-item-p-poplin"]') as HTMLElement;
-        const link = within(poplinCard).getByRole('link', { name: /shop at arket/i });
+        const link = within(poplinCard).getByRole('link', { name: /check item at arket/i });
 
         expect(link).toHaveAttribute('href', 'https://www.arket.com/en_us/womens/shirts/product.oversized-poplin-shirt.white.1132458001.html');
         expect(link).toHaveAttribute('target', '_blank');

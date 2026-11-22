@@ -30,14 +30,20 @@ export const productSchema = z.object({
     department: departmentSchema,
     /** Deliberately nullable: unknown price must never be invented. */
     price: z.number().nonnegative().nullable(),
-    /** Deliberately nullable: no valid page means no shop link. */
     productUrl: z.string().url().nullable(),
+    productUrlVerifiedAt: z.string().date().optional(),
+    retailerUrl: z.string().url().optional(),
     priceRetrievedAt: z.string().nullable(),
     colors: z.array(colorSchema).min(1),
     styles: z.array(styleSchema).min(1),
     image: z.string().nullable(),
     arSupported: z.boolean(),
     overlayAsset: z.string().nullable(),
+    photoOverlayAsset: z.string().trim().min(1).optional(),
+    photoOverlayOutline: z.array(z.tuple([
+        z.number().min(0).max(100),
+        z.number().min(0).max(100),
+    ])).min(3).optional(),
     notes: z.string().optional(),
 });
 

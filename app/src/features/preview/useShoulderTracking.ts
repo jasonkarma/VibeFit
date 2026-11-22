@@ -3,6 +3,7 @@ import {
     AUTO_FOLLOW_CONFIDENCE,
     estimateShouldersFromFrame,
     transformFromShoulders,
+    projectShouldersToStage,
     type ShoulderEstimate,
 } from './shoulderTracking';
 import type { OverlayTransform } from './overlayTransform';
@@ -43,10 +44,7 @@ export interface UseShoulderTrackingResult {
     estimate: ShoulderEstimate | null;
     /** True while auto-follow is moving the garment. */
     autoFollowing: boolean;
-    /** Called by manual controls to suspend auto-follow. */
-    suspend: () => void;
-    /** Re-enable auto-follow after a manual adjustment. */
-    resume: () => void;
+
 }
 
 /** How often to run detection. 12fps is ample and keeps the main thread free. */
@@ -66,27 +64,6 @@ export function useShoulderTracking({
     const [estimate, setEstimate] = useState<ShoulderEstimate | null>(null);
     const [autoFollowing, setAutoFollowing] = useState(false);
 
-    /** Suspended by a manual adjustment; auto-follow stops until resumed. */
-    const suspendedRef = useRef(false);
-    /** Smoothed values carried between frames. */
-    const smoothedRef = useRef<{ scale: number; offsetX: number; offsetY: number } | null>(null);
-    /** Count of consecutive confident hits, to debounce the takeover. */
-    const hitsRef = useRef(0);
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-    const suspend = useCallback(() => {
-        suspendedRef.current = true;
-        setAutoFollowing(false);
-        setStatus('off');
-    }, []);
-
-    const resume = useCallback(() => {
-        suspendedRef.current = false;
-        hitsRef.current = 0;
-        smoothedRef.current = null;
-        setStatus('searching');
-    }, []);
-
     /*
      * The callback is stored in a ref so the effect does not need it in its
      * dependency list. If it were a dependency, an inline arrow in the parent would
@@ -102,6 +79,7 @@ export function useShoulderTracking({
         // Every early return here is a "do not start a loop" guarantee.
         if (!enabled || !active) {
             setStatus('off');
+            setEstimate(null);
             setAutoFollowing(false);
             return;
         }
@@ -114,6 +92,9 @@ export function useShoulderTracking({
         let frame = 0;
         let cancelled = false;
         let lastRun = 0;
+        let hits = 0;
+        let canvas: HTMLCanvasElement | undefined;
+        let smoothed: ReturnType<typeof transformFromShoulders> | undefined;
 
         const tick = (now: number) => {
             if (cancelled) return;
@@ -125,55 +106,35 @@ export function useShoulderTracking({
                 if (video && video.readyState >= 2) {
                     // One canvas reused across frames; allocating per frame would
                     // churn the GC during a live demo.
-                    if (!canvasRef.current) {
-                        canvasRef.current = document.createElement('canvas');
-                    }
+                    canvas ??= document.createElement('canvas');
+                    const next = estimateShouldersFromFrame(video, canvas);
+                    setEstimate(next);
 
-                    const next = estimateShouldersFromFrame(video, canvasRef.current);
-
-                    if (!next) {
-                        // Losing the subject does not immediately drop the overlay —
-                        // a brief miss (turning, blinking light) should not reset the
-                        // garment to its default position.
-                        hitsRef.current = 0;
-                        setEstimate(null);
-                        if (!suspendedRef.current) setStatus('searching');
+                    if (!next || next.confidence < AUTO_FOLLOW_CONFIDENCE) {
+                        hits = 0;
+                        setAutoFollowing(false);
+                        setStatus('searching');
                     } else {
-                        hitsRef.current += 1;
-                        setEstimate(next);
-
-                        if (suspendedRef.current) {
-                            // Tracking continues in the background so the confidence
-                            // hint stays live, but nothing moves.
-                        } else if (next.confidence >= AUTO_FOLLOW_CONFIDENCE) {
-                            const raw = transformFromShoulders(next);
-                            const previous = smoothedRef.current;
-
-                            const smoothed = previous
-                                ? {
-                                    scale: previous.scale + (raw.scale - previous.scale) * SMOOTHING,
-                                    offsetX:
-                                        previous.offsetX + (raw.offsetX - previous.offsetX) * SMOOTHING,
-                                    offsetY:
-                                        previous.offsetY + (raw.offsetY - previous.offsetY) * SMOOTHING,
-                                }
-                                : raw;
-
-                            smoothedRef.current = smoothed;
-
-                            // Only take over after a few consecutive confident hits,
-                            // so a single spurious detection never yanks the garment.
-                            if (hitsRef.current >= CONFIRM_FRAMES) {
-                                onTransformRef.current({
-                                    scale: Math.round(smoothed.scale),
-                                    offsetX: Math.round(smoothed.offsetX),
-                                    offsetY: Math.round(smoothed.offsetY),
-                                });
-                                setAutoFollowing(true);
-                                setStatus('tracking');
-                            }
-                        } else if (!suspendedRef.current && hitsRef.current < CONFIRM_FRAMES) {
-                            setStatus('searching');
+                        hits += 1;
+                        if (hits >= CONFIRM_FRAMES) {
+                            // Match the centered object-cover crop before applying
+                            // the horizontal mirror in transformFromShoulders.
+                            const raw = transformFromShoulders(
+                                projectShouldersToStage(next, video),
+                            );
+                            const previous = smoothed ?? raw;
+                            smoothed = {
+                                scale: previous.scale + (raw.scale - previous.scale) * SMOOTHING,
+                                offsetX: previous.offsetX + (raw.offsetX - previous.offsetX) * SMOOTHING,
+                                offsetY: previous.offsetY + (raw.offsetY - previous.offsetY) * SMOOTHING,
+                            };
+                            onTransformRef.current({
+                                scale: Math.round(smoothed.scale),
+                                offsetX: Math.round(smoothed.offsetX),
+                                offsetY: Math.round(smoothed.offsetY),
+                            });
+                            setAutoFollowing(true);
+                            setStatus('tracking');
                         }
                     }
                 }
@@ -187,9 +148,8 @@ export function useShoulderTracking({
         return () => {
             cancelled = true;
             window.cancelAnimationFrame(frame);
-            canvasRef.current = null;
         };
     }, [enabled, active, videoRef]);
 
-    return { status, estimate, autoFollowing, suspend, resume };
+    return { status, estimate, autoFollowing };
 }

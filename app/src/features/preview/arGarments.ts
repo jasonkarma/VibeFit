@@ -12,9 +12,9 @@ import { catalog as defaultCatalog } from '@/data/catalog';
  * A garment qualifies only when all three hold:
  *   1. `arSupported` is true,
  *   2. it is a `top` or `layer` (a sleeve the user can see themselves in),
- *   3. it actually has an `overlayAsset`.
+ *   3. it has a photo cutout or an illustrative overlay.
  *
- * Point 3 matters: an `arSupported` product with a missing asset would render an
+ * Point 3 matters: an `arSupported` product with no assets would render an
  * empty overlay frame that looks like a bug. Filtering it out means the switcher
  * only ever offers garments that will visibly do something.
  */
@@ -23,28 +23,15 @@ export function arGarmentsFrom(catalog: Catalog): Product[] {
         (product) =>
             product.arSupported &&
             (product.slot === 'top' || product.slot === 'layer') &&
-            typeof product.overlayAsset === 'string' &&
-            product.overlayAsset.trim().length > 0,
+            Boolean(product.photoOverlayAsset?.trim() || product.overlayAsset?.trim()),
     );
 }
 
 /** Convenience binding against the loaded catalog. */
 export const AR_GARMENTS: Product[] = arGarmentsFrom(defaultCatalog);
 
-/**
- * How many garments get an AR overlay.
- *
- * The Sprint 2 charter scope was **five** tops/jackets, all womenswear. Sprint 3's
- * department feature makes that a dead end for half the users: selecting Menswear
- * then opening a try-on would offer nothing but womenswear pieces.
- *
- * So the count is now 7 — the original five, plus the merino crew and unstructured
- * blazer — and it is expressed as a constant that the tests assert against rather
- * than a magic number scattered through the code. Every department must contribute
- * at least one supported garment; that is the invariant worth protecting, and it is
- * asserted in `arGarments.test.ts`.
- */
-export const AR_GARMENT_TARGET_COUNT = 7;
+/** Number of catalog garments with a try-on asset. */
+export const AR_GARMENT_TARGET_COUNT = 9;
 
 /** Minimum supported garments per department. Guards the filter from a dead end. */
 export const AR_GARMENTS_PER_DEPARTMENT_MIN = 1;

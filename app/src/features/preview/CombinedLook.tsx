@@ -17,16 +17,14 @@ interface CombinedLookProps {
  * composition in wear order (layer behind, top, bottom, shoes) with accessories
  * alongside, so the outfit reads as one look rather than a product grid.
  *
- * Two honesty constraints are baked in, both from the charter rather than taste:
- *   • Every visual carries the `Prototype Visual` badge — there is no product
- *     photography in this prototype and the banner says so.
- *   • The label is literally "Illustrative Prototype Preview", because a
- *     composition of placeholder tiles must never be presented as a rendering.
+ * Where the catalog supplies photography, it appears alongside any remaining
+ * illustrative tiles.
  */
 export function CombinedLook({ entry }: CombinedLookProps) {
     const { outfit, items } = entry;
     const { container, card } = useMotion();
     const pricing = summarisePricing(items);
+    const hasPhotos = items.some((item) => Boolean(item.image));
 
     /**
      * Wear order: layer outermost/behind, then top, bottom, shoes; accessories last.
@@ -63,7 +61,7 @@ export function CombinedLook({ entry }: CombinedLookProps) {
                     className="rounded-pill border border-champagne/35 bg-champagne/10 px-3 py-1 font-data text-[0.5625rem] uppercase tracking-[0.12em] text-champagne"
                     data-testid="combined-look-label"
                 >
-                    Illustrative Prototype Preview
+                    {hasPhotos ? 'Outfit preview' : 'Illustrative Prototype Preview'}
                 </span>
             </div>
 
@@ -162,7 +160,7 @@ export function CombinedLook({ entry }: CombinedLookProps) {
                     </div>
 
                     <p className="mt-4 text-center font-data text-[0.5625rem] uppercase tracking-[0.1em] text-obsidian-500">
-                        Prototype visuals · not product photography
+                        {hasPhotos ? 'Product photos where available' : 'Prototype visuals · not product photography'}
                     </p>
                 </motion.div>
 

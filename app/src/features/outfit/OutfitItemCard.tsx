@@ -7,9 +7,8 @@ import {
     PRICE_UNAVAILABLE,
     formatItemPrice,
     hasDisplayablePrice,
-    hasShoppingLink,
     samplePriceLabel,
-    shopLinkLabel,
+    shoppingDestination,
 } from '@/lib/pricing';
 import { cn } from '@/lib/cn';
 
@@ -30,9 +29,7 @@ interface OutfitItemCardProps {
  *   • `price: null` → render "Price Unavailable". The wrong answers are `$0.00`,
  *     "~$X", or hiding the row — all three invent or conceal a fact. The dollar
  *     sign is absent from this branch entirely, so a screenshot cannot be misread.
- *   • `productUrl: null` → render "Link Unavailable" as text, never an anchor.
- *     The wrong answers are a disabled-looking button or `href="#"`, both of which
- *     look clickable and lie.
+ *   • Missing shopping destination → render "Link Unavailable" as text.
  *
  * The shop link is a real `<a>` with `target="_blank"` and
  * `rel="noopener noreferrer"`, and its accessible name names the retailer so a
@@ -40,7 +37,7 @@ interface OutfitItemCardProps {
  */
 export function OutfitItemCard({ product }: OutfitItemCardProps) {
     const price = formatItemPrice(product.price);
-    const canShop = hasShoppingLink(product);
+    const destination = shoppingDestination(product);
     const swatch = product.colors[0] ? COLOR_SWATCHES[product.colors[0]] : undefined;
 
     return (
@@ -52,7 +49,7 @@ export function OutfitItemCard({ product }: OutfitItemCardProps) {
             )}
             data-testid={`outfit-item-${product.id}`}
             data-price-known={hasDisplayablePrice(product) ? 'true' : 'false'}
-            data-link-available={canShop ? 'true' : 'false'}
+            data-link-available={destination ? 'true' : 'false'}
         >
             <PrototypeVisual
                 slot={product.slot}
@@ -94,9 +91,9 @@ export function OutfitItemCard({ product }: OutfitItemCardProps) {
                 </div>
 
                 <div className="mt-auto pt-4">
-                    {canShop ? (
+                    {destination ? (
                         <a
-                            href={product.productUrl ?? undefined}
+                            href={destination.href}
                             target="_blank"
                             rel="noopener noreferrer"
                             className={cn(
@@ -105,9 +102,9 @@ export function OutfitItemCard({ product }: OutfitItemCardProps) {
                                 'font-sans text-[0.8125rem] font-medium text-champagne',
                                 'transition-colors hover:bg-champagne/20 hover:text-champagne-100',
                             )}
-                            aria-label={`${shopLinkLabel(product.retailer)} — opens in a new tab`}
+                            aria-label={`${destination.label} — ${product.name} (opens in a new tab)`}
                         >
-                            {shopLinkLabel(product.retailer)}
+                            {destination.label}
                             <ExternalLink className="h-3 w-3" aria-hidden="true" />
                         </a>
                     ) : (

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { usePreferencesStore } from '../preferencesStore';
-import { DEFAULT_DEPARTMENT } from '@/types/domain';
+import { DEFAULT_DEPARTMENT, EMPTY_PREFERENCES } from '@/types/domain';
+import { getProduct } from '@/data/catalog';
 
 /**
  * Persisted-state migration v1 → v2 (Sprint 3).
@@ -21,6 +22,63 @@ function writeLegacyPayload(payload: unknown) {
 beforeEach(() => {
     window.localStorage.clear();
     usePreferencesStore.getState().reset();
+});
+
+it('refreshes retailer destinations in saved recommendations without reranking', async () => {
+    usePreferencesStore.setState({
+        preferences: {
+            ...EMPTY_PREFERENCES,
+            occasion: 'Work',
+            dressCode: 'Business Formal',
+            budgetInput: '400',
+            budget: 400,
+        },
+    });
+    usePreferencesStore.getState().generate();
+    const original = usePreferencesStore.getState().results[0];
+    const product = getProduct('p-linen-trouser')!;
+    writeLegacyPayload({
+        version: 2,
+        state: {
+            results: [{
+                ...original,
+                items: [{ ...product, productUrl: product.retailerUrl, retailerUrl: undefined }],
+            }],
+        },
+    });
+
+    await usePreferencesStore.persist.rehydrate();
+
+    const [result] = usePreferencesStore.getState().results;
+    expect(result.outfit.id).toBe(original.outfit.id);
+    expect(result.matchScore).toBe(original.matchScore);
+    expect(result.items[0]).toMatchObject({ productUrl: null, retailerUrl: product.retailerUrl });
+});
+
+it('reruns stored recommendations against current garment prices when the catalog changes', async () => {
+    writeLegacyPayload({
+        version: 2,
+        state: {
+            catalogVersion: '1.1.0-sprint3',
+            preferences: {
+                ...EMPTY_PREFERENCES,
+                occasion: 'Work',
+                dressCode: 'Smart Casual',
+                budgetInput: '300',
+                budget: 300,
+                department: 'Womenswear',
+            },
+            results: [],
+            lastGeneratedAt: 42,
+        },
+    });
+
+    await usePreferencesStore.persist.rehydrate();
+
+    const updated = usePreferencesStore.getState().results.find((entry) => entry.outfit.id === 'o-12');
+    expect(updated?.knownTotal).toBe(295);
+    expect(updated?.priceComplete).toBe(true);
+    expect(usePreferencesStore.getState().preferences.budget).toBe(300);
 });
 
 describe('v1 → v2 persistence migration', () => {

@@ -65,6 +65,8 @@ export function ResultsPage() {
         preferences.budget,
         preferences.styles.join('|'),
         preferences.colors.join('|'),
+        preferences.department,
+        preferences.preferredRetailers.join('|'),
     ].join('::');
 
     /**
@@ -118,10 +120,6 @@ export function ResultsPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lastGeneratedAt]);
 
-    if (!hasRequiredInputs) return null;
-
-    const budget = preferences.budget ?? 0;
-
     /**
      * Display order: the model's ranking first, then anything it did not mention.
      * `aiOrder` only ever contains IDs from this result set (enforced in
@@ -136,6 +134,9 @@ export function ResultsPage() {
         const remaining = results.filter((entry) => !aiOrder.includes(entry.outfit.id));
         return [...ordered, ...remaining];
     }, [results, aiOrder]);
+
+    if (!hasRequiredInputs) return null;
+    const budget = preferences.budget ?? 0;
 
     function handleApplyRelax(patch: Partial<typeof preferences>) {
         applyPatch(patch);

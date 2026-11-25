@@ -9,10 +9,13 @@ import { PrototypeVisual } from '@/components/ui/PrototypeVisual';
 import { useMotion } from '@/lib/motion';
 import { cn } from '@/lib/cn';
 import { LINK_UNAVAILABLE, shoppingDestination } from '@/lib/pricing';
+import { formatUsdExact } from '@/lib/format';
+import { SaveOutfitButton } from '@/features/saved/SaveOutfitButton';
 
 interface OutfitCardProps {
     entry: RankedOutfit;
-    budget: number;
+    budget?: number;
+    collectionPath?: '/results' | '/saved';
     onOpen: (entry: RankedOutfit) => void;
     /** Where this card sits in the stagger, for reveal delay. */
     index: number;
@@ -25,7 +28,9 @@ interface OutfitCardProps {
 
 const WEAR_ORDER = ['layer', 'top', 'bottom', 'shoes', 'accessory'] as const;
 
-export function OutfitCard({ entry, budget, onOpen, index, aiReason }: OutfitCardProps) {
+export function OutfitCard({
+    entry, budget, onOpen, index, aiReason, collectionPath = '/results',
+}: OutfitCardProps) {
     const { reduced, card } = useMotion();
     const { outfit, items, knownTotal, priceComplete, matchScore, reasons, arReady } = entry;
 
@@ -66,13 +71,15 @@ export function OutfitCard({ entry, budget, onOpen, index, aiReason }: OutfitCar
                         className="h-full w-full rounded-none border-0 transition-transform duration-700 group-hover:scale-105"
                     />
 
-                    <span className="absolute right-3 top-3 z-10 block">
-                        <MatchRing value={matchScore} size={46} />
-                    </span>
+                    {budget !== undefined && (
+                        <span className="absolute right-3 top-3 z-10 block">
+                            <MatchRing value={matchScore} size={46} />
+                        </span>
+                    )}
 
                     {arReady && (
                         <Link
-                            to={`/results/${outfit.id}/preview?mode=ar`}
+                            to={`${collectionPath}/${outfit.id}/preview?mode=ar`}
                             aria-label={`Try on ${outfit.name} with camera`}
                             className="absolute left-3 top-3 z-20 inline-flex min-h-9 items-center gap-1.5 rounded-pill border border-violet/50 bg-obsidian/90 px-3 py-1.5 text-xs font-medium text-violet hover:text-white focus-visible:outline focus-visible:outline-violet"
                         >
@@ -84,11 +91,13 @@ export function OutfitCard({ entry, budget, onOpen, index, aiReason }: OutfitCar
 
                 {/* Body */}
                 <div className="flex flex-1 flex-col p-4">
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center justify-between gap-2">
                         <h3 className="font-display text-xl leading-tight text-white">{outfit.name}</h3>
-                        <ArrowUpRight
-                            className="mt-1 h-4 w-4 shrink-0 text-obsidian-500 transition-colors group-hover:text-champagne"
-                            aria-hidden="true"
+                        <SaveOutfitButton
+                            outfitId={outfit.id}
+                            outfitName={outfit.name}
+                            removeLabel={collectionPath === '/saved'}
+                            className="relative z-20"
                         />
                     </div>
 
@@ -109,16 +118,18 @@ export function OutfitCard({ entry, budget, onOpen, index, aiReason }: OutfitCar
                     )}
 
                     {/* Reason chips: presentational, so spans rather than list items. */}
-                    <div className="mt-3 flex flex-wrap gap-1">
-                        {reasons.map((reason) => (
-                            <span
-                                key={reason}
-                                className="rounded-pill border border-white/10 px-2 py-0.5 font-data text-[0.625rem] text-obsidian-400"
-                            >
-                                {reason}
-                            </span>
-                        ))}
-                    </div>
+                    {budget !== undefined && (
+                        <div className="mt-3 flex flex-wrap gap-1">
+                            {reasons.map((reason) => (
+                                <span
+                                    key={reason}
+                                    className="rounded-pill border border-white/10 px-2 py-0.5 font-data text-[0.625rem] text-obsidian-400"
+                                >
+                                    {reason}
+                                </span>
+                            ))}
+                        </div>
+                    )}
 
                     <ul className="mt-4 grid grid-cols-2 gap-2" aria-label={`Products in ${outfit.name}`}>
                         {orderedPieces.map((piece) => {
@@ -156,19 +167,27 @@ export function OutfitCard({ entry, budget, onOpen, index, aiReason }: OutfitCar
                     </ul>
 
                     <div className="mt-auto pt-4">
-                        <BudgetMeter total={knownTotal} budget={budget} priceComplete={priceComplete} compact />
+                        {budget !== undefined ? (
+                            <BudgetMeter total={knownTotal} budget={budget} priceComplete={priceComplete} compact />
+                        ) : (
+                            <p className="font-data text-sm text-white">
+                                {priceComplete ? 'Total' : 'Known subtotal'} {formatUsdExact(knownTotal)}
+                            </p>
+                        )}
                         <p className="mt-2 font-data text-[0.625rem] uppercase tracking-[0.1em] text-obsidian-500">
                             {items.length} pieces
                         </p>
                     </div>
                 </div>
 
-                {/* Shopping anchors sit above the outfit-details click target. */}
+                {/* Shopping and saving controls sit above the outfit-details click target. */}
                 <button
                     type="button"
                     onClick={() => onOpen(entry)}
                     className="absolute inset-0 z-10 rounded-surface focus:outline-none"
-                    aria-label={`View details for ${outfit.name} — ${matchScore}% match, ${items.length} pieces`}
+                    aria-label={budget === undefined
+                        ? `View details for ${outfit.name}`
+                        : `View details for ${outfit.name} — ${matchScore}% match, ${items.length} pieces`}
                 />
             </article>
         </motion.div>

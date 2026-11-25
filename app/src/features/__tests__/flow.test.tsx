@@ -189,7 +189,7 @@ describe('full flow — generate, retain, refine', () => {
         expect(cards.length).toBeGreaterThan(0);
 
         // Each card exposes a distinct accessible name containing the outfit name.
-        const names = cards.map((card) => within(card).getByRole('button').getAttribute('aria-label'));
+        const names = cards.map((card) => within(card).getByRole('button', { name: /view details for/i }).getAttribute('aria-label'));
         expect(new Set(names).size).toBe(names.length);
 
         // Occasion was retained through generation (AC 11.4).
@@ -301,7 +301,7 @@ describe('Sprint 2 — results to detail round trip', () => {
         // Open the first recommendation.
         const grid = screen.getByRole('list', { name: /recommended outfits/i });
         const firstCard = within(grid).getAllByRole('listitem')[0];
-        await user.click(within(firstCard).getByRole('button'));
+        await user.click(within(firstCard).getByRole('button', { name: /view details for/i }));
 
         // The detail screen is genuinely a new destination.
         expect(

@@ -16,6 +16,7 @@ import { summarisePricing, budgetVerdict, PRICE_UNAVAILABLE } from '@/lib/pricin
 import { outfitSupportsAr } from '@/features/preview/arGarments';
 import { OutfitItemCard } from './OutfitItemCard';
 import { RationalePanel } from './RationalePanel';
+import { SaveOutfitButton } from '@/features/saved/SaveOutfitButton';
 
 /**
  * Outfit detail (Story 6) with itemised pricing (Story 7) and shopping links
@@ -35,7 +36,7 @@ import { RationalePanel } from './RationalePanel';
  * has its own guard against re-generating on mount, which is where that guarantee
  * actually lives.
  */
-export function OutfitDetailPage() {
+export function OutfitDetailPage({ fromSaved = false }: { fromSaved?: boolean }) {
     const { outfitId } = useParams<{ outfitId: string }>();
     const navigate = useNavigate();
     const { container, card } = useMotion();
@@ -43,27 +44,29 @@ export function OutfitDetailPage() {
     const preferences = usePreferencesStore((state) => state.preferences);
     const results = usePreferencesStore((state) => state.results);
 
-    const hasRequiredInputs = Boolean(
+    const canViewOutfit = fromSaved || Boolean(
         preferences.occasion && preferences.dressCode && preferences.budget,
     );
+    const backPath = fromSaved ? '/saved' : '/results';
+    const backLabel = fromSaved ? 'Back to Saved Outfits' : 'Back to Recommendations';
 
     useEffect(() => {
-        if (!hasRequiredInputs) {
+        if (!canViewOutfit) {
             navigate('/preferences', { replace: true });
         }
-    }, [hasRequiredInputs, navigate]);
+    }, [canViewOutfit, navigate]);
 
     /** Cached entry first, catalog fallback second. */
     const entry: RankedOutfit | null = useMemo(() => {
         if (!outfitId) return null;
-        const cached = results.find((candidate) => candidate.outfit.id === outfitId);
+        const cached = fromSaved ? undefined : results.find((candidate) => candidate.outfit.id === outfitId);
         if (cached) return cached;
         return rankedOutfitById(outfitId, preferences, catalog);
-    }, [outfitId, results, preferences]);
+    }, [outfitId, results, preferences, fromSaved]);
 
     const pricing = useMemo(() => summarisePricing(entry?.items ?? []), [entry]);
 
-    if (!hasRequiredInputs) return null;
+    if (!canViewOutfit) return null;
 
     if (!entry) {
         return (
@@ -77,24 +80,23 @@ export function OutfitDetailPage() {
                         We couldn&apos;t find that outfit
                     </h1>
                     <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-obsidian-400">
-                        The link may be out of date, or the outfit is no longer in the collection.
-                        Your other recommendations are still here.
+                        The link may be out of date, or the outfit may have left the collection.
                     </p>
                     <button
                         type="button"
-                        onClick={() => navigate('/results')}
+                        onClick={() => navigate(backPath)}
                         className="mt-6 inline-flex items-center gap-1.5 rounded-pill border border-champagne/40 bg-champagne/10 px-4 py-2 font-sans text-[0.8125rem] text-champagne transition-colors hover:bg-champagne/20"
                     >
                         <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-                        Back to Recommendations
+                        {backLabel}
                     </button>
                 </div>
             </PageTransition>
         );
     }
 
-    const { outfit, items, matchScore, reasons, arReady } = entry;
-    const budget = preferences.budget;
+    const { outfit, items, matchScore, arReady } = entry;
+    const budget = fromSaved ? null : preferences.budget;
     const verdict =
         pricing.kind === 'complete' ? budgetVerdict(pricing.total, budget) : null;
     const canPreviewAr = arReady && outfitSupportsAr(items);
@@ -105,17 +107,17 @@ export function OutfitDetailPage() {
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <button
                     type="button"
-                    onClick={() => navigate('/results')}
+                    onClick={() => navigate(backPath)}
                     className="inline-flex items-center gap-1.5 rounded-pill border border-white/10 bg-white/[0.03] px-4 py-2 font-sans text-[0.8125rem] text-obsidian-50 backdrop-blur-xl transition-colors hover:border-white/25 hover:text-white"
                 >
                     <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-                    Back to Recommendations
+                    {backLabel}
                 </button>
 
                 {canPreviewAr && (
                     <button
                         type="button"
-                        onClick={() => navigate(`/results/${outfit.id}/preview`)}
+                        onClick={() => navigate(`${backPath}/${outfit.id}/preview`)}
                         className="inline-flex items-center gap-1.5 rounded-pill border border-violet/40 bg-violet/15 px-4 py-2 font-sans text-[0.8125rem] font-medium text-violet transition-colors hover:bg-violet/25 hover:text-white"
                     >
                         <Camera className="h-3.5 w-3.5" aria-hidden="true" />
@@ -141,8 +143,9 @@ export function OutfitDetailPage() {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <MatchRing value={matchScore} size={64} />
+                <div className="flex flex-wrap items-center gap-3">
+                    <SaveOutfitButton outfitId={outfit.id} outfitName={outfit.name} />
+                    {!fromSaved && <MatchRing value={matchScore} size={64} />}
                 </div>
             </header>
 
@@ -197,11 +200,11 @@ export function OutfitDetailPage() {
                             </p>
                         )}
 
-                        {pricing.kind === 'complete' ? (
+                        {pricing.kind === 'complete' && budget !== null && (
                             <div className="mt-4">
                                 <BudgetMeter
                                     total={pricing.total}
-                                    budget={budget ?? 0}
+                                    budget={budget}
                                     priceComplete
                                 />
                                 {verdict && (
@@ -218,7 +221,8 @@ export function OutfitDetailPage() {
                                     </p>
                                 )}
                             </div>
-                        ) : (
+                        )}
+                        {pricing.kind === 'partial' && (
                             <div className="mt-4">
                                 <p className="text-[0.75rem] leading-relaxed text-obsidian-400">
                                     {PRICE_UNAVAILABLE} appears on the item above. A budget verdict
@@ -240,7 +244,7 @@ export function OutfitDetailPage() {
                         )}
                     </section>
 
-                    <RationalePanel entry={entry} />
+                    {!fromSaved && <RationalePanel entry={entry} />}
                 </aside>
             </div>
 

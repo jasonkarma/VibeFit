@@ -76,7 +76,7 @@ describe('Story 6 — outfit details', () => {
         const grid = await screen.findByRole('list', { name: /recommended outfits/i });
         const firstCard = within(grid).getAllByRole('listitem')[0];
 
-        const button = within(firstCard).getByRole('button');
+        const button = within(firstCard).getByRole('button', { name: /view details for/i });
         const label = button.getAttribute('aria-label') ?? '';
         expect(label).toMatch(/view details for/i);
 
@@ -147,7 +147,7 @@ describe('Story 6 — outfit details', () => {
 
         // Open the first outfit, then come back.
         const grid = screen.getByRole('list', { name: /recommended outfits/i });
-        await user.click(within(within(grid).getAllByRole('listitem')[0]).getByRole('button'));
+        await user.click(within(within(grid).getAllByRole('listitem')[0]).getByRole('button', { name: /view details for/i }));
         await screen.findByRole('list', { name: /garments in this outfit/i });
 
         await user.click(screen.getByRole('button', { name: /back to recommendations/i }));

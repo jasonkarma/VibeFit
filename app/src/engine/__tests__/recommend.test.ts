@@ -35,6 +35,9 @@ describe('charter acceptance: 10 predefined scenarios', () => {
                 expect(entry.items.length).toBeGreaterThanOrEqual(3);
                 expect(entry.outfit.occasions).toContain(scenario.occasion);
                 expect(entry.outfit.dressCodes).toContain(scenario.dressCode);
+                if (scenario.styles.length > 0) {
+                    expect(entry.outfit.styles.some((style) => scenario.styles.includes(style))).toBe(true);
+                }
 
                 // Budget AC: known total must never exceed the stated budget.
                 expect(entry.knownTotal).toBeLessThanOrEqual(scenario.budget);

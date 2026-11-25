@@ -34,7 +34,7 @@ type TabId = (typeof TABS)[number]['id'];
  * The disclaimer renders outside the tab panels, in the page footer, so it is
  * present in both tabs and cannot be lost by a refactor of either.
  */
-export function PreviewPage() {
+export function PreviewPage({ fromSaved = false }: { fromSaved?: boolean }) {
     const { outfitId } = useParams<{ outfitId: string }>();
     const navigate = useNavigate();
 
@@ -44,22 +44,23 @@ export function PreviewPage() {
     const [searchParams] = useSearchParams();
     const [tab, setTab] = useState<TabId>(() => searchParams.get('mode') === 'ar' ? 'ar' : 'combined');
 
-    const hasRequiredInputs = Boolean(
+    const canViewOutfit = fromSaved || Boolean(
         preferences.occasion && preferences.dressCode && preferences.budget,
     );
+    const collectionPath = fromSaved ? '/saved' : '/results';
 
     useEffect(() => {
-        if (!hasRequiredInputs) {
+        if (!canViewOutfit) {
             navigate('/preferences', { replace: true });
         }
-    }, [hasRequiredInputs, navigate]);
+    }, [canViewOutfit, navigate]);
 
     const entry: RankedOutfit | null = useMemo(() => {
         if (!outfitId) return null;
-        const cached = results.find((candidate) => candidate.outfit.id === outfitId);
+        const cached = fromSaved ? undefined : results.find((candidate) => candidate.outfit.id === outfitId);
         if (cached) return cached;
         return rankedOutfitById(outfitId, preferences, catalog);
-    }, [outfitId, results, preferences]);
+    }, [outfitId, results, preferences, fromSaved]);
 
     const arAvailable = useMemo(
         () => (entry ? outfitSupportsAr(entry.items) : false),
@@ -70,7 +71,7 @@ export function PreviewPage() {
     // combined look keeps the route valid instead of showing an empty panel.
     const activeTab: TabId = tab === 'ar' && !arAvailable ? 'combined' : tab;
 
-    if (!hasRequiredInputs) return null;
+    if (!canViewOutfit) return null;
 
     if (!entry) {
         return (
@@ -82,18 +83,18 @@ export function PreviewPage() {
                     </h1>
                     <button
                         type="button"
-                        onClick={() => navigate('/results')}
+                        onClick={() => navigate(collectionPath)}
                         className="mt-6 inline-flex items-center gap-1.5 rounded-pill border border-champagne/40 bg-champagne/10 px-4 py-2 font-sans text-[0.8125rem] text-champagne transition-colors hover:bg-champagne/20"
                     >
                         <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-                        Back to Recommendations
+                        {fromSaved ? 'Back to Saved Outfits' : 'Back to Recommendations'}
                     </button>
                 </div>
             </PageTransition>
         );
     }
 
-    const detailPath = `/results/${entry.outfit.id}`;
+    const detailPath = `${collectionPath}/${entry.outfit.id}`;
 
     return (
         <PageTransition>

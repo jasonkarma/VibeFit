@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import { Sparkles } from 'lucide-react';
+import { Link, NavLink } from 'react-router-dom';
+import { Heart } from 'lucide-react';
 
 interface HeaderProps {
     /** Where the wordmark links to. Results screen points back to preferences. */
@@ -23,12 +23,15 @@ export function Header({ homeHref = '/preferences' }: HeaderProps) {
                 </span>
             </Link>
 
-            <div className="flex items-center gap-2 rounded-pill border border-white/10 bg-white/[0.03] px-3 py-1.5 backdrop-blur-xl">
-                <Sparkles className="h-3 w-3 text-violet" aria-hidden="true" />
-                <span className="font-data text-[0.625rem] uppercase tracking-[0.12em] text-obsidian-400">
-                    Sprint 2 Prototype
-                </span>
-            </div>
+            <nav aria-label="Main navigation">
+                <NavLink
+                    to="/saved"
+                    className="flex min-h-11 items-center gap-2 rounded-pill border border-white/10 bg-white/[0.03] px-3 text-xs font-medium text-obsidian-50 transition-colors hover:border-champagne/45 hover:text-champagne focus-visible:outline focus-visible:outline-2 focus-visible:outline-champagne aria-[current=page]:border-champagne/45 aria-[current=page]:text-champagne"
+                >
+                    <Heart className="h-4 w-4" aria-hidden="true" />
+                    Saved Outfits
+                </NavLink>
+            </nav>
         </header>
     );
 }
